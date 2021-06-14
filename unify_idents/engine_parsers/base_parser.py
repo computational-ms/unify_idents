@@ -1,9 +1,8 @@
 import csv
-from unify_idents import (
-    UnifiedRow,
-)
+
 import uparma
 
+from unify_idents import UnifiedRow
 
 """All engines
         * Retention Time (s) is correctly set using _ursgal_lookup.pkl
@@ -25,8 +24,25 @@ import uparma
 
 class __BaseParser:
     def __init__(self, input_file, params=None):
+        if params is None:
+            self.params = {}
+        else:
+            self.params = params
         self.param_mapper = uparma.UParma()
         self.peptide_mapper = None
+
+        # currently scan_rt_lookup is just a file name
+        # read and write file to $URSGAL_HOME?
+        self.scan_rt_lookup = self.params.get("scan_rt_lookup", None)
+        if self.scan_rt_lookup is None:
+            # self.scan_rt_lookup:
+            # {
+            #     filename: {
+            #         "rt_2_scan": {rt:scan},
+            #         "scan_2_rt": {scan:rt},
+            #         "scan_2_mz": {scan:mz},
+            # }
+            self.scan_rt_lookup = {}
         # should it also have scan_rt_lookup?
 
     def file_matches_parser(self):

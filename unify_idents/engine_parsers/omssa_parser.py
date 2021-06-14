@@ -1,11 +1,10 @@
 #!/usr/bin/env python
 import csv
-from unify_idents import (
-    UnifiedRow,
-)
-import uparma
-from unify_idents.engine_parsers.base_parser import __BaseParser
 
+import uparma
+
+from unify_idents import UnifiedRow
+from unify_idents.engine_parsers.base_parser import __BaseParser
 
 """OMSSA
         * Carbamidomethyl is updated and set

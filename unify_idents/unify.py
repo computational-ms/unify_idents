@@ -1,9 +1,16 @@
 #!/usr/bin/env python
-from pathlib import Path
 import inspect
 from importlib import import_module
+from pathlib import Path
+import bz2
+import csv
 
 # Add UnifiedTable
+
+
+class UnifiedDataFrame:
+    pass
+
 
 # inherit from ordered dict?
 class UnifiedRow:
@@ -52,16 +59,24 @@ class UnifiedRow:
 
 
 class Unify:
-    def __init__(self, *args, **kwargs):
+    def __init__(self, input_file, params=None):
         """Summary"""
-        input_file = kwargs.get("ufiles", None)[0]
-        self.umeta = kwargs
-        if input_file is None:
-            raise Exception("XXX parameter is required!")
-        if not isinstance(input_file, Path):
-            self.input_file = Path(input_file)
+        self.input_file = input_file
+        self.params = params
+        if not isinstance(self.input_file, Path):
+            self.input_file = Path(self.input_file)
         else:
-            self.input_file = input_file
+            self.input_file = self.input_file
+        if params is None:
+            self.params = {}
+        else:
+            self.params = params
+
+        self.scan_rt_path = self.params.get("scan_rt_lookup_file", None)
+        if self.scan_rt_path is None:
+            raise Exception("Meaningfull error message")
+        else:
+            self.scan_rt_lookup = self.read_rt_lookup_file(self.scan_rt_path)
         # self.engine = self._determine_engine(self.input_file)
         self.parser = self._get_parser(self.input_file)
 
@@ -112,9 +127,26 @@ class Unify:
         all_parsers = self._get_parser_classes()
 
         for parser_class in all_parsers:
-            parser = parser_class(
-                input_file, params=self.umeta.get("translated_cparameters", {})
-            )
+            parser = parser_class(input_file, params=self.params)
             if parser.file_matches_parser() is True:
                 break
         return parser
+
+    def read_rt_lookup_file(self, scan_rt_lookup_path):
+        with bz2.open(scan_rt_lookup_path, "rt") as fin:
+            lookup = {}
+            reader = csv.DictReader(fin)
+            for line in reader:
+                lookup.setdefault(
+                    line["File"], {"scan2rt": {}, "rt2scan": {}, "scan2mz": {}}
+                )
+                file, scan, rt, mz = (
+                    line["File"],
+                    line["Spectrum ID"],
+                    line["RT"],
+                    line["Precursor mz"],
+                )
+                lookup[file]["scan2rt"][int(scan)] = float(rt)
+                lookup[file]["rt2scan"][float(rt)] = int(scan)
+                lookup[file]["scan2mz"][int(scan)] = float(mz)
+        return lookup
