@@ -1,15 +1,20 @@
 #!/usr/bin/env python
+import bz2
+import csv
 import inspect
 from importlib import import_module
 from pathlib import Path
-import bz2
-import csv
 
-# Add UnifiedTable
+import pandas as pd
 
 
 class UnifiedDataFrame:
-    pass
+    def __init__(self, rows):
+        self.rows = rows
+        self.df = pd.DataFrame(rows)
+
+    def __iter__(self):
+        return iter(self.rows)
 
 
 # inherit from ordered dict?
@@ -27,7 +32,7 @@ class UnifiedRow:
             "Retention Time (s)",
             "Exp m/z",
             "Calc m/z",
-            "uCalc_m/z",
+            "uCalc m/z",
             "uCalc Mass",
             "Accuracy (ppm)",
             "Mass Difference",
@@ -46,16 +51,23 @@ class UnifiedRow:
         if self.string_repr is None:
             self.string_repr = []
             for col in self.col_order:
-                self.string_repr.append(self.data.get(col, ""))
+                self.string_repr.append(str(self.data.get(col, "")))
             self.string_repr = ", ".join(self.string_repr)
         return self.string_repr
 
-    def __repr__(self):
-        return self.__str__()
+    def to_dict(self):
+        return self.data
+
+    # def __repr__(self):
+    #     return self.__str__()
 
     def calc_mz(self):
         # use chemical composition
-        pass
+        # do we really want a new CC object for every row?
+        self.data["uCalc m/z"] = 0
+        self.data["uCalc mass"] = 0
+        self.data["Mass Difference"] = 0
+        self.data["Accuracy (ppm)"] = 0
 
 
 class Unify:
@@ -77,7 +89,6 @@ class Unify:
             raise Exception("Meaningfull error message")
         else:
             self.scan_rt_lookup = self.read_rt_lookup_file(self.scan_rt_path)
-        # self.engine = self._determine_engine(self.input_file)
         self.parser = self._get_parser(self.input_file)
 
     def __iter__(self):
@@ -87,21 +98,6 @@ class Unify:
         line = next(self.parser)
         # do some magic here, like calling methods of row (e.g. calc_mz)
         return line
-
-    # def _determine_engine(self, input_file):
-    #     """Determine the engine used for generating `input_file`
-
-    #     Args:
-    #         input_file (str): path to the input file
-    #     """
-    #     engine = None
-    #     if input_file.suffix == ".xml":
-    #         # either xtandem or msgfplus
-    #         pass
-    #     elif input_file.suffix == ".csv_tmp":
-    #         # omssa or msfragger
-    #         engine = "omssa"
-    #     return engine
 
     def _get_parser_classes(self):
         classes = []
@@ -120,7 +116,6 @@ class Unify:
                         and not "__" in name
                     ):
                         classes.append(obj)
-                print()
         return classes
 
     def _get_parser(self, input_file):
@@ -150,3 +145,9 @@ class Unify:
                 lookup[file]["rt2scan"][float(rt)] = int(scan)
                 lookup[file]["scan2mz"][int(scan)] = float(mz)
         return lookup
+
+    def get_dataframe(self):
+        data = []
+        for unified_row in self:
+            data.append(unified_row.to_dict())
+        return UnifiedDataFrame(data)

@@ -6,13 +6,7 @@ import uparma
 from unify_idents import UnifiedRow
 from unify_idents.engine_parsers.base_parser import __BaseParser
 
-"""OMSSA
-        * Carbamidomethyl is updated and set
-"""
-# add a base parser, which has all the common functionality?
-# base parser could also do type casting
-# use ABC?
-# sanity check
+
 class OmssaParser(__BaseParser):
     def __init__(self, input_file, params=None):
         super().__init__(input_file, params)
@@ -25,7 +19,6 @@ class OmssaParser(__BaseParser):
         self.style = "omssa_style_1"
         self.column_mapping = self.get_column_names()
 
-        # copy pasta from ursgal1 unify_csv
         self.cols_to_remove = [
             "proteinacc_start_stop_pre_post_;",
             "Start",
@@ -76,7 +69,15 @@ class OmssaParser(__BaseParser):
         new_row["Spectrum ID"] = int(new_row["Spectrum Title"].split(".")[1])
         new_row["Search Engine"] = "omssa_2_1_9"
         new_row = self.general_fixes(new_row)
-        breakpoint()
+
+        fixed_mods = []
+        for pos, aa in enumerate(new_row["Sequence"]):
+            pos += 1  # start counting at 1, 0 is N-term
+            for mod in self.params["mods"]["fix"]:
+                if aa == mod["aa"]:
+                    fixed_mods.append(f"{mod['name']}:{pos}")
+        f_mod_string = ";".join(fixed_mods)
+
         # TODO add fixed modifications
         # TODO
         # all the other transformations
