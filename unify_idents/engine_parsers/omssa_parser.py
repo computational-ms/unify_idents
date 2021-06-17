@@ -18,7 +18,10 @@ class OmssaParser(__BaseParser):
         self.params = params
         self.input_file = input_file
 
-        self.reader = csv.DictReader(open(input_file))
+        try:
+            self.reader = csv.DictReader(open(input_file))
+        except:
+            self.reader = None
         self.style = "omssa_style_1"
         self.column_mapping = self.get_column_names()
 
@@ -79,7 +82,32 @@ class OmssaParser(__BaseParser):
     def file_matches_parser(self):
         # TODO implement file sensing
         # use get column names
-        return True
+        fn = [
+            "Spectrum number",
+            " Filename/id",
+            " Peptide",
+            " E-value",
+            " Mass",
+            " gi",
+            " Accession",
+            " Start",
+            " Stop",
+            " Defline",
+            " Mods",
+            " Charge",
+            " Theo Mass",
+            " P-value",
+            " NIST score",
+        ]
+        field_set = set([a.strip() for a in fn])
+        if (
+            isinstance(self.reader, csv.DictReader)
+            and set([f.strip() for f in self.reader.fieldnames]) == fn
+        ):
+            ret_val = True
+        else:
+            ret_val = False
+        return ret_val
 
     def __iter__(self):
         return self
