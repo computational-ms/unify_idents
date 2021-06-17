@@ -24,7 +24,7 @@ class __BaseParser:
         self.param_mapper = uparma.UParma()
         self.peptide_mapper = UPeptideMapper(params["database"])
         self.mod_mapper = UnimodMapper()
-        self.cc = ChemicalComposition()
+        # self.cc = ChemicalComposition()
 
         self.map_mods(self.params["Modifications"])
 
@@ -40,6 +40,7 @@ class __BaseParser:
         row["Retention Time (s)"] = float(
             self.scan_rt_lookup[row["Raw file location"]]["scan2rt"][row["Spectrum ID"]]
         )
+        row["Sequence"] = row["Sequence"].upper()
 
         # mapping peptides
         starts = []

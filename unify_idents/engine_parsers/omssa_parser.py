@@ -78,6 +78,7 @@ class OmssaParser(__BaseParser):
 
     def file_matches_parser(self):
         # TODO implement file sensing
+        # use get column names
         return True
 
     def __iter__(self):
@@ -125,11 +126,9 @@ class OmssaParser(__BaseParser):
                             position = "0"
                 translated_mods.append("{0}:{1}".format(unimod_name, position))
 
+        # join fixed and variable mods
         new_row["Modifications"] = ";".join(translated_mods)
 
-        # TODO add fixed modifications
-        # TODO
-        # all the other transformations
         return UnifiedRow(**new_row)
 
     def get_column_names(self):

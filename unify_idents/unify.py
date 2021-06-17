@@ -98,6 +98,8 @@ class Unify:
 
     def __next__(self):
         line = next(self.parser)
+        # TODO
+        # line = self.parser.general_fixes(line)
         # do some magic here, like calling methods of row (e.g. calc_mz)
         return line
 

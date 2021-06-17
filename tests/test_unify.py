@@ -71,3 +71,4 @@ def test_engine_parsers_omssa_unified_frame():
     )
     df = u.get_dataframe()
     assert isinstance(df, UnifiedDataFrame)
+    breakpoint()
