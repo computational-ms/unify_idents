@@ -8,6 +8,7 @@ from pathlib import Path
 import pandas as pd
 
 
+# inherit from pd.DataFrame
 class UnifiedDataFrame:
     def __init__(self, rows):
         self.rows = rows
@@ -48,6 +49,7 @@ class UnifiedRow:
         self.string_repr = None
 
     def __str__(self):
+        # needs fix, only return unify cols and not Engine:name columns
         if self.string_repr is None:
             self.string_repr = []
             for col in self.col_order:

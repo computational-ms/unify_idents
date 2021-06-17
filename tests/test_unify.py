@@ -9,8 +9,8 @@ from unify_idents.unify import UnifiedDataFrame
 
 def test_unify_get_parser_classes():
     rt_lookup_path = Path(__file__).parent / "data" / "_ursgal_lookup.csv.bz2"
-    p = Path(__file__).parent / "data" / "BSA1_mzml2mgf_0_0_1_omssa_2_1_9.csv_tmp"
-    db_path = Path(__file__).parent / "data" / "BSA1.fasta"
+    p = Path(__file__).parent / "data" / "test_Creinhardtii_QE_pH11_omssa_2_1_9.csv"
+    db_path = Path(__file__).parent / "data" / "test_Creinhardtii_target_decoy.fasta"
     u = Unify(
         p,
         {
@@ -19,7 +19,9 @@ def test_unify_get_parser_classes():
             "Modifications": [
                 "C,fix,any,Carbamidomethyl",
                 "M,opt,any,Oxidation",
+                "*,opt,Prot-N-term,Acetyl",
             ],
+            "omssa_mod_dir": Path(__file__).parent / "data",
         },
     )
     parsers = u._get_parser_classes()
@@ -28,8 +30,8 @@ def test_unify_get_parser_classes():
 
 def test_unify_get_omssa_parser():
     rt_lookup_path = Path(__file__).parent / "data" / "_ursgal_lookup.csv.bz2"
-    p = Path(__file__).parent / "data" / "BSA1_mzml2mgf_0_0_1_omssa_2_1_9.csv_tmp"
-    db_path = Path(__file__).parent / "data" / "BSA1.fasta"
+    p = Path(__file__).parent / "data" / "test_Creinhardtii_QE_pH11_omssa_2_1_9.csv"
+    db_path = Path(__file__).parent / "data" / "test_Creinhardtii_target_decoy.fasta"
     u = Unify(
         p,
         {
@@ -38,7 +40,9 @@ def test_unify_get_omssa_parser():
             "Modifications": [
                 "C,fix,any,Carbamidomethyl",
                 "M,opt,any,Oxidation",
+                "*,opt,Prot-N-term,Acetyl",
             ],
+            "omssa_mod_dir": Path(__file__).parent / "data",
         },
     )
     parser = u._get_parser(p)
@@ -47,10 +51,10 @@ def test_unify_get_omssa_parser():
 
 def test_engine_parsers_omssa_unified_frame():
     input_file = (
-        Path(__file__).parent / "data" / "BSA1_mzml2mgf_0_0_1_omssa_2_1_9.csv_tmp"
+        Path(__file__).parent / "data" / "test_Creinhardtii_QE_pH11_omssa_2_1_9.csv"
     )
     rt_lookup_path = Path(__file__).parent / "data" / "_ursgal_lookup.csv.bz2"
-    db_path = Path(__file__).parent / "data" / "BSA1.fasta"
+    db_path = Path(__file__).parent / "data" / "test_Creinhardtii_target_decoy.fasta"
 
     u = Unify(
         input_file,
@@ -60,7 +64,9 @@ def test_engine_parsers_omssa_unified_frame():
             "Modifications": [
                 "C,fix,any,Carbamidomethyl",
                 "M,opt,any,Oxidation",
+                "*,opt,Prot-N-term,Acetyl",
             ],
+            "omssa_mod_dir": Path(__file__).parent / "data",
         },
     )
     df = u.get_dataframe()

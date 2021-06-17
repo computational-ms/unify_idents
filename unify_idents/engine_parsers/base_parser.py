@@ -5,8 +5,10 @@ from pathlib import Path
 import uparma
 from peptide_mapper.mapper import UPeptideMapper
 from unimod_mapper.unimod_mapper import UnimodMapper
+from chemical_composition import ChemicalComposition
 
 from unify_idents import UnifiedRow
+from loguru import logger
 
 # get from params
 DELIMITER = "<|>"
@@ -22,6 +24,7 @@ class __BaseParser:
         self.param_mapper = uparma.UParma()
         self.peptide_mapper = UPeptideMapper(params["database"])
         self.mod_mapper = UnimodMapper()
+        self.cc = ChemicalComposition()
 
         self.map_mods(self.params["Modifications"])
 
@@ -58,6 +61,15 @@ class __BaseParser:
         row["Sequence Post AA"] = DELIMITER.join(post)
         row["Sequence Start"] = DELIMITER.join(starts)
         row["Sequence Stop"] = DELIMITER.join(stops)
+
+        # recalc masses etc
+        # _hash = "#"
+        # seq_mod = "#".join([row["Sequence"], row["Modifications"]])
+        # self.cc.use(row["Sequence"])
+        # row["uCalc m/z"] = 0
+        # row["uCalc mass"] = 0
+        # row["Mass Difference"] = 0
+        # row["Accuracy (ppm)"] = 0
         return row
 
     def read_rt_lookup_file(self, scan_rt_lookup_path):
@@ -89,22 +101,21 @@ class __BaseParser:
              ... ]
 
         """
-        # TODO remove print functions and replace by logger
+        # TODO remove logger.warning functions and replace by logger
         self.params["mods"] = {"fix": [], "opt": []}
         for ursgal_index, mod in enumerate(sorted(mods)):
             mod_params = mod.split(",")
             if len(mod_params) >= 6 or len(mod_params) <= 3:
-                print(
+                logger.warning(
                     """
-    [ WARNING ] For modifications, please use the ursgal_style:
-    [ WARNING ] 'amino_acid,opt/fix,position,Unimod PSI-MS Name'
-    [ WARNING ] or
-    [ WARNING ] 'amino_acid,opt/fix,position,name,chemical_composition'
-    [ WARNING ] Continue without modification {0} """.format(
+For modifications, please use the ursgal_style:
+'amino_acid,opt/fix,position,Unimod PSI-MS Name'
+or
+'amino_acid,opt/fix,position,name,chemical_composition'
+Continue without modification {0} """.format(
                         mod
                     )
                 )
-                print(mod_params)
                 continue
             aa = mod_params[0].strip()
             mod_option = mod_params[1].strip()
@@ -119,14 +130,14 @@ class __BaseParser:
                     mass = self.mod_mapper.id2mass(unimod_id)
                     composition = self.mod_mapper.id2composition(unimod_id)
                     if unimod_name is None:
-                        print(
+                        logger.warning(
                             """
-    [ WARNING ] '{1}' is not a Unimod modification
-    [ WARNING ] please change it to a valid Unimod Accession # or PSI-MS Unimod Name
-    [ WARNING ] or add the chemical composition hill notation (including 1)
-    [ WARNING ] e.g.: H-1N1O2
-    [ WARNING ] ursgal_style: 'amino_acid,opt/fix,position,name,chemical_composition'
-    [ WARNING ] Continue without modification {0} """.format(
+'{1}' is not a Unimod modification
+please change it to a valid Unimod Accession # or PSI-MS Unimod Name
+or add the chemical composition hill notation (including 1)
+e.g.: H-1N1O2
+ursgal_style: 'amino_acid,opt/fix,position,name,chemical_composition'
+Continue without modification {0} """.format(
                                 mod, unimod_id
                             )
                         )
@@ -139,14 +150,14 @@ class __BaseParser:
                     mass = self.mod_mapper.name2mass(unimod_name)
                     composition = self.mod_mapper.name2composition(unimod_name)
                     if unimod_id is None:
-                        print(
+                        logger.warning(
                             """
-    [ WARNING ] '{1}' is not a Unimod modification
-    [ WARNING ] please change it to a valid PSI-MS Unimod Name or Unimod Accession #
-    [ WARNING ] or add the chemical composition hill notation (including 1)
-    [ WARNING ] e.g.: H-1N1O2
-    [ WARNING ] ursgal_style: 'amino_acid,opt/fix,position,name,chemical_composition'
-    [ WARNING ] Continue without modification {0} """.format(
+'{1}' is not a Unimod modification
+please change it to a valid PSI-MS Unimod Name or Unimod Accession #
+or add the chemical composition hill notation (including 1)
+e.g.: H-1N1O2
+ursgal_style: 'amino_acid,opt/fix,position,name,chemical_composition'
+Continue without modification {0} """.format(
                                 mod, unimod_name
                             )
                         )
@@ -174,23 +185,23 @@ class __BaseParser:
                         unimod = True
                         break
                 if unimod == False and unimod_name_list != []:
-                    print(
+                    logger.warning(
                         """
-    [ WARNING ] '{0}' is not a Unimod modification
-    [ WARNING ] but the chemical composition you specified is included in Unimod.
-    [ WARNING ] Please use one of the Unimod names:
-    [ WARNING ] {1}
-    [ WARNING ] Continue without modification {2} """.format(
+'{0}' is not a Unimod modification
+but the chemical composition you specified is included in Unimod.
+Please use one of the Unimod names:
+{1}
+Continue without modification {2} """.format(
                             name, unimod_name_list, mod
                         )
                     )
                     continue
                 if unimod == False and unimod_name_list == []:
-                    print(
+                    logger.warning(
                         """
-    [ WARNING ] '{0}' is not a Unimod modification
-    [ WARNING ] trying to continue with the chemical composition you specified
-    [ WARNING ] This is not working with OMSSA so far""".format(
+'{0}' is not a Unimod modification
+trying to continue with the chemical composition you specified
+This is not working with OMSSA so far""".format(
                             mod,
                         )
                     )
