@@ -128,11 +128,10 @@ class OmssaParser(__BaseParser):
             new_row[col] = ""
         new_row["Spectrum ID"] = int(new_row["Spectrum Title"].split(".")[1])
         new_row["Search Engine"] = "omssa_2_1_9"
-        new_row = self.general_fixes(new_row)
 
         modstring = self.create_mod_string(new_row)
-
         new_row["Modifications"] = modstring
+        new_row = self.general_fixes(new_row)
 
         return UnifiedRow(**new_row)
 

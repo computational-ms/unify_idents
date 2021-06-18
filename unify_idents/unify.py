@@ -3,23 +3,73 @@ import bz2
 import csv
 import inspect
 from peptide_mapper.mapper import UPeptideMapper
+from chemical_composition import ChemicalComposition
 
 from importlib import import_module
 from pathlib import Path
 
 import pandas as pd
 
+PROTON = 1.00727646677
+
 
 # inherit from pd.DataFrame
 class UnifiedDataFrame:
-    def __init__(self, rows):
+    def __init__(self, rows, db_path):
+        self.DELIMITER = "<|>"
         self.rows = rows
         self.df = pd.DataFrame(rows)
         # where do we get the database
-        # self.mapper = UPeptideMapper()
+        self.mapper = UPeptideMapper(db_path)
+        self.cc = ChemicalComposition()
+        all_peptides = [row["Sequence"] for row in rows]
+        mapped_peptides = self.mapper.map_peptides(all_peptides)
+        self.update_protein_mapping(mapped_peptides)
 
     def __iter__(self):
         return iter(self.rows)
+
+    def update_protein_mapping(self, mapped_peptides):
+        for _id, row in self.df.iterrows():
+            mapping = mapped_peptides[row["Sequence"]]
+            # breakpoint()
+            starts = []
+            ids = []
+            stops = []
+            pre = []
+            post = []
+            for match in mapping:
+                ids.append(match["id"])
+                starts.append(str(match["start"]))
+                stops.append(str(match["end"]))
+                pre.append(str(match["pre"]))
+                post.append(str(match["post"]))
+
+            self.df.at[_id, "Protein ID"] = self.DELIMITER.join(ids)
+            self.df.at[_id, "Sequence Pre AA"] = self.DELIMITER.join(pre)
+            self.df.at[_id, "Sequence Post AA"] = self.DELIMITER.join(post)
+            self.df.at[_id, "Sequence Start"] = self.DELIMITER.join(starts)
+            self.df.at[_id, "Sequence Stop"] = self.DELIMITER.join(stops)
+
+            # also do the mass calc here?
+            self.cc.use(sequence=row["Sequence"], modifications=row["Modifications"])
+            mass = self.cc.mass()
+            charge = int(row["Charge"])
+            mz = self.calc_mz(mass, charge)
+            # exp m/z is actually the math
+            engine_mass = float(row["Exp m/z"])
+            self.df.at[_id, "uCalc m/z"] = mz
+            self.df.at[_id, "uCalc mass"] = mass
+            self.df.at[_id, "Mass Difference"] = engine_mass - mass
+            self.df.at[_id, "Accuracy (ppm)"] = (engine_mass - mass) / mass / 5e-6
+        return
+
+    def calc_mz(self, mass, charge):
+        return (mass + (charge * PROTON)) / charge
+
+    def calc_mass(self, mz, charge):
+        calc_mass = mz * charge - (charge * PROTON)
+        return calc_mass
 
 
 # inherit from ordered dict?
@@ -67,13 +117,13 @@ class UnifiedRow:
     # def __repr__(self):
     #     return self.__str__()
 
-    def calc_mz(self):
-        # use chemical composition
-        # do we really want a new CC object for every row?
-        self.data["uCalc m/z"] = 0
-        self.data["uCalc mass"] = 0
-        self.data["Mass Difference"] = 0
-        self.data["Accuracy (ppm)"] = 0
+    # def calc_mz(self):
+    #     # use chemical composition
+    #     # do we really want a new CC object for every row?
+    #     self.data["uCalc m/z"] = 0
+    #     self.data["uCalc mass"] = 0
+    #     self.data["Mass Difference"] = 0
+    #     self.data["Accuracy (ppm)"] = 0
 
 
 class Unify:
@@ -158,4 +208,4 @@ class Unify:
         data = []
         for unified_row in self:
             data.append(unified_row.to_dict())
-        return UnifiedDataFrame(data)
+        return UnifiedDataFrame(data, db_path=self.params["database"])

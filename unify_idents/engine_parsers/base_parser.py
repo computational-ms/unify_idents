@@ -11,7 +11,6 @@ from unify_idents import UnifiedRow
 from loguru import logger
 
 # get from params
-DELIMITER = "<|>"
 
 
 class __BaseParser:
@@ -24,7 +23,7 @@ class __BaseParser:
         self.param_mapper = uparma.UParma()
         self.peptide_mapper = UPeptideMapper(params["database"])
         self.mod_mapper = UnimodMapper()
-        # self.cc = ChemicalComposition()
+        self.cc = ChemicalComposition()
 
         self.map_mods(self.params["Modifications"])
 
@@ -41,8 +40,26 @@ class __BaseParser:
             self.scan_rt_lookup[row["Raw file location"]]["scan2rt"][row["Spectrum ID"]]
         )
         row["Sequence"] = row["Sequence"].upper()
-        row = self.map_peptides(row)
+        # row = self.map_peptides(row)
+        # row = self.recalc_masses(row)
+        # seq_mod = row["Sequence"] + "#" + row["Modifications"]
+        # self.cc.use(sequence=row["Sequence"], modifications=row["Modifications"])
+        # row["uCalc m/z"] = self.calc_mz(self.cc.mass(), int(row["Charge"]))
+        # row["uCalc mass"] = self.cc.mass()
+        # and so on
+
         return row
+
+    def recalc_masses(row):
+        seq_mod = row["Sequence"] + "#" + row["Modifications"]
+        self.cc.use(sequence=row["Sequence"], modifications=row["Modifications"])
+        row["uCalc m/z"] = self.calc_mz(self.cc.mass(), int(row["Charge"]))
+        row["uCalc mass"] = self.cc.mass()
+        return row
+
+    # def calc_mz(self, mass, charge):
+    #     PROTON = 1.00727646677
+    #     return (mass + (charge * PROTON)) / charge
 
     def map_peptides(self, row):
         starts = []
