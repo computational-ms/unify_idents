@@ -51,7 +51,7 @@ class OmssaParser(__BaseParser):
             },
         }
 
-        self.format_mods()
+        self.create_mod_lookup()
 
         self.cols_to_remove = [
             "proteinacc_start_stop_pre_post_;",
@@ -130,6 +130,13 @@ class OmssaParser(__BaseParser):
         new_row["Search Engine"] = "omssa_2_1_9"
         new_row = self.general_fixes(new_row)
 
+        modstring = self.create_mod_string(new_row)
+
+        new_row["Modifications"] = modstring
+
+        return UnifiedRow(**new_row)
+
+    def create_mod_string(self, new_row):
         fixed_mods = []
         for pos, aa in enumerate(new_row["Sequence"]):
             pos += 1  # start counting at 1, 0 is N-term
@@ -159,9 +166,7 @@ class OmssaParser(__BaseParser):
         opt_mods = [mod.split(":") for mod in translated_mods if mod != ""]
         all_mods = sorted(fix_mods + opt_mods, key=lambda x: float(x[1]))
         all_mods = ";".join([":".join(m) for m in all_mods])
-        new_row["Modifications"] = all_mods
-
-        return UnifiedRow(**new_row)
+        return all_mods
 
     def get_column_names(self):
         # create own uparma mapper
@@ -246,7 +251,7 @@ class OmssaParser(__BaseParser):
                     tmp = _create_empty_tmp()
         return
 
-    def format_mods(self):
+    def create_mod_lookup(self):
         self._load_omssa_xml()
         self.lookups = {}
         # put in own method
