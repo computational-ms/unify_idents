@@ -126,7 +126,6 @@ class OmssaParser(__BaseParser):
             del new_row[col]
         for col in self.cols_to_add:
             new_row[col] = ""
-        # breakpoint()
         new_row["Spectrum ID"] = int(new_row["Spectrum Title"].split(".")[1])
         new_row["Search Engine"] = "omssa_2_1_9"
         new_row = self.general_fixes(new_row)
@@ -155,7 +154,12 @@ class OmssaParser(__BaseParser):
                 translated_mods.append("{0}:{1}".format(unimod_name, position))
 
         # join fixed and variable mods
-        new_row["Modifications"] = ";".join(translated_mods)
+
+        fix_mods = [mod.split(":") for mod in f_mod_string.split(";") if mod != ""]
+        opt_mods = [mod.split(":") for mod in translated_mods if mod != ""]
+        all_mods = sorted(fix_mods + opt_mods, key=lambda x: float(x[1]))
+        all_mods = ";".join([":".join(m) for m in all_mods])
+        new_row["Modifications"] = all_mods
 
         return UnifiedRow(**new_row)
 

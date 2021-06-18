@@ -49,7 +49,9 @@ class __BaseParser:
         pre = []
         post = []
         # we need to convert sequences to uppercase, e.g. omssa reports modified AAs in lowercase
-        mapped = self.peptide_mapper.map_peptides([row["Sequence"].upper()])
+        mapped = self.peptide_mapper.map_peptides(
+            [row["Sequence"].upper()]
+        )  # uses 99% of time
         for seq, data_list in mapped.items():
             for data in data_list:
                 ids.append(data["id"])
@@ -62,15 +64,6 @@ class __BaseParser:
         row["Sequence Post AA"] = DELIMITER.join(post)
         row["Sequence Start"] = DELIMITER.join(starts)
         row["Sequence Stop"] = DELIMITER.join(stops)
-
-        # recalc masses etc
-        # _hash = "#"
-        # seq_mod = "#".join([row["Sequence"], row["Modifications"]])
-        # self.cc.use(row["Sequence"])
-        # row["uCalc m/z"] = 0
-        # row["uCalc mass"] = 0
-        # row["Mass Difference"] = 0
-        # row["Accuracy (ppm)"] = 0
         return row
 
     def read_rt_lookup_file(self, scan_rt_lookup_path):

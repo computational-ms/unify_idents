@@ -2,6 +2,8 @@
 import bz2
 import csv
 import inspect
+from peptide_mapper.mapper import UPeptideMapper
+
 from importlib import import_module
 from pathlib import Path
 
@@ -13,6 +15,8 @@ class UnifiedDataFrame:
     def __init__(self, rows):
         self.rows = rows
         self.df = pd.DataFrame(rows)
+        # where do we get the database
+        # self.mapper = UPeptideMapper()
 
     def __iter__(self):
         return iter(self.rows)
