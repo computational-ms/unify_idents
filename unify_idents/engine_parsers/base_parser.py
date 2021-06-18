@@ -41,8 +41,10 @@ class __BaseParser:
             self.scan_rt_lookup[row["Raw file location"]]["scan2rt"][row["Spectrum ID"]]
         )
         row["Sequence"] = row["Sequence"].upper()
+        row = self.map_peptides(row)
+        return row
 
-        # mapping peptides
+    def map_peptides(self, row):
         starts = []
         ids = []
         stops = []
