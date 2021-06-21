@@ -25,7 +25,7 @@ def test_unify_get_parser_classes():
         },
     )
     parsers = u._get_parser_classes()
-    assert len(parsers) == 2  # currently we have dummy and omssa
+    assert len(parsers) == 3  # currently we have dummy and omssa
 
 
 def test_unify_get_omssa_parser():

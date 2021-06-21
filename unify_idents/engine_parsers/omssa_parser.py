@@ -8,6 +8,7 @@ from unify_idents.engine_parsers.base_parser import __BaseParser
 
 import xml.etree.ElementTree
 from pathlib import Path
+from loguru import logger
 
 
 class OmssaParser(__BaseParser):
@@ -102,7 +103,7 @@ class OmssaParser(__BaseParser):
         field_set = set([a.strip() for a in fn])
         if (
             isinstance(self.reader, csv.DictReader)
-            and set([f.strip() for f in self.reader.fieldnames]) == fn
+            and set([f.strip() for f in self.reader.fieldnames]) == field_set
         ):
             ret_val = True
         else:
@@ -222,10 +223,6 @@ class OmssaParser(__BaseParser):
                     try:
                         l_value = tmp[lookup_field]
                     except:
-                        # self.print_info(
-                        #     "Skipping entry {0} (no unimod! map)".format(tmp),
-                        #     caller="WARNING!",
-                        # )
                         tmp["aa_targets"] = []
                         continue
                     if tmp["omssa_name"] in self.omssa_mod_corrections.keys():
@@ -253,7 +250,6 @@ class OmssaParser(__BaseParser):
     def create_mod_lookup(self):
         self._load_omssa_xml()
         self.lookups = {}
-        # put in own method
         for param_key in ["_fixed_mods", "_opt_mods"]:
             mod_type = param_key[1:4]
             modifications = ""
@@ -261,8 +257,6 @@ class OmssaParser(__BaseParser):
             for mod in self.params["mods"][mod_type]:
                 unimod_id_does_not_exist = False
                 aa_can_not_be_mapped = True
-                # print(mod['id'])
-                # print(self.omssa_mod_Mapper.keys())
                 if mod["id"] not in self.omssa_mod_mapper.keys():
                     unimod_id_does_not_exist = True
                 else:
@@ -292,17 +286,14 @@ class OmssaParser(__BaseParser):
                                 "omssa_id": omssa_id,
                                 "id": mod["id"],
                             }
-                # print(unimod_id_does_not_exist)
-                # print(aa_can_not_be_mapped)
                 if unimod_id_does_not_exist or aa_can_not_be_mapped:
-                    self.print_info(
+                    logger.warning(
                         """
     The combination of modification name and aminoacid is not supported by
     OMSSA. Continuing without modification: {0}
                     """.format(
                             mod
                         ),
-                        caller="WARNING",
                     )
                     continue
 

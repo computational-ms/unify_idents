@@ -178,7 +178,6 @@ class Unify:
 
     def _get_parser(self, input_file):
         all_parsers = self._get_parser_classes()
-
         for parser_class in all_parsers:
             parser = parser_class(input_file, params=self.params)
             if parser.file_matches_parser() is True:

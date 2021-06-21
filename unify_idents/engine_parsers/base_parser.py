@@ -30,6 +30,15 @@ class __BaseParser:
         self.scan_rt_path = self.params.get("scan_rt_lookup_file", None)
         self.scan_rt_lookup = self.read_rt_lookup_file(self.scan_rt_path)
 
+        self.cols_to_remove = []
+        self.cols_to_add = []
+
+    def __iter__(self):
+        return self
+
+    # def __next__(self):
+    #     raise StopIteration
+
     def file_matches_parser(self):
         # needs to return False to dont be selected as engine parser during `get_parsers`
         return False
@@ -37,7 +46,9 @@ class __BaseParser:
     def general_fixes(self, row):
         row["Raw file location"] = row["Spectrum Title"].split(".")[0]
         row["Retention Time (s)"] = float(
-            self.scan_rt_lookup[row["Raw file location"]]["scan2rt"][row["Spectrum ID"]]
+            self.scan_rt_lookup[row["Raw file location"]]["scan2rt"][
+                int(row["Spectrum ID"])
+            ]
         )
         row["Sequence"] = row["Sequence"].upper()
         # row = self.map_peptides(row)

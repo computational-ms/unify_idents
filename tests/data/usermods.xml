@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<MSModSpecSet
+    xmlns="http://www.ncbi.nlm.nih.gov"
+    xmlns:xs="http://www.w3.org/2001/XMLSchema-instance"
+    xs:schemaLocation="http://www.ncbi.nlm.nih.gov OMSSA.xsd"
+>
+  <MSModSpec>
+    <MSModSpec_mod>
+      <MSMod value="usermod1">119</MSMod>
+    </MSModSpec_mod>
+    <MSModSpec_type>
+      <MSModType value="modaa">0</MSModType>
+    </MSModSpec_type>
+    <MSModSpec_name>Deamidation of Q</MSModSpec_name>
+    <MSModSpec_monomass>0.984016</MSModSpec_monomass>
+    <MSModSpec_averagemass>0.9848</MSModSpec_averagemass>
+    <MSModSpec_n15mass>0</MSModSpec_n15mass>
+    <MSModSpec_residues>
+      <MSModSpec_residues_E>Q</MSModSpec_residues_E>
+    </MSModSpec_residues>
+    <MSModSpec_unimod>7</MSModSpec_unimod>
+    <MSModSpec_psi-ms>Deamidated</MSModSpec_psi-ms>
+  </MSModSpec>
+</MSModSpecSet>
