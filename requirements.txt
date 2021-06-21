@@ -1,2 +1,7 @@
 pytest
 uparma
+loguru
+peptide_mapper
+chemical_composition
+unimod_mapper
+pandas
