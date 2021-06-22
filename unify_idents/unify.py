@@ -102,6 +102,9 @@ class UnifiedRow:
         ]
         self.string_repr = None
 
+    def __getitem__(self, key):
+        return self.data[key]
+
     def __str__(self):
         # needs fix, only return unify cols and not Engine:name columns
         if self.string_repr is None:
