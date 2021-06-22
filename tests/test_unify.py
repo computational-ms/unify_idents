@@ -71,3 +71,30 @@ def test_engine_parsers_omssa_unified_frame():
     )
     df = u.get_dataframe()
     assert isinstance(df, UnifiedDataFrame)
+
+
+def test_engine_parsers_msfragger_unified_frame():
+    input_file = (
+        Path(__file__).parent
+        / "data"
+        / "test_Creinhardtii_QE_pH11_mzml2mgf_0_0_1_msfragger_3.tsv"
+    )
+    rt_lookup_path = Path(__file__).parent / "data" / "_ursgal_lookup.csv.bz2"
+    db_path = Path(__file__).parent / "data" / "test_Creinhardtii_target_decoy.fasta"
+
+    u = Unify(
+        input_file,
+        {
+            "scan_rt_lookup_file": rt_lookup_path,
+            "database": db_path,
+            "Modifications": [
+                "C,fix,any,Carbamidomethyl",
+                "M,opt,any,Oxidation",
+                "*,opt,Prot-N-term,Acetyl",
+            ],
+            "omssa_mod_dir": Path(__file__).parent / "data",
+            "Raw file location": "test_Creinhardtii_QE_pH11.mzML",
+        },
+    )
+    df = u.get_dataframe()
+    assert isinstance(df, UnifiedDataFrame)

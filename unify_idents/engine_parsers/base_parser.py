@@ -68,9 +68,9 @@ class __BaseParser:
         row["uCalc mass"] = self.cc.mass()
         return row
 
-    # def calc_mz(self, mass, charge):
-    #     PROTON = 1.00727646677
-    #     return (mass + (charge * PROTON)) / charge
+    def calc_mz(self, mass, charge):
+        PROTON = 1.00727646677
+        return (float(mass) + (int(charge) * PROTON)) / int(charge)
 
     def map_peptides(self, row):
         starts = []
