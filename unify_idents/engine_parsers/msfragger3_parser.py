@@ -50,6 +50,29 @@ class MSFragger3Parser(__BaseParser):
             "Search Engine",
         ]
 
+        self.DICT_15N_DIFF = {
+            "A": 0.997035,
+            "C": 0.997035,
+            "D": 0.997035,
+            "E": 0.997035,
+            "F": 0.997035,
+            "G": 0.997035,
+            "H": 2.991105,
+            "I": 0.997035,
+            "K": 1.99407,
+            "L": 0.997035,
+            "M": 0.997035,
+            "N": 1.99407,
+            "P": 0.997035,
+            "Q": 1.99407,
+            "R": 3.98814,
+            "S": 0.997035,
+            "T": 0.997035,
+            "V": 0.997035,
+            "W": 1.99407,
+            "Y": 0.997035,
+        }
+
         self.mass2mod = {str(d["mass"]): d["name"] for d in self.params["mods"]["opt"]}
         self.mass2mod.update(
             {str(d["mass"]): d["name"] for d in self.params["mods"]["fix"]}
@@ -102,7 +125,13 @@ class MSFragger3Parser(__BaseParser):
         new_row["Calc m/z"] = self.calc_mz(
             new_row["MSFragger:Neutral mass of peptide"], new_row["Charge"]
         )
+
+        # TODO
+        # think of all the labile mode, glycan and 15N stuff ...
         modstring = self.format_mods(new_row)
+        # if modstring != "":
+        #     breakpoint()
+
         new_row["Modifications"] = modstring
 
         new_row = self.general_fixes(new_row)
@@ -117,7 +146,7 @@ class MSFragger3Parser(__BaseParser):
     def prepare_mass_to_mod(self):
         fixed_mods = {}
         opt_mods = {}
-        mod_dict = {}
+        self.mod_dict = {}
 
         n_term_replacement = {
             "Ammonia-loss": None,
@@ -130,14 +159,14 @@ class MSFragger3Parser(__BaseParser):
                 aa = modification["aa"]
                 pos = modification["pos"]
                 name = modification["name"]
-                if name not in mod_dict.keys():
-                    mod_dict[name] = {
+                if name not in self.mod_dict.keys():
+                    self.mod_dict[name] = {
                         "mass": modification["mass"],
                         "aa": set(),
                         "pos": set(),
                     }
-                mod_dict[name]["aa"].add(aa)
-                mod_dict[name]["aa"].add(pos)
+                self.mod_dict[name]["aa"].add(aa)
+                self.mod_dict[name]["aa"].add(pos)
                 if "N-term" in pos:
                     n_term_replacement[name] = aa
                 if mod_type == "fix":
@@ -148,7 +177,7 @@ class MSFragger3Parser(__BaseParser):
                         # already in upeptide_mapper
                         # According to unimod, the modification is also on Selenocystein
                         # otherwise we should change that back so that it is skipped...
-                        mod_dict["Carbamidomethyl"]["aa"].add("U")
+                        self.mod_dict["Carbamidomethyl"]["aa"].add("U")
                         fixed_mods["U"] = "Carbamidomethyl"
                 if mod_type == "opt":
                     opt_mods[aa] = name
@@ -156,16 +185,16 @@ class MSFragger3Parser(__BaseParser):
         getcontext().prec = 8
         getcontext().rounding = ROUND_UP
         # mod_dict_list = params['mods']['opt'] + params['mods']['fix']
-        use15N = False
+        use15N = True
         if use15N:
             aminoacids_2_check = set()
-            for modname in mod_dict.keys():
-                aminoacids_2_check |= mod_dict[modname]["aa"]
+            for modname in self.mod_dict.keys():
+                aminoacids_2_check |= self.mod_dict[modname]["aa"]
             additional_15N_modifications = []
-            for aminoacid, N15_Diff in ursgal.ukb.DICT_15N_DIFF.items():
+            for aminoacid, N15_Diff in self.DICT_15N_DIFF.items():
                 if aminoacid not in aminoacids_2_check:
                     continue
-                if "_15N_{0}".format(aminoacid) in mod_dict.keys():
+                if "_15N_{0}".format(aminoacid) in self.mod_dict.keys():
                     print(
                         """
                         Error in unify_csv
@@ -173,53 +202,29 @@ class MSFragger3Parser(__BaseParser):
                         This should never happen"""
                     )
                     sys.exit(1)
-                mod_dict["_15N_{0}".format(aminoacid)] = {
+                self.mod_dict["_15N_{0}".format(aminoacid)] = {
                     "mass": N15_Diff,
                     "aa": set([aminoacid]),
                     "pos": set(["any"]),
                 }
-                # additional_dict = {
-                #     'name' : '_15N_{0}'.format(aminoacid),
-                #     'mass' : N15_Diff,
-                #     'aa'   : aminoacid,
-                #     'pos'  : 'any'
-
-                # }
-            #     additional_15N_modifications.append(
-            #         additional_dict
-            #     )
-            # mod_dict_list += additional_15N_modifications
-
-        # mod_lookup = {} #d['name'] for d in self.params['mods']['opt']]
-        # for mod_dict in mod_dict_list:
-        #     if mod_dict['name'] not in mod_lookup.keys():
-        #         mod_lookup[mod_dict['name']] = []
-        #     mod_lookup[ mod_dict['name'] ].append(mod_dict)
 
         mod_names = []
-        for mod in sorted(list(mod_dict.keys())):
-            mod_names.extend(itertools.repeat(mod, len(mod_dict[mod]["aa"])))
+        for mod in sorted(list(self.mod_dict.keys())):
+            mod_names.extend(itertools.repeat(mod, len(self.mod_dict[mod]["aa"])))
         mass_to_mod_combo = {}
         # we cover all combocs of mods
         for iter_length in range(2, len(mod_names) + 1):
             for name_combo in itertools.combinations(mod_names, iter_length):
                 mass = 0
                 for name in name_combo:
-                    mass += Decimal(mod_dict[name]["mass"])
+                    mass += Decimal(self.mod_dict[name]["mass"])
                 rounded_mass = self.mass_format_string.format(mass)
                 if rounded_mass not in mass_to_mod_combo.keys():
                     mass_to_mod_combo[rounded_mass] = set()
                 mass_to_mod_combo[rounded_mass].add(name_combo)
-        # print(mass_to_mod_combo.keys())
-        # sys.exit(1)
-        # msfragger mod merge block end
-        ##############################
         return mass_to_mod_combo
 
     def format_mods(self, row):
-        # we have to reformat the modifications
-        # M|14$15.994915|17$57.021465 to 15.994915:14;57.021465:17
-        # reformat it in Xtandem style
         ms_fragger_reformatted_mods = []
         if row["Modifications"] == "M":
             # M stand for Modifications here, not Methionine
@@ -271,15 +276,8 @@ class MSFragger3Parser(__BaseParser):
                         combo_explainable = set([True])
                         tmp_mods = []
                         for new_name in combo:
-                            meta_mod_info = mod_dict[new_name]
+                            meta_mod_info = self.mod_dict[new_name]
                             single_mod_check = set([True])
-                            """
-                            meta_mod_info = {
-                                'aa': set of aa,
-                                'mass': 42.010565,
-                                'pos': set of pos,
-                            }
-                            """
                             # check aa
                             if (
                                 "*" not in meta_mod_info["aa"]
@@ -307,7 +305,6 @@ class MSFragger3Parser(__BaseParser):
                                         single_mod_check.add(False)
 
                             if all(single_mod_check):
-                                # MS Frager starts counting at zero
                                 pos_in_peptide_for_format_str = msfragger_pos + 1
                                 # we keep mass here so that the
                                 # correct name is added later in already
@@ -345,5 +342,20 @@ class MSFragger3Parser(__BaseParser):
                     ms_fragger_reformatted_mods.append(
                         "{0}:{1}".format(raw_msfragger_mass, msfragger_pos + 1)
                     )
-        mods = ";".join(ms_fragger_reformatted_mods)
-        return mods
+        # mods = ";".join(ms_fragger_reformatted_mods)
+        formatted_mods = []
+        for i, aa in enumerate(row["Sequence"]):
+            i += 1
+            for mod in self.params["mods"]["fix"]:
+                if aa in mod["aa"]:
+                    formatted_mods.append(f"{mod['name']}:{i}")
+        for mod in ms_fragger_reformatted_mods:
+            mass, pos = mod.split(":")
+            mass, pos = float(mass), int(pos)
+            names = self.mod_mapper.appMass2name_list(mass, decimal_places=6)
+            for n in names:
+                if n in self.mod_dict:
+                    if row["Sequence"][pos - 1] in self.mod_dict[n]["aa"]:
+                        formatted_mods.append(f"{n}:{pos}")
+        formatted_mods = ";".join(formatted_mods)
+        return formatted_mods

@@ -51,6 +51,9 @@ class __BaseParser:
             ]
         )
         row["Sequence"] = row["Sequence"].upper()
+        # row = self.check_mod_positions(row)
+        # row = self.check_enzyme_specificity(row)
+
         # row = self.map_peptides(row)
         # row = self.recalc_masses(row)
         # seq_mod = row["Sequence"] + "#" + row["Modifications"]
@@ -59,6 +62,9 @@ class __BaseParser:
         # row["uCalc mass"] = self.cc.mass()
         # and so on
 
+        return row
+
+    def check_mod_positions(self, row):
         return row
 
     def recalc_masses(row):
