@@ -136,12 +136,11 @@ class MSFragger3Parser(__BaseParser):
             del new_row[col]
         for col in self.cols_to_add:
             if col not in new_row:
-                # print(f"ADD {col}")
                 new_row[col] = ""
 
         new_row["Search Engine"] = "msfragger_3_0"
         new_row["Spectrum Title"] = "{file}.{specid}.{specid}.{charge}".format(
-            file=self.params["Raw file location"],
+            file=self.params["Raw file location"].split(".")[0],
             specid=new_row["Spectrum ID"],
             charge=new_row["Charge"],
         )
@@ -156,8 +155,6 @@ class MSFragger3Parser(__BaseParser):
         # TODO
         # think of all the labile mode, glycan and 15N stuff ...
         modstring = self.format_mods(new_row)
-        # if modstring != "":
-        #     breakpoint()
 
         new_row["Modifications"] = modstring
 

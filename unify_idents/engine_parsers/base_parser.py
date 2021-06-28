@@ -44,11 +44,10 @@ class __BaseParser:
         return False
 
     def general_fixes(self, row):
+        basename = row["Raw file location"].split(".")[0]
         row["Raw file location"] = row["Spectrum Title"].split(".")[0]
         row["Retention Time (s)"] = float(
-            self.scan_rt_lookup[row["Raw file location"]]["scan2rt"][
-                int(row["Spectrum ID"])
-            ]
+            self.scan_rt_lookup[basename]["scan2rt"][int(row["Spectrum ID"])]
         )
         row["Sequence"] = row["Sequence"].upper()
         # row = self.check_mod_positions(row)
@@ -107,7 +106,8 @@ class __BaseParser:
             lookup = {}
             reader = csv.DictReader(fin)
             for line in reader:
-                file = Path(line["File"]).stem
+                file = Path(line["File"])
+                file = str(file.stem).rstrip("".join(file.suffixes))
                 lookup.setdefault(file, {"scan2rt": {}, "rt2scan": {}, "scan2mz": {}})
                 scan, rt, mz = (
                     line["Spectrum ID"],
