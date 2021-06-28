@@ -60,7 +60,7 @@ class UnifiedDataFrame:
             engine_mass = float(row["Exp m/z"])
             self.df.at[_id, "uCalc m/z"] = mz
             self.df.at[_id, "uCalc Mass"] = mass
-            self.df.at[_id, "Mass Difference"] = engine_mass - mass
+            # self.df.at[_id, "Mass Difference"] = engine_mass - mass
             self.df.at[_id, "Accuracy (ppm)"] = (engine_mass - mass) / mass / 5e-6
         return
 
@@ -182,9 +182,9 @@ class Unify:
     def _get_parser(self, input_file):
         all_parsers = self._get_parser_classes()
         for parser_class in all_parsers:
-            parser = parser_class(input_file, params=self.params)
-            if parser.file_matches_parser() is True:
+            if parser_class.file_matches_parser(input_file) is True:
                 break
+        parser = parser_class(input_file, params=self.params)
         return parser
 
     def read_rt_lookup_file(self, scan_rt_lookup_path):

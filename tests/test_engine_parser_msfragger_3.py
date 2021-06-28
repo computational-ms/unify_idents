@@ -34,22 +34,7 @@ def test_engine_parsers_msfragger_file_matches_parser():
     )
     rt_lookup_path = Path(__file__).parent / "data" / "_ursgal_lookup.csv.bz2"
     db_path = Path(__file__).parent / "data" / "test_Creinhardtii_target_decoy.fasta"
-
-    parser = MSFragger3Parser(
-        input_file,
-        params={
-            "scan_rt_lookup_file": rt_lookup_path,
-            "database": db_path,
-            "Modifications": [
-                "C,fix,any,Carbamidomethyl",
-                "M,opt,any,Oxidation",
-                "*,opt,Prot-N-term,Acetyl",
-            ],
-            "Raw file location": "test_Creinhardtii_QE_pH11.mzML",
-            # "omssa_mod_dir": Path(__file__).parent / "data",
-        },
-    )
-    assert parser.file_matches_parser() is True
+    assert MSFragger3Parser.file_matches_parser(input_file) is True
 
 
 def test_engine_parsers_msfragger_iterable():
@@ -72,6 +57,7 @@ def test_engine_parsers_msfragger_iterable():
                 "*,opt,Prot-N-term,Acetyl",
             ],
             "Raw file location": "test_Creinhardtii_QE_pH11.mzML",
+            "15N": False,
         },
     )
     for row in parser:
@@ -98,6 +84,7 @@ def test_engine_parsers_msfragger_unify_row():
                 "*,opt,Prot-N-term,Acetyl",
             ],
             "Raw file location": "test_Creinhardtii_QE_pH11.mzML",
+            "15N": False,
         },
     )
     for row in parser:

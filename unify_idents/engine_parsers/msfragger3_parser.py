@@ -92,10 +92,37 @@ class MSFragger3Parser(__BaseParser):
         line = self._unify_row(line)
         return line
 
-    def file_matches_parser(self):
-        with open(self.input_file) as fin:
+    @classmethod
+    def file_matches_parser(cls, file):
+        column_names = [
+            "scannum",
+            "peptide",
+            "charge",
+            "peptide_prev_aa",
+            "peptide_next_aa",
+            "protein",
+            "modification_info",
+            "retention_time",
+            "precursor_neutral_mass",
+            "calc_neutral_pep_mass",
+            "hit_rank",
+            "massdiff",
+            "num_matched_ions",
+            "tot_num_ions",
+            "hyperscore",
+            "nextscore",
+            "num_tol_term",
+            "num_missed_cleavages",
+            "expectscore",
+            "best_locs",
+            "score_without_delta_mass",
+            "best_score_with_delta_mass",
+            "second_best_score_with_delta_mass",
+            "delta_score",
+        ]
+        with open(file) as fin:
             headers = fin.readline()
-            if set(headers.split()) == set(self.column_mapping.values()):
+            if set(headers.split()) == set(column_names):
                 ret_val = True
             else:
                 ret_val = False
@@ -144,8 +171,8 @@ class MSFragger3Parser(__BaseParser):
         return headers
 
     def prepare_mass_to_mod(self):
-        fixed_mods = {}
-        opt_mods = {}
+        self.fixed_mods = {}
+        self.opt_mods = {}
         self.mod_dict = {}
 
         n_term_replacement = {
@@ -170,7 +197,7 @@ class MSFragger3Parser(__BaseParser):
                 if "N-term" in pos:
                     n_term_replacement[name] = aa
                 if mod_type == "fix":
-                    fixed_mods[aa] = name
+                    self.fixed_mods[aa] = name
                     if aa == "C" and name == "Carbamidomethyl":
                         cam = True
                         # allow also Carbamidomnethyl on U, since the mod name gets changed
@@ -178,14 +205,14 @@ class MSFragger3Parser(__BaseParser):
                         # According to unimod, the modification is also on Selenocystein
                         # otherwise we should change that back so that it is skipped...
                         self.mod_dict["Carbamidomethyl"]["aa"].add("U")
-                        fixed_mods["U"] = "Carbamidomethyl"
+                        self.fixed_mods["U"] = "Carbamidomethyl"
                 if mod_type == "opt":
-                    opt_mods[aa] = name
+                    self.opt_mods[aa] = name
 
         getcontext().prec = 8
         getcontext().rounding = ROUND_UP
         # mod_dict_list = params['mods']['opt'] + params['mods']['fix']
-        use15N = True
+        use15N = self.params.get("15N", False)
         if use15N:
             aminoacids_2_check = set()
             for modname in self.mod_dict.keys():
@@ -343,6 +370,8 @@ class MSFragger3Parser(__BaseParser):
                         "{0}:{1}".format(raw_msfragger_mass, msfragger_pos + 1)
                     )
         # mods = ";".join(ms_fragger_reformatted_mods)
+
+        # TODO check the N-term mods have position 0 and C-term mods position `len(seq)`
         formatted_mods = []
         for i, aa in enumerate(row["Sequence"]):
             i += 1

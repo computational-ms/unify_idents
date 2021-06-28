@@ -23,6 +23,7 @@ class OmssaParser(__BaseParser):
             self.reader = csv.DictReader(open(input_file))
         except:
             self.reader = None
+
         self.style = "omssa_style_1"
         self.column_mapping = self.get_column_names()
 
@@ -52,8 +53,6 @@ class OmssaParser(__BaseParser):
             },
         }
 
-        self.create_mod_lookup()
-
         self.cols_to_remove = [
             "proteinacc_start_stop_pre_post_;",
             "Start",
@@ -79,8 +78,11 @@ class OmssaParser(__BaseParser):
             "Conflicting uparam",
             "Search Engine",
         ]
+        if self.reader is not None:
+            self.create_mod_lookup()
 
-    def file_matches_parser(self):
+    @classmethod
+    def file_matches_parser(cls, file):
         # TODO implement file sensing
         # use get column names
         fn = [
@@ -101,13 +103,12 @@ class OmssaParser(__BaseParser):
             " NIST score",
         ]
         field_set = set([a.strip() for a in fn])
-        if (
-            isinstance(self.reader, csv.DictReader)
-            and set([f.strip() for f in self.reader.fieldnames]) == field_set
-        ):
-            ret_val = True
-        else:
-            ret_val = False
+        with open(file) as fh:
+            reader = csv.DictReader(fh)
+            if set([f.strip() for f in reader.fieldnames]) == field_set:
+                ret_val = True
+            else:
+                ret_val = False
         return ret_val
 
     def __iter__(self):
