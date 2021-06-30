@@ -44,8 +44,8 @@ class __BaseParser:
         return False
 
     def general_fixes(self, row):
-        basename = row["Raw file location"].split(".")[0]
         row["Raw file location"] = row["Spectrum Title"].split(".")[0]
+        basename = row["Raw file location"].split(".")[0]
         row["Retention Time (s)"] = float(
             self.scan_rt_lookup[basename]["scan2rt"][int(row["Spectrum ID"])]
         )

@@ -1,10 +1,10 @@
 #!/usr/bin/env python
 from pathlib import Path
-import uparma
 
-from unify_idents.unify import Unify
+import pytest
+import uparma
 from unify_idents.engine_parsers.omssa_parser import OmssaParser
-from unify_idents.unify import UnifiedDataFrame
+from unify_idents.unify import UnifiedDataFrame, Unify
 
 
 def test_unify_get_parser_classes():
@@ -98,3 +98,31 @@ def test_engine_parsers_msfragger_unified_frame():
     )
     df = u.get_dataframe()
     assert isinstance(df, UnifiedDataFrame)
+
+
+def test_engine_parsers_msfragger_df_masses():
+    input_file = Path(__file__).parent / "data" / "msfragger_no_mods.tsv"
+    rt_lookup_path = Path(__file__).parent / "data" / "_ursgal_lookup.csv.bz2"
+    db_path = Path(__file__).parent / "data" / "test_Creinhardtii_target_decoy.fasta"
+
+    parser = Unify(
+        input_file,
+        {
+            "scan_rt_lookup_file": rt_lookup_path,
+            "database": db_path,
+            "Modifications": [
+                "C,fix,any,Carbamidomethyl",
+                "M,opt,any,Oxidation",
+                "*,opt,Prot-N-term,Acetyl",
+            ],
+            "Raw file location": "test_Creinhardtii_QE_pH11.mzML",
+            "15N": False,
+        },
+    )
+    res = parser.get_dataframe()
+    row = res.df.iloc[0]
+    assert row["Sequence"] == "ATTALTDDTLDGAGR"
+    assert row["Charge"] == "2"
+    assert float(row["uCalc m/z"]) == pytest.approx(739.3601)
+    assert float(row["uCalc Mass"]) == pytest.approx(1476.7056)
+    assert float(row["Accuracy (ppm)"]) == pytest.approx(-2.182, 0.01)

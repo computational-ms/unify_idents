@@ -53,15 +53,20 @@ class UnifiedDataFrame:
 
             # also do the mass calc here?
             self.cc.use(sequence=row["Sequence"], modifications=row["Modifications"])
-            mass = self.cc.mass()
+            calc_mass = self.cc.mass()
+            exp_mass = self.calc_mass(float(row["Exp m/z"]), int(row["Charge"]))
             charge = int(row["Charge"])
-            mz = self.calc_mz(mass, charge)
+            calc_mz = self.calc_mz(calc_mass, charge)
             # exp m/z is actually the math
-            engine_mass = float(row["Exp m/z"])
-            self.df.at[_id, "uCalc m/z"] = mz
-            self.df.at[_id, "uCalc Mass"] = mass
+            self.df.at[_id, "uCalc m/z"] = calc_mz
+            self.df.at[_id, "uCalc Mass"] = calc_mass
+
+            # neutral_mass = float(row["Exp m/z"])
+            # self.df.at[_id, "Exp m/z"] = self.calc_mz(neutral_mass, int(row["Charge"]))
             # self.df.at[_id, "Mass Difference"] = engine_mass - mass
-            self.df.at[_id, "Accuracy (ppm)"] = (engine_mass - mass) / mass / 5e-6
+            self.df.at[_id, "Accuracy (ppm)"] = (exp_mass - calc_mass) / calc_mass * 1e6
+            breakpoint()
+
         return
 
     def calc_mz(self, mass, charge):
