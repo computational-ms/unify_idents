@@ -1,7 +1,7 @@
-pytest
-uparma
-loguru
-peptide_mapper
-chemical_composition
-unimod_mapper
-pandas
+loguru==0.5.3
+pandas==1.2.4
+pytest==6.2.4
+uparma==0.4.1
+unimod-mapper==0.4.2
+peptide_mapper==0.4.0
+peptide-mapper==0.4.2
