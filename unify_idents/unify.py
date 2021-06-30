@@ -60,12 +60,7 @@ class UnifiedDataFrame:
             # exp m/z is actually the math
             self.df.at[_id, "uCalc m/z"] = calc_mz
             self.df.at[_id, "uCalc Mass"] = calc_mass
-
-            # neutral_mass = float(row["Exp m/z"])
-            # self.df.at[_id, "Exp m/z"] = self.calc_mz(neutral_mass, int(row["Charge"]))
-            # self.df.at[_id, "Mass Difference"] = engine_mass - mass
             self.df.at[_id, "Accuracy (ppm)"] = (exp_mass - calc_mass) / calc_mass * 1e6
-            breakpoint()
 
         return
 

@@ -36,9 +36,6 @@ class __BaseParser:
     def __iter__(self):
         return self
 
-    # def __next__(self):
-    #     raise StopIteration
-
     def file_matches_parser(self):
         # needs to return False to dont be selected as engine parser during `get_parsers`
         return False
@@ -50,16 +47,6 @@ class __BaseParser:
             self.scan_rt_lookup[basename]["scan2rt"][int(row["Spectrum ID"])]
         )
         row["Sequence"] = row["Sequence"].upper()
-        # row = self.check_mod_positions(row)
-        # row = self.check_enzyme_specificity(row)
-
-        # row = self.map_peptides(row)
-        # row = self.recalc_masses(row)
-        # seq_mod = row["Sequence"] + "#" + row["Modifications"]
-        # self.cc.use(sequence=row["Sequence"], modifications=row["Modifications"])
-        # row["uCalc m/z"] = self.calc_mz(self.cc.mass(), int(row["Charge"]))
-        # row["uCalc mass"] = self.cc.mass()
-        # and so on
 
         return row
 
@@ -120,17 +107,6 @@ class __BaseParser:
         return lookup
 
     def map_mods(self, mods):
-        """Maps modifications defined in params["modification"] using unimod.
-
-        Examples:
-
-             >>> [
-             ...    "M,opt,any,Oxidation",        # Met oxidation
-             ...    "C,fix,any,Carbamidomethyl",  # Carbamidomethylation
-             ...    "*,opt,Prot-N-term,Acetyl"    # N-Acteylation
-             ... ]
-
-        """
         # TODO remove logger.warning functions and replace by logger
         self.params["mods"] = {"fix": [], "opt": []}
         for ursgal_index, mod in enumerate(sorted(mods)):
