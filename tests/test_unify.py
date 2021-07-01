@@ -5,6 +5,7 @@ import pytest
 import uparma
 from unify_idents.engine_parsers.omssa_parser import OmssaParser
 from unify_idents.unify import UnifiedDataFrame, Unify
+from unify_idents.engine_parsers.msgfplus_2021_03_22_parser import MSGFPlus_2021_03_22
 
 
 def test_unify_get_parser_classes():
@@ -47,6 +48,27 @@ def test_unify_get_omssa_parser():
     )
     parser = u._get_parser(p)
     assert isinstance(parser, OmssaParser)
+
+
+def test_unify_get_msgfplus_parser():
+    rt_lookup_path = Path(__file__).parent / "data" / "_ursgal_lookup.csv.bz2"
+    p = Path(__file__).parent / "data" / "OF_20190919_OEF_01_msgfplus_2021_03_22.mzid"
+    db_path = Path(__file__).parent / "data" / "test_Creinhardtii_target_decoy.fasta"
+    u = Unify(
+        p,
+        {
+            "scan_rt_lookup_file": rt_lookup_path,
+            "database": db_path,
+            "Modifications": [
+                "C,fix,any,Carbamidomethyl",
+                "M,opt,any,Oxidation",
+                "*,opt,Prot-N-term,Acetyl",
+            ],
+            "omssa_mod_dir": Path(__file__).parent / "data",
+        },
+    )
+    parser = u._get_parser(p)
+    assert isinstance(parser, MSGFPlus_2021_03_22)
 
 
 def test_engine_parsers_omssa_unified_frame():
