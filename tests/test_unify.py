@@ -52,7 +52,7 @@ def test_unify_get_omssa_parser():
 
 def test_unify_get_msgfplus_parser():
     rt_lookup_path = Path(__file__).parent / "data" / "_ursgal_lookup.csv.bz2"
-    p = Path(__file__).parent / "data" / "OF_20190919_OEF_01_msgfplus_2021_03_22.mzid"
+    p = Path(__file__).parent / "data" / "BSA1_msgfplus_2021_03_22.mzid"
     db_path = Path(__file__).parent / "data" / "test_Creinhardtii_target_decoy.fasta"
     u = Unify(
         p,
