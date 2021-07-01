@@ -100,7 +100,7 @@ def test_engine_parsers_msfragger_unified_frame():
     assert isinstance(df, UnifiedDataFrame)
 
 
-def test_engine_parsers_msfragger_df_masses():
+def test_unify_msfragger_df_masses():
     input_file = Path(__file__).parent / "data" / "msfragger_no_mods.tsv"
     rt_lookup_path = Path(__file__).parent / "data" / "_ursgal_lookup.csv.bz2"
     db_path = Path(__file__).parent / "data" / "test_Creinhardtii_target_decoy.fasta"

@@ -94,7 +94,9 @@ class __BaseParser:
             reader = csv.DictReader(fin)
             for line in reader:
                 file = Path(line["File"])
-                file = str(file.stem).rstrip("".join(file.suffixes))
+                file = str(file.stem).rstrip(
+                    "".join(file.suffixes)
+                )  # remove all suffixes, eg. idx.gz
                 lookup.setdefault(file, {"scan2rt": {}, "rt2scan": {}, "scan2mz": {}})
                 scan, rt, mz = (
                     line["Spectrum ID"],
