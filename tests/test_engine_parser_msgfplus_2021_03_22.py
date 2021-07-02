@@ -85,7 +85,7 @@ def test_engine_parsers_msgfplus_iter_items():
     for i, line in enumerate(parser):
         print(i, line)
         assert isinstance(line, UnifiedRow)
-        # break
+        break
 
 
 def test_engine_parsers_msgfplus_get_peptide_lookup():
@@ -138,12 +138,14 @@ def test_engine_parsers_msgfplus_internal_next():
             "omssa_mod_dir": Path(__file__).parent / "data",
         },
     )
-    row = parser._next()
+    for row in parser._next():
 
-    assert isinstance(row, dict)
-    assert row["Sequence"] == "YICDNQDTISSK"
-    assert row["MS-GF:RawScore"] == 40
-    assert row["NumMatchedMainIons"] == 3
+        assert isinstance(row, dict)
+        assert row["Sequence"] == "YICDNQDTISSK"
+        assert row["Modifications"] == "Carbamidomethyl:3"
+        assert row["MS-GF:RawScore"] == "40"
+        assert row["NumMatchedMainIons"] == "3"
+        break
 
 
 def test_engine_parsers_msgfplus_next():
@@ -167,5 +169,6 @@ def test_engine_parsers_msgfplus_next():
     row = next(parser)
     assert isinstance(row, UnifiedRow)
     assert row["Sequence"] == "YICDNQDTISSK"
-    assert row["MS-GF:RawScore"] == 40
-    assert row["NumMatchedMainIons"] == 3
+    assert row["Modifications"] == "Carbamidomethyl:3"
+    assert row["MS-GF:RawScore"] == "40"
+    assert row["NumMatchedMainIons"] == "3"

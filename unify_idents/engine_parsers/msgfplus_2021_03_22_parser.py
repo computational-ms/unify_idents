@@ -60,30 +60,55 @@ class MSGFPlus_2021_03_22(__BaseParser):
 
     def __next__(self):
         # breakpoint()
-        n = self._next()
-        u = self._unify_row(n)
-        return u
+        # n = self._next()
+        for n in self._next():
+            u = self._unify_row(n)
+            return u
 
     def _next(self):
         # breakpoint()
-        data = {}
+        data = []
         while True:
             event, ele = next(self.reader, ("STOP", "STOP"))
             if event == "end" and ele.tag.endswith("SpectrumIdentificationResult"):
                 # TODO get data and format (preliminary) row
                 # LOGIC HERE
-                _data = self.get_peptide_data_from_xml(ele)
-                break
+                for spec_result in list(
+                    ele[::-1]
+                ):  # iterate the list from end to start, since cvParams are after SpectrumIdentificationItem
+                    if spec_result.tag.endswith("cvParam"):
+                        if spec_result.attrib["name"] == "scan start time":
+                            scan_time = spec_result.attrib["value"]
+                        if spec_result.attrib["name"] == "scan number(s)":
+                            spec_id = spec_result.attrib["value"]
+                        # breakpoint()
+                    if spec_result.tag.endswith("SpectrumIdentificationItem"):
+                        pep_data = self.peptide_lookup[
+                            spec_result.attrib["peptide_ref"]
+                        ]
+                        mods = []
+                        for m in pep_data["Modifications"]:
+                            name = m["name"]
+                            pos = m["pos"]
+                            mods.append(f"{name}:{pos}")
+                        data = {
+                            "Spectrum ID": spec_id,
+                            "Retention Time (s)": scan_time,
+                            "Sequence": pep_data["Sequence"],
+                            "Modifications": ";".join(mods),
+                        }
+                        for child in list(spec_result):
+                            if child.tag.endswith("Param"):
+                                data[child.attrib["name"]] = child.attrib["value"]
+
+                        yield data
+                # _data = self.get_peptide_data_from_xml(ele)
+                # break
             if event == "STOP":
                 raise StopIteration
-        # breakpoint()
-        return data
-
-    def get_peptide_data_from_xml(self, element):
-        pass
 
     def _unify_row(self, row):
-        new_row = {}
+        new_row = row
 
         return UnifiedRow(**new_row)
 
