@@ -35,6 +35,10 @@ class MSGFPlus_2021_03_22(__BaseParser):
         p = Path(file)
 
         max_lines = 20
+
+        if not file.suffix == ".mzid":
+            return False
+
         with open(file) as fin:
             mzml_iter = iter(ElementTree.iterparse(fin, events=("end", "start")))
             for pos, (event, ele) in enumerate(mzml_iter):
@@ -100,10 +104,7 @@ class MSGFPlus_2021_03_22(__BaseParser):
                         for child in list(spec_result):
                             if child.tag.endswith("Param"):
                                 data[child.attrib["name"]] = child.attrib["value"]
-
                         yield data
-                # _data = self.get_peptide_data_from_xml(ele)
-                # break
             if event == "STOP":
                 raise StopIteration
 
