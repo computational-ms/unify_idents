@@ -19,10 +19,7 @@ class OmssaParser(__BaseParser):
         self.params = params
         self.input_file = input_file
 
-        try:
-            self.reader = csv.DictReader(open(input_file))
-        except:
-            self.reader = None
+        self.reader = csv.DictReader(open(input_file))
 
         self.style = "omssa_style_1"
         self.column_mapping = self.get_column_names()
@@ -62,6 +59,7 @@ class OmssaParser(__BaseParser):
             "Accession",
         ]
 
+        # move to base parser if possible
         self.cols_to_add = [
             "uCalc m/z",
             "uCalc Mass",
@@ -78,8 +76,7 @@ class OmssaParser(__BaseParser):
             "Conflicting uparam",
             "Search Engine",
         ]
-        if self.reader is not None:
-            self.create_mod_lookup()
+        self.create_mod_lookup()
 
     @classmethod
     def file_matches_parser(cls, file):
