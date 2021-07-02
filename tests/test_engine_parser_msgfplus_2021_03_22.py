@@ -144,7 +144,7 @@ def test_engine_parsers_msgfplus_internal_next():
         assert row["Sequence"] == "YICDNQDTISSK"
         assert row["Modifications"] == "Carbamidomethyl:3"
         assert row["MS-GF:RawScore"] == "40"
-        assert row["NumMatchedMainIons"] == "3"
+        assert row["MS-GF:NumMatchedMainIons"] == "3"
         break
 
 
@@ -171,4 +171,4 @@ def test_engine_parsers_msgfplus_next():
     assert row["Sequence"] == "YICDNQDTISSK"
     assert row["Modifications"] == "Carbamidomethyl:3"
     assert row["MS-GF:RawScore"] == "40"
-    assert row["NumMatchedMainIons"] == "3"
+    assert row["MS-GF:NumMatchedMainIons"] == "3"

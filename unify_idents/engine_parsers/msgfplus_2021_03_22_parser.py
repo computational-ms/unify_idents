@@ -103,7 +103,11 @@ class MSGFPlus_2021_03_22(__BaseParser):
                         }
                         for child in list(spec_result):
                             if child.tag.endswith("Param"):
-                                data[child.attrib["name"]] = child.attrib["value"]
+                                # prefix name if 'MS-GF'
+                                n = child.attrib["name"]
+                                if not n.startswith("MS-GF:"):
+                                    n = f"MS-GF:{n}"
+                                data[n] = child.attrib["value"]
                         yield data
             if event == "STOP":
                 raise StopIteration
