@@ -82,5 +82,90 @@ def test_engine_parsers_msgfplus_iter_items():
         },
     )
 
-    for line in parser:
+    for i, line in enumerate(parser):
+        print(i, line)
         assert isinstance(line, UnifiedRow)
+        # break
+
+
+def test_engine_parsers_msgfplus_get_peptide_lookup():
+    input_file = Path(__file__).parent / "data" / "BSA1_msgfplus_2021_03_22.mzid"
+    rt_lookup_path = Path(__file__).parent / "data" / "_ursgal_lookup.csv.bz2"
+    db_path = Path(__file__).parent / "data" / "test_Creinhardtii_target_decoy.fasta"
+
+    parser = MSGFPlus_2021_03_22(
+        input_file,
+        params={
+            "scan_rt_lookup_file": rt_lookup_path,
+            "database": db_path,
+            "Modifications": [
+                "C,fix,any,Carbamidomethyl",
+                "M,opt,any,Oxidation",
+                "*,opt,Prot-N-term,Acetyl",
+            ],
+            "omssa_mod_dir": Path(__file__).parent / "data",
+        },
+    )
+    assert len(parser.peptide_lookup) == 24
+    assert "Pep_YICDNQDTISSK" in parser.peptide_lookup.keys()
+    assert parser.peptide_lookup["Pep_YICDNQDTISSK"]["Sequence"] == "YICDNQDTISSK"
+    assert parser.peptide_lookup["Pep_YICDNQDTISSK"]["Modifications"][0]["pos"] == "3"
+    assert (
+        parser.peptide_lookup["Pep_YICDNQDTISSK"]["Modifications"][0]["mass"]
+        == "57.021464"
+    )
+    assert (
+        parser.peptide_lookup["Pep_YICDNQDTISSK"]["Modifications"][0]["name"]
+        == "Carbamidomethyl"
+    )
+
+
+def test_engine_parsers_msgfplus_internal_next():
+    input_file = Path(__file__).parent / "data" / "BSA1_msgfplus_2021_03_22.mzid"
+    rt_lookup_path = Path(__file__).parent / "data" / "_ursgal_lookup.csv.bz2"
+    db_path = Path(__file__).parent / "data" / "test_Creinhardtii_target_decoy.fasta"
+
+    parser = MSGFPlus_2021_03_22(
+        input_file,
+        params={
+            "scan_rt_lookup_file": rt_lookup_path,
+            "database": db_path,
+            "Modifications": [
+                "C,fix,any,Carbamidomethyl",
+                "M,opt,any,Oxidation",
+                "*,opt,Prot-N-term,Acetyl",
+            ],
+            "omssa_mod_dir": Path(__file__).parent / "data",
+        },
+    )
+    row = parser._next()
+
+    assert isinstance(row, dict)
+    assert row["Sequence"] == "YICDNQDTISSK"
+    assert row["MS-GF:RawScore"] == 40
+    assert row["NumMatchedMainIons"] == 3
+
+
+def test_engine_parsers_msgfplus_next():
+    input_file = Path(__file__).parent / "data" / "BSA1_msgfplus_2021_03_22.mzid"
+    rt_lookup_path = Path(__file__).parent / "data" / "_ursgal_lookup.csv.bz2"
+    db_path = Path(__file__).parent / "data" / "test_Creinhardtii_target_decoy.fasta"
+
+    parser = MSGFPlus_2021_03_22(
+        input_file,
+        params={
+            "scan_rt_lookup_file": rt_lookup_path,
+            "database": db_path,
+            "Modifications": [
+                "C,fix,any,Carbamidomethyl",
+                "M,opt,any,Oxidation",
+                "*,opt,Prot-N-term,Acetyl",
+            ],
+            "omssa_mod_dir": Path(__file__).parent / "data",
+        },
+    )
+    row = next(parser)
+    assert isinstance(row, UnifiedRow)
+    assert row["Sequence"] == "YICDNQDTISSK"
+    assert row["MS-GF:RawScore"] == 40
+    assert row["NumMatchedMainIons"] == 3
