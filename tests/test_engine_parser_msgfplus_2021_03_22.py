@@ -145,6 +145,7 @@ def test_engine_parsers_msgfplus_internal_next():
         assert row["Modifications"] == "Carbamidomethyl:3"
         assert row["MS-GF:RawScore"] == "40"
         assert row["MS-GF:NumMatchedMainIons"] == "3"
+        # search engine not set here, just stuff directly from the mzid
         break
 
 
@@ -172,3 +173,4 @@ def test_engine_parsers_msgfplus_next():
     assert row["Modifications"] == "Carbamidomethyl:3"
     assert row["MS-GF:RawScore"] == "40"
     assert row["MS-GF:NumMatchedMainIons"] == "3"
+    assert row["Search Engine"] == "MSGFPlus_2021_03_22"

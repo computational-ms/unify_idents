@@ -25,6 +25,25 @@ class MSGFPlus_2021_03_22(__BaseParser):
         self.reader = iter(ElementTree.iterparse(self.fh, events=("end", "start")))
         self.peptide_lookup = self._get_peptide_lookup()
 
+        self.cols_to_add = [
+            "Raw file location",
+            "Spectrum Title",
+            "uCalc m/z",
+            "uCalc Mass",
+            "Retention Time (s)",
+            "Accuracy (ppm)",
+            "Mass Difference",
+            "Protein ID",
+            "Sequence Start",
+            "Sequence Stop",
+            "Sequence Pre AA",
+            "Sequence Post AA",
+            "Enzyme Specificity",
+            "Complies search criteria",
+            "Conflicting uparam",
+            "Search Engine",
+        ]
+
     def __del__(self):
         self.fh.close()
 
@@ -61,11 +80,6 @@ class MSGFPlus_2021_03_22(__BaseParser):
 
     def __next__(self):
         for n in self._next():
-            col_mapping = self.get_column_names(self.style)
-            for new_key, old_key in col_mapping.items():
-                if old_key in n.keys() and old_key != new_key:
-                    n[new_key] = n[old_key]
-                    del n[old_key]
             u = self._unify_row(n)
             return u
 
@@ -123,7 +137,16 @@ class MSGFPlus_2021_03_22(__BaseParser):
                 raise StopIteration
 
     def _unify_row(self, row):
-        new_row = row
+        for col_to_add in self.cols_to_add:
+            if col_to_add not in row:
+                row[col_to_add] = ""
+
+        col_mapping = self.get_column_names(self.style)
+        for new_key, old_key in col_mapping.items():
+            if old_key in row.keys() and old_key != new_key:
+                row[new_key] = row[old_key]
+                del row[old_key]
+        row["Search Engine"] = "MSGFPlus_2021_03_22"
         new_row = self.general_fixes(row)
         return UnifiedRow(**new_row)
 
