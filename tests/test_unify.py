@@ -64,7 +64,6 @@ def test_unify_get_msgfplus_parser():
                 "M,opt,any,Oxidation",
                 "*,opt,Prot-N-term,Acetyl",
             ],
-            "omssa_mod_dir": Path(__file__).parent / "data",
         },
     )
     parser = u._get_parser(p)
@@ -137,7 +136,6 @@ def test_engine_parsers_msgf_unified_frame():
                 "M,opt,any,Oxidation",
                 "*,opt,Prot-N-term,Acetyl",
             ],
-            "omssa_mod_dir": Path(__file__).parent / "data",
         },
     )
     df = u.get_dataframe()
