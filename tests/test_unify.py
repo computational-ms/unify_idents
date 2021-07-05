@@ -142,6 +142,7 @@ def test_engine_parsers_msgf_unified_frame():
     )
     df = u.get_dataframe()
     assert isinstance(df, UnifiedDataFrame)
+    assert len(df) == 91
 
 
 def test_unify_msfragger_df_masses():
