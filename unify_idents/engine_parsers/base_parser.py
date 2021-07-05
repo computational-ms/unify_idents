@@ -30,24 +30,27 @@ class __BaseParser:
         self.scan_rt_path = self.params.get("scan_rt_lookup_file", None)
         self.scan_rt_lookup = self.read_rt_lookup_file(self.scan_rt_path)
 
+        self.cols_to_remove = []
+        self.cols_to_add = []
+
+    def __iter__(self):
+        return self
+
     def file_matches_parser(self):
         # needs to return False to dont be selected as engine parser during `get_parsers`
         return False
 
     def general_fixes(self, row):
         row["Raw file location"] = row["Spectrum Title"].split(".")[0]
+        basename = row["Raw file location"].split(".")[0]
         row["Retention Time (s)"] = float(
-            self.scan_rt_lookup[row["Raw file location"]]["scan2rt"][row["Spectrum ID"]]
+            self.scan_rt_lookup[basename]["scan2rt"][int(row["Spectrum ID"])]
         )
         row["Sequence"] = row["Sequence"].upper()
-        # row = self.map_peptides(row)
-        # row = self.recalc_masses(row)
-        # seq_mod = row["Sequence"] + "#" + row["Modifications"]
-        # self.cc.use(sequence=row["Sequence"], modifications=row["Modifications"])
-        # row["uCalc m/z"] = self.calc_mz(self.cc.mass(), int(row["Charge"]))
-        # row["uCalc mass"] = self.cc.mass()
-        # and so on
 
+        return row
+
+    def check_mod_positions(self, row):
         return row
 
     def recalc_masses(row):
@@ -57,9 +60,9 @@ class __BaseParser:
         row["uCalc mass"] = self.cc.mass()
         return row
 
-    # def calc_mz(self, mass, charge):
-    #     PROTON = 1.00727646677
-    #     return (mass + (charge * PROTON)) / charge
+    def calc_mz(self, mass, charge):
+        PROTON = 1.00727646677
+        return (float(mass) + (int(charge) * PROTON)) / int(charge)
 
     def map_peptides(self, row):
         starts = []
@@ -90,7 +93,10 @@ class __BaseParser:
             lookup = {}
             reader = csv.DictReader(fin)
             for line in reader:
-                file = Path(line["File"]).stem
+                file = Path(line["File"])
+                file = str(file.stem).rstrip(
+                    "".join(file.suffixes)
+                )  # remove all suffixes, eg. idx.gz
                 lookup.setdefault(file, {"scan2rt": {}, "rt2scan": {}, "scan2mz": {}})
                 scan, rt, mz = (
                     line["Spectrum ID"],
@@ -103,17 +109,6 @@ class __BaseParser:
         return lookup
 
     def map_mods(self, mods):
-        """Maps modifications defined in params["modification"] using unimod.
-
-        Examples:
-
-             >>> [
-             ...    "M,opt,any,Oxidation",        # Met oxidation
-             ...    "C,fix,any,Carbamidomethyl",  # Carbamidomethylation
-             ...    "*,opt,Prot-N-term,Acetyl"    # N-Acteylation
-             ... ]
-
-        """
         # TODO remove logger.warning functions and replace by logger
         self.params["mods"] = {"fix": [], "opt": []}
         for ursgal_index, mod in enumerate(sorted(mods)):
