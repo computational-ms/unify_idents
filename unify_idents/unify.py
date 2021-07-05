@@ -209,5 +209,6 @@ class Unify:
     def get_dataframe(self):
         data = []
         for unified_row in self:
+            print(type(unified_row))
             data.append(unified_row.to_dict())
         return UnifiedDataFrame(data, db_path=self.params["database"])

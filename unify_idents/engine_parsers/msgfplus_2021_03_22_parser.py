@@ -24,7 +24,6 @@ class MSGFPlus_2021_03_22(__BaseParser):
         self.fh = open(input_file)
         self.reader = iter(ElementTree.iterparse(self.fh, events=("end", "start")))
         self.peptide_lookup = self._get_peptide_lookup()
-        # self.peptide_evidence_lookup = self.get_peptide_evidence_lookup()
 
     def __del__(self):
         self.fh.close()
@@ -63,20 +62,20 @@ class MSGFPlus_2021_03_22(__BaseParser):
         return self
 
     def __next__(self):
-        # breakpoint()
-        # n = self._next()
         for n in self._next():
+            col_mapping = self.get_column_names(self.style)
+            for new_key, old_key in col_mapping.items():
+                if old_key in n.keys() and old_key != new_key:
+                    n[new_key] = n[old_key]
+                    del n[old_key]
             u = self._unify_row(n)
             return u
 
     def _next(self):
-        # breakpoint()
         data = []
         while True:
             event, ele = next(self.reader, ("STOP", "STOP"))
             if event == "end" and ele.tag.endswith("SpectrumIdentificationResult"):
-                # TODO get data and format (preliminary) row
-                # LOGIC HERE
                 for spec_result in list(
                     ele[::-1]
                 ):  # iterate the list from end to start, since cvParams are after SpectrumIdentificationItem
@@ -85,8 +84,15 @@ class MSGFPlus_2021_03_22(__BaseParser):
                             scan_time = spec_result.attrib["value"]
                         if spec_result.attrib["name"] == "scan number(s)":
                             spec_id = spec_result.attrib["value"]
-                        # breakpoint()
-                    if spec_result.tag.endswith("SpectrumIdentificationItem"):
+                        if spec_result.attrib["name"] == "spectrum title":
+                            spec_title = spec_result.attrib["value"]
+                    else:
+                        continue
+
+                def all_items():
+                    for spec_result in ele[::-1]:
+                        if not spec_result.tag.endswith("SpectrumIdentificationItem"):
+                            continue
                         pep_data = self.peptide_lookup[
                             spec_result.attrib["peptide_ref"]
                         ]
@@ -98,8 +104,12 @@ class MSGFPlus_2021_03_22(__BaseParser):
                         data = {
                             "Spectrum ID": spec_id,
                             "Retention Time (s)": scan_time,
-                            "Sequence": pep_data["Sequence"],
+                            "Peptide": pep_data["Sequence"],
                             "Modifications": ";".join(mods),
+                            "Title": spec_title,
+                            "Exp m/z": spec_result.attrib["experimentalMassToCharge"],
+                            "Calc m/z": spec_result.attrib["calculatedMassToCharge"],
+                            "Charge": spec_result.attrib["chargeState"],
                         }
                         for child in list(spec_result):
                             if child.tag.endswith("Param"):
@@ -109,12 +119,13 @@ class MSGFPlus_2021_03_22(__BaseParser):
                                     n = f"MS-GF:{n}"
                                 data[n] = child.attrib["value"]
                         yield data
+
+                return all_items()
             if event == "STOP":
                 raise StopIteration
 
     def _unify_row(self, row):
         new_row = row
-
         return UnifiedRow(**new_row)
 
     def _get_peptide_lookup(self):
