@@ -43,6 +43,7 @@ class __BaseParser:
     def general_fixes(self, row):
         row["Raw file location"] = row["Spectrum Title"].split(".")[0]
         basename = row["Raw file location"].split(".")[0]
+        # breakpoint()
         row["Retention Time (s)"] = float(
             self.scan_rt_lookup[basename]["scan2rt"][int(row["Spectrum ID"])]
         )
@@ -64,6 +65,7 @@ class __BaseParser:
         return (float(mass) + (int(charge) * PROTON)) / int(charge)
 
     def read_rt_lookup_file(self, scan_rt_lookup_path):
+        # breakpoint()
         with bz2.open(scan_rt_lookup_path, "rt") as fin:
             lookup = {}
             reader = csv.DictReader(fin)

@@ -35,21 +35,19 @@ class MSGFPlus_2021_03_22(__BaseParser):
 
         max_lines = 20
 
-        if not file.suffix == ".mzid":
-            return False
-
-        with open(file) as fin:
-            mzml_iter = iter(ElementTree.iterparse(fin, events=("end", "start")))
-            for pos, (event, ele) in enumerate(mzml_iter):
-                if pos > max_lines:
-                    ret_val = False
-                    break
-                if ele.tag.endswith("AnalysisSoftware"):
-                    name = ele.attrib.get("name", "")
-                    version = ele.attrib.get("version", "")
-                    if name == "MS-GF+" and version == "Release (v2021.03.22)":
-                        ret_val = True
+        if file.suffix == ".mzid":
+            with open(file) as fin:
+                mzml_iter = iter(ElementTree.iterparse(fin, events=("end", "start")))
+                for pos, (event, ele) in enumerate(mzml_iter):
+                    if pos > max_lines:
+                        ret_val = False
                         break
+                    if ele.tag.endswith("AnalysisSoftware"):
+                        name = ele.attrib.get("name", "")
+                        version = ele.attrib.get("version", "")
+                        if name == "MS-GF+" and version == "Release (v2021.03.22)":
+                            ret_val = True
+                            break
         return ret_val
 
     def get_column_names(self, style):
@@ -90,7 +88,8 @@ class MSGFPlus_2021_03_22(__BaseParser):
                         continue
 
                 def all_items():
-                    for spec_result in ele[::-1]:
+                    # todo use iterparse
+                    for spec_result in ele:
                         if not spec_result.tag.endswith("SpectrumIdentificationItem"):
                             continue
                         pep_data = self.peptide_lookup[
@@ -113,7 +112,6 @@ class MSGFPlus_2021_03_22(__BaseParser):
                         }
                         for child in list(spec_result):
                             if child.tag.endswith("Param"):
-                                # prefix name if 'MS-GF'
                                 n = child.attrib["name"]
                                 if not n.startswith("MS-GF:"):
                                     n = f"MS-GF:{n}"
@@ -126,6 +124,7 @@ class MSGFPlus_2021_03_22(__BaseParser):
 
     def _unify_row(self, row):
         new_row = row
+        new_row = self.general_fixes(row)
         return UnifiedRow(**new_row)
 
     def _get_peptide_lookup(self):

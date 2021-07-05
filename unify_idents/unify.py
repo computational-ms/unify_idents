@@ -26,6 +26,9 @@ class UnifiedDataFrame:
         mapped_peptides = self.mapper.map_peptides(all_peptides)
         self.update_protein_mapping(mapped_peptides)
 
+    def __len__(self):
+        return len(self.df)
+
     def __iter__(self):
         return iter(self.rows)
 
@@ -105,6 +108,11 @@ class UnifiedRow:
     def __getitem__(self, key):
         return self.data[key]
 
+    def __setitem__(self, key, value):
+        if key not in self.data:
+            raise KeyError("Cant add new key")
+        self.data[key] = value
+
     def __str__(self):
         # needs fix, only return unify cols and not Engine:name columns
         if self.string_repr is None:
@@ -156,7 +164,7 @@ class Unify:
     def __next__(self):
         line = next(self.parser)
         # TODO
-        # line = self.parser.general_fixes(line)
+        line = self.parser.general_fixes(line)
         # do some magic here, like calling methods of row (e.g. calc_mz)
         return line
 
@@ -209,6 +217,6 @@ class Unify:
     def get_dataframe(self):
         data = []
         for unified_row in self:
-            print(type(unified_row))
+            # print(type(unified_row))
             data.append(unified_row.to_dict())
         return UnifiedDataFrame(data, db_path=self.params["database"])
