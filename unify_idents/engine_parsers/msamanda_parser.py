@@ -91,7 +91,7 @@ class MSamandaParser(__BaseParser):
             if reader.fieldnames[0] == msamanda_version:
                 ret_val = True
             else:
-                ret_val = False
+                ret_val = False    
         return ret_val
 
     # def __iter__(self):
