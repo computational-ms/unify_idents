@@ -15,7 +15,7 @@ def test_engine_parsers_msgfplus_init():
     parser = MSGFPlus_2021_03_22(
         input_file,
         params={
-            "scan_rt_lookup_file": rt_lookup_path,
+            "rt_pickle_name": rt_lookup_path,
             "database": db_path,
             "Modifications": [
                 "C,fix,any,Carbamidomethyl",
@@ -49,7 +49,7 @@ def test_engine_parsers_msgfplus_is_iterable():
     parser = MSGFPlus_2021_03_22(
         input_file,
         params={
-            "scan_rt_lookup_file": rt_lookup_path,
+            "rt_pickle_name": rt_lookup_path,
             "database": db_path,
             "Modifications": [
                 "C,fix,any,Carbamidomethyl",
@@ -71,7 +71,7 @@ def test_engine_parsers_msgfplus_iter_items():
     parser = MSGFPlus_2021_03_22(
         input_file,
         params={
-            "scan_rt_lookup_file": rt_lookup_path,
+            "rt_pickle_name": rt_lookup_path,
             "database": db_path,
             "Modifications": [
                 "C,fix,any,Carbamidomethyl",
@@ -94,7 +94,7 @@ def test_engine_parsers_msgfplus_get_peptide_lookup():
     parser = MSGFPlus_2021_03_22(
         input_file,
         params={
-            "scan_rt_lookup_file": rt_lookup_path,
+            "rt_pickle_name": rt_lookup_path,
             "database": db_path,
             "Modifications": [
                 "C,fix,any,Carbamidomethyl",
@@ -126,7 +126,7 @@ def test_engine_parsers_msgfplus_internal_next():
     parser = MSGFPlus_2021_03_22(
         input_file,
         params={
-            "scan_rt_lookup_file": rt_lookup_path,
+            "rt_pickle_name": rt_lookup_path,
             "database": db_path,
             "Modifications": [
                 "C,fix,any,Carbamidomethyl",
@@ -154,7 +154,7 @@ def test_engine_parsers_msgfplus_next():
     parser = MSGFPlus_2021_03_22(
         input_file,
         params={
-            "scan_rt_lookup_file": rt_lookup_path,
+            "rt_pickle_name": rt_lookup_path,
             "database": db_path,
             "Modifications": [
                 "C,fix,any,Carbamidomethyl",

@@ -151,11 +151,11 @@ class Unify:
         else:
             self.params = params
 
-        self.scan_rt_path = self.params.get("scan_rt_lookup_file", None)
-        if self.scan_rt_path is None:
-            raise Exception("Meaningfull error message")
-        else:
-            self.scan_rt_lookup = self.read_rt_lookup_file(self.scan_rt_path)
+        # self.scan_rt_path = self.params.get("rt_pickle_name", None)
+        # if self.scan_rt_path is None:
+        #     raise Exception("Meaningfull error message")
+        # else:
+        #     self.scan_rt_lookup = self.read_rt_lookup_file(self.scan_rt_path)
         self.parser = self._get_parser(self.input_file)
 
     def __iter__(self):
@@ -196,6 +196,7 @@ class Unify:
         return parser
 
     def read_rt_lookup_file(self, scan_rt_lookup_path):
+        # breakpoint()
         with bz2.open(scan_rt_lookup_path, "rt") as fin:
             lookup = {}
             reader = csv.DictReader(fin)

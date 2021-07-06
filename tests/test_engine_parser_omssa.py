@@ -15,7 +15,7 @@ def test_engine_parsers_omssa_init():
     parser = OmssaParser(
         input_file,
         params={
-            "scan_rt_lookup_file": rt_lookup_path,
+            "rt_pickle_name": rt_lookup_path,
             "database": db_path,
             "Modifications": [
                 "C,fix,any,Carbamidomethyl",
@@ -47,7 +47,7 @@ def test_engine_parsers_omssa_unify_row():
     parser = OmssaParser(
         input_file,
         params={
-            "scan_rt_lookup_file": rt_lookup_path,
+            "rt_pickle_name": rt_lookup_path,
             "database": db_path,
             "Modifications": [
                 "C,fix,any,Carbamidomethyl",
@@ -71,7 +71,7 @@ def test_engine_parsers_omssa_unify_row():
 #     parser = OmssaParser(
 #         input_file,
 #         params={
-#             "scan_rt_lookup_file": rt_lookup_path,
+#             "rt_pickle_name": rt_lookup_path,
 #             "database": db_path,
 #             "Modifications": [
 #                 "C,fix,any,Carbamidomethyl",

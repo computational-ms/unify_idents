@@ -14,7 +14,7 @@ def test_engine_parsers_msfragger_init():
     parser = MSFragger3Parser(
         input_file,
         params={
-            "scan_rt_lookup_file": rt_lookup_path,
+            "rt_pickle_name": rt_lookup_path,
             "database": db_path,
             "Modifications": [
                 "C,fix,any,Carbamidomethyl",
@@ -49,7 +49,7 @@ def test_engine_parsers_msfragger_iterable():
     parser = MSFragger3Parser(
         input_file,
         params={
-            "scan_rt_lookup_file": rt_lookup_path,
+            "rt_pickle_name": rt_lookup_path,
             "database": db_path,
             "Modifications": [
                 "C,fix,any,Carbamidomethyl",
@@ -76,7 +76,7 @@ def test_engine_parsers_msfragger_unify_row():
     parser = MSFragger3Parser(
         input_file,
         params={
-            "scan_rt_lookup_file": rt_lookup_path,
+            "rt_pickle_name": rt_lookup_path,
             "database": db_path,
             "Modifications": [
                 "C,fix,any,Carbamidomethyl",
@@ -101,7 +101,7 @@ def test_engine_parsers_msfragger_merge_mods():
     parser = MSFragger3Parser(
         input_file,
         params={
-            "scan_rt_lookup_file": rt_lookup_path,
+            "rt_pickle_name": rt_lookup_path,
             "database": db_path,
             "Modifications": [
                 "C,fix,any,Carbamidomethyl",
@@ -126,7 +126,7 @@ def test_engine_parsers_msfragger_single_mods():
     parser = MSFragger3Parser(
         input_file,
         params={
-            "scan_rt_lookup_file": rt_lookup_path,
+            "rt_pickle_name": rt_lookup_path,
             "database": db_path,
             "Modifications": [
                 "C,fix,any,Carbamidomethyl",
@@ -149,7 +149,7 @@ def test_engine_parsers_msfragger_single_mods():
     parser = MSFragger3Parser(
         input_file,
         params={
-            "scan_rt_lookup_file": rt_lookup_path,
+            "rt_pickle_name": rt_lookup_path,
             "database": db_path,
             "Modifications": [
                 "C,fix,any,Carbamidomethyl",

@@ -15,7 +15,7 @@ def test_unify_get_parser_classes():
     u = Unify(
         p,
         {
-            "scan_rt_lookup_file": rt_lookup_path,
+            "rt_pickle_name": rt_lookup_path,
             "database": db_path,
             "Modifications": [
                 "C,fix,any,Carbamidomethyl",
@@ -36,7 +36,7 @@ def test_unify_get_omssa_parser():
     u = Unify(
         p,
         {
-            "scan_rt_lookup_file": rt_lookup_path,
+            "rt_pickle_name": rt_lookup_path,
             "database": db_path,
             "Modifications": [
                 "C,fix,any,Carbamidomethyl",
@@ -57,7 +57,7 @@ def test_unify_get_msgfplus_parser():
     u = Unify(
         p,
         {
-            "scan_rt_lookup_file": rt_lookup_path,
+            "rt_pickle_name": rt_lookup_path,
             "database": db_path,
             "Modifications": [
                 "C,fix,any,Carbamidomethyl",
@@ -80,7 +80,7 @@ def test_engine_parsers_omssa_unified_frame():
     u = Unify(
         input_file,
         {
-            "scan_rt_lookup_file": rt_lookup_path,
+            "rt_pickle_name": rt_lookup_path,
             "database": db_path,
             "Modifications": [
                 "C,fix,any,Carbamidomethyl",
@@ -106,7 +106,7 @@ def test_engine_parsers_msfragger_unified_frame():
     u = Unify(
         input_file,
         params={
-            "scan_rt_lookup_file": rt_lookup_path,
+            "rt_pickle_name": rt_lookup_path,
             "database": db_path,
             "Modifications": [
                 "C,fix,any,Carbamidomethyl",
@@ -129,7 +129,7 @@ def test_engine_parsers_msgf_unified_frame():
     u = Unify(
         input_file,
         params={
-            "scan_rt_lookup_file": rt_lookup_path,
+            "rt_pickle_name": rt_lookup_path,
             "database": db_path,
             "Modifications": [
                 "C,fix,any,Carbamidomethyl",
@@ -157,7 +157,7 @@ def test_unify_msfragger_df_masses():
     parser = Unify(
         input_file,
         {
-            "scan_rt_lookup_file": rt_lookup_path,
+            "rt_pickle_name": rt_lookup_path,
             "database": db_path,
             "Modifications": [
                 "C,fix,any,Carbamidomethyl",
