@@ -81,36 +81,19 @@ class MSamandaParser(__BaseParser):
     #     if self.reader is not None:
     #         self.create_mod_lookup()
     #
-    # @classmethod
-    # def file_matches_parser(cls, file):
-    #     # TO.DO implement file sensing
-    #     # use get column names
-    #     fn = [
-    #         "Spectrum number",
-    #         " Filename/id",
-    #         " Peptide",
-    #         " E-value",
-    #         " Mass",
-    #         " gi",
-    #         " Accession",
-    #         " Start",
-    #         " Stop",
-    #         " Defline",
-    #         " Mods",
-    #         " Charge",
-    #         " Theo Mass",
-    #         " P-value",
-    #         " NIST score",
-    #     ]
-    #     field_set = set([a.strip() for a in fn])
-    #     with open(file) as fh:
-    #         reader = csv.DictReader(fh)
-    #         if set([f.strip() for f in reader.fieldnames]) == field_set:
-    #             ret_val = True
-    #         else:
-    #             ret_val = False
-    #     return ret_val
-    #
+    @classmethod
+    def file_matches_parser(cls, file):
+        # TO.DO implement file sensing
+        # use get column names
+        msamanda_version = "#version: 2.0.0.17442"
+        with open(file) as fh:
+            reader = csv.DictReader(fh)
+            if reader.fieldnames[0] == msamanda_version:
+                ret_val = True
+            else:
+                ret_val = False
+        return ret_val
+
     # def __iter__(self):
     #     return self
     #
