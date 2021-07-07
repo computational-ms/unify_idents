@@ -28,32 +28,31 @@ class MSamandaParser(__BaseParser):
 
         self.style = "msamanda_style_1"
         self.column_mapping = self.get_column_names()
+        self.cols_to_remove = [
+            "proteinacc_start_stop_pre_post_;",
+            # "Start",
+            # "Stop",
+            # "NIST score",
+            # "gi",
+            # "Accession",
+        ]
     
-    #     self.cols_to_remove = [
-    #         "proteinacc_start_stop_pre_post_;",
-    #         "Start",
-    #         "Stop",
-    #         "NIST score",
-    #         "gi",
-    #         "Accession",
-    #     ]
-    #
-    #     self.cols_to_add = [
-    #         "uCalc m/z",
-    #         "uCalc Mass",
-    #         "Retention Time (s)",
-    #         "Accuracy (ppm)",
-    #         "Mass Difference",
-    #         "Protein ID",
-    #         "Sequence Start",
-    #         "Sequence Stop",
-    #         "Sequence Pre AA",
-    #         "Sequence Post AA",
-    #         "Enzyme Specificity",
-    #         "Complies search criteria",
-    #         "Conflicting uparam",
-    #         "Search Engine",
-    #     ]
+        self.cols_to_add = [
+            "uCalc m/z",
+            "uCalc Mass",
+            "Retention Time (s)",
+            "Accuracy (ppm)",
+            "Mass Difference",
+            "Protein ID",
+            "Sequence Start",
+            "Sequence Stop",
+            "Sequence Pre AA",
+            "Sequence Post AA",
+            "Enzyme Specificity",
+            "Complies search criteria",
+            "Conflicting uparam",
+            "Search Engine",
+        ]
     #     if self.reader is not None:
     #         self.create_mod_lookup()
     #
@@ -78,23 +77,23 @@ class MSamandaParser(__BaseParser):
         u = self._unify_row(n)
         return u
     
-    # def _unify_row(self, row):
+    def _unify_row(self, row):
     
-    #     new_row = {}
-    #     for unify_name, omssa_name in self.column_mapping.items():
-    #         new_row[unify_name] = row[omssa_name]
-    #     for col in self.cols_to_remove:
-    #         del new_row[col]
-    #     for col in self.cols_to_add:
-    #         new_row[col] = ""
-    #     new_row["Spectrum ID"] = int(new_row["Spectrum Title"].split(".")[1])
-    #     new_row["Search Engine"] = "omssa_2_1_9"
+        new_row = {}
+        for unify_name, engine_name in self.column_mapping.items():
+            new_row[unify_name] = row[engine_name]
+        for col in self.cols_to_remove:
+            del new_row[col]
+        for col in self.cols_to_add:
+            new_row[col] = ""
+        new_row["Spectrum ID"] = int(new_row["Spectrum Title"].split(".")[1])
+        new_row["Search Engine"] = "msamanda_2_0_0_17442"
+
+        modstring = self.create_mod_string(new_row)
+        new_row["Modifications"] = modstring
+        new_row = self.general_fixes(new_row)
     
-    #     modstring = self.create_mod_string(new_row)
-    #     new_row["Modifications"] = modstring
-    #     new_row = self.general_fixes(new_row)
-    
-    #     return UnifiedRow(**new_row)
+        return UnifiedRow(**new_row)
     
     # def create_mod_string(self, new_row):
     #     fixed_mods = []
