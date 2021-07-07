@@ -91,42 +91,42 @@ class MSamandaParser(__BaseParser):
 
         modstring = self.create_mod_string(new_row)
         new_row["Modifications"] = modstring
-        new_row = self.general_fixes(new_row)
+        # new_row = self.general_fixes(new_row)
     
         return UnifiedRow(**new_row)
     
-    # def create_mod_string(self, new_row):
-    #     fixed_mods = []
-    #     for pos, aa in enumerate(new_row["Sequence"]):
-    #         pos += 1  # start counting at 1, 0 is N-term
-    #         for mod in self.params["mods"]["fix"]:
-    #             if aa == mod["aa"]:
-    #                 fixed_mods.append(f"{mod['name']}:{pos}")
-    #     f_mod_string = ";".join(fixed_mods)
-    #
-    #     translated_mods = []
-    #     if new_row["Modifications"] != "":
-    #         splitted_Modifications = new_row["Modifications"].split(",")
-    #         for mod in splitted_Modifications:
-    #             omssa_name, position = mod.split(":")
-    #             omssa_name = omssa_name.strip()
-    #             position = position.strip()
-    #             unimod_name = self.lookups[omssa_name]["name"]
-    #             if position.strip() == "1":
-    #                 # print( self.lookups[ omssa_name ] )
-    #                 for target in self.lookups[omssa_name]["aa_targets"]:
-    #                     if "N-TERM" in target.upper():
-    #                         position = "0"
-    #             translated_mods.append("{0}:{1}".format(unimod_name, position))
-    #
-    #     # join fixed and variable mods
-    #
-    #     fix_mods = [mod.split(":") for mod in f_mod_string.split(";") if mod != ""]
-    #     opt_mods = [mod.split(":") for mod in translated_mods if mod != ""]
-    #     all_mods = sorted(fix_mods + opt_mods, key=lambda x: float(x[1]))
-    #     all_mods = ";".join([":".join(m) for m in all_mods])
-    #     return all_mods
-    #
+    def create_mod_string(self, new_row):
+
+        # mod_dict = copy.deepcopy(new_row)
+        mod_input = new_row["Modifications"]
+        translated_mods = []
+        # N-Term(Acetyl|42.010565|fixed);M1(Oxidation|15.994915|fixed);M23(Oxidation|15.994915|fixed)
+        if mod_input != "":
+            splitted_Modifications = mod_input.split(";")
+            for mod in splitted_Modifications:
+
+                (
+                    position_or_aa_and_pos_unimod_name,
+                    mod_mass,
+                    fixed_or_opt,
+                ) = mod.split("|")
+                (
+                    position_or_aa_and_pos,
+                    unimod_name,
+                ) = position_or_aa_and_pos_unimod_name.split("(")
+                position_or_aa_and_pos = position_or_aa_and_pos.strip()
+                unimod_name = unimod_name.strip()
+
+                if position_or_aa_and_pos.upper() == "N-TERM":
+                    position = 0
+                else:
+                    position = position_or_aa_and_pos[1:]
+
+                translated_mods.append("{0}:{1}".format(unimod_name, position))
+
+        modstring = ";".join(translated_mods)
+        return modstring
+
     def get_column_names(self):
         # create own uparma mapper
         headers = self.param_mapper.get_default_params(style=self.style)[
@@ -136,7 +136,7 @@ class MSamandaParser(__BaseParser):
     
 
 # def output_cleanup(udict):
-#     cached_msamanada_output = []
+#/     cached_msamanada_output = []
 #     result_file = open(f"{udict['output_filenames'][0]}", "r")
 #     csv_dict_reader_object = csv.DictReader(
 #         (row for row in result_file if not row.startswith("#")), delimiter="\t"

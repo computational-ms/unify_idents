@@ -4,7 +4,7 @@ from unify_idents.unify import UnifiedDataFrame
 from unify_idents.engine_parsers.msamanda_parser import MSamandaParser
 import uparma
 
-from collections import Iterable
+from collections.abc import Iterable
 
 
 def test_engine_parsers_msamanda_init():
