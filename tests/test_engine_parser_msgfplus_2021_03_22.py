@@ -17,7 +17,7 @@ def test_engine_parsers_msgfplus_init():
         params={
             "rt_pickle_name": rt_lookup_path,
             "database": db_path,
-            "Modifications": [
+            "modifications": [
                 "C,fix,any,Carbamidomethyl",
                 "M,opt,any,Oxidation",
                 "*,opt,Prot-N-term,Acetyl",
@@ -51,7 +51,7 @@ def test_engine_parsers_msgfplus_is_iterable():
         params={
             "rt_pickle_name": rt_lookup_path,
             "database": db_path,
-            "Modifications": [
+            "modifications": [
                 "C,fix,any,Carbamidomethyl",
                 "M,opt,any,Oxidation",
                 "*,opt,Prot-N-term,Acetyl",
@@ -73,7 +73,7 @@ def test_engine_parsers_msgfplus_iter_items():
         params={
             "rt_pickle_name": rt_lookup_path,
             "database": db_path,
-            "Modifications": [
+            "modifications": [
                 "C,fix,any,Carbamidomethyl",
                 "M,opt,any,Oxidation",
                 "*,opt,Prot-N-term,Acetyl",
@@ -96,7 +96,7 @@ def test_engine_parsers_msgfplus_get_peptide_lookup():
         params={
             "rt_pickle_name": rt_lookup_path,
             "database": db_path,
-            "Modifications": [
+            "modifications": [
                 "C,fix,any,Carbamidomethyl",
                 "M,opt,any,Oxidation",
                 "*,opt,Prot-N-term,Acetyl",
@@ -128,7 +128,7 @@ def test_engine_parsers_msgfplus_internal_next():
         params={
             "rt_pickle_name": rt_lookup_path,
             "database": db_path,
-            "Modifications": [
+            "modifications": [
                 "C,fix,any,Carbamidomethyl",
                 "M,opt,any,Oxidation",
                 "*,opt,Prot-N-term,Acetyl",
@@ -156,7 +156,7 @@ def test_engine_parsers_msgfplus_next():
         params={
             "rt_pickle_name": rt_lookup_path,
             "database": db_path,
-            "Modifications": [
+            "modifications": [
                 "C,fix,any,Carbamidomethyl",
                 "M,opt,any,Oxidation",
                 "*,opt,Prot-N-term,Acetyl",

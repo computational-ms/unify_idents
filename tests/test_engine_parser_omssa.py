@@ -17,7 +17,7 @@ def test_engine_parsers_omssa_init():
         params={
             "rt_pickle_name": rt_lookup_path,
             "database": db_path,
-            "Modifications": [
+            "modifications": [
                 "C,fix,any,Carbamidomethyl",
                 "M,opt,any,Oxidation",
                 "*,opt,Prot-N-term,Acetyl",
@@ -49,7 +49,7 @@ def test_engine_parsers_omssa_unify_row():
         params={
             "rt_pickle_name": rt_lookup_path,
             "database": db_path,
-            "Modifications": [
+            "modifications": [
                 "C,fix,any,Carbamidomethyl",
                 "M,opt,any,Oxidation",
                 "*,opt,Prot-N-term,Acetyl",
@@ -73,7 +73,7 @@ def test_engine_parsers_omssa_unify_row():
 #         params={
 #             "rt_pickle_name": rt_lookup_path,
 #             "database": db_path,
-#             "Modifications": [
+#             "modifications": [
 #                 "C,fix,any,Carbamidomethyl",
 #                 "M,opt,any,Oxidation",
 #             ],

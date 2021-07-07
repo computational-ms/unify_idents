@@ -25,7 +25,7 @@ class __BaseParser:
         self.mod_mapper = UnimodMapper()
         self.cc = ChemicalComposition()
 
-        self.map_mods(self.params["Modifications"])
+        self.map_mods(self.params["modifications"])
 
         self.scan_rt_path = self.params.get("rt_pickle_name", None)
         self.scan_rt_lookup = self.read_rt_lookup_file(self.scan_rt_path)
