@@ -89,25 +89,3 @@ def test_engine_parsers_msamanda_unify_row():
 
     for row in parser:
         print(row)
-#
-#
-# # def test_engine_parsers_omssa_unified_frame():
-# #     input_file = (
-# #         Path(__file__).parent / "data" / "BSA1_mzml2mgf_0_0_1_omssa_2_1_9.csv_tmp"
-# #     )
-# #     rt_lookup_path = Path(__file__).parent / "data" / "_ursgal_lookup.csv.bz2"
-# #     db_path = Path(__file__).parent / "data" / "test_Creinhardtii_target_decoy.fasta"
-#
-# #     parser = OmssaParser(
-# #         input_file,
-# #         params={
-# #             "scan_rt_lookup_file": rt_lookup_path,
-# #             "database": db_path,
-# #             "Modifications": [
-# #                 "C,fix,any,Carbamidomethyl",
-# #                 "M,opt,any,Oxidation",
-# #             ],
-# #         },
-# #     )
-# #     df = parser.get_dataframe()
-# #     assert isinstance(df, UnifiedDataFrame)

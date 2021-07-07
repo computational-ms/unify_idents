@@ -42,8 +42,7 @@ def main():
 
     df = u.get_dataframe()
     print(df.df)
-    df.df.to_csv("/Users/cellzome/Data/StSchulze/ursgal_1_vs_2/unfiy_idents.csv")
-
+    df.df.to_csv(f'{Path(__file__).parent.parent / "tests" / "data" / "msamanda_unfiy_idents.csv"}')
 
 if __name__ == "__main__":
     main()

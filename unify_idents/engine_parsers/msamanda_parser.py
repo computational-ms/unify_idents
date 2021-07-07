@@ -6,11 +6,6 @@ import uparma
 from unify_idents import UnifiedRow
 from unify_idents.engine_parsers.base_parser import __BaseParser
 
-import xml.etree.ElementTree
-from pathlib import Path
-from loguru import logger
-
-
 class MSamandaParser(__BaseParser):
     def __init__(self, input_file, params=None):
         super().__init__(input_file, params)
@@ -30,17 +25,13 @@ class MSamandaParser(__BaseParser):
         self.column_mapping = self.get_column_names()
         self.cols_to_remove = [
             "proteinacc_start_stop_pre_post_;",
-            # "Start",
-            # "Stop",
-            # "NIST score",
-            # "gi",
-            # "Accession",
+            "Filename",
+            "Rank",
         ]
     
         self.cols_to_add = [
             "uCalc m/z",
             "uCalc Mass",
-            "Retention Time (s)",
             "Accuracy (ppm)",
             "Mass Difference",
             "Protein ID",
@@ -91,13 +82,12 @@ class MSamandaParser(__BaseParser):
 
         modstring = self.create_mod_string(new_row)
         new_row["Modifications"] = modstring
-        # new_row = self.general_fixes(new_row)
+        new_row = self.general_fixes(new_row)
     
         return UnifiedRow(**new_row)
     
     def create_mod_string(self, new_row):
 
-        # mod_dict = copy.deepcopy(new_row)
         mod_input = new_row["Modifications"]
         translated_mods = []
         # N-Term(Acetyl|42.010565|fixed);M1(Oxidation|15.994915|fixed);M23(Oxidation|15.994915|fixed)
@@ -133,102 +123,3 @@ class MSamandaParser(__BaseParser):
             "header_translations"
         ]["translated_value"]
         return headers
-    
-
-# def output_cleanup(udict):
-#/     cached_msamanada_output = []
-#     result_file = open(f"{udict['output_filenames'][0]}", "r")
-#     csv_dict_reader_object = csv.DictReader(
-#         (row for row in result_file if not row.startswith("#")), delimiter="\t"
-#     )
-#     headers = csv_dict_reader_object.fieldnames
-#     header_translations = udict["translated_cparameters"]["header_translations"][
-#         "translated_value"
-#     ]
-#     header_translations = {value: key for key, value in header_translations.items()}
-#     translated_headers = []
-#     for header in headers:
-#         translated_headers.append(header_translations.get(header, header))
-#     translated_headers += ["Raw data location"]
-#     logger.info("[ PARSING  ] Loading unformatted MS Amanda results ...")
-#     for line_dict in csv_dict_reader_object:
-#         cached_msamanada_output.append(line_dict)
-#     logger.info("Loading unformatted MS Amanda results done!")
-#     result_file.close()
-
-#     # self.params["output_file"] = self.params["output_file"].replace("tsv", "csv")
-#     if sys.platform == "win32":
-#         lineterminator = "\n"
-#     else:
-#         lineterminator = "\r\n"
-#     with open(f"{udict['output_filenames'][0]}", "w") as result_file:
-#         csv_dict_writer_object = csv.DictWriter(
-#             result_file,
-#             fieldnames=translated_headers,
-#             lineterminator=lineterminator,
-#         )
-#         csv_dict_writer_object.writeheader()
-#         logger.info("Writing MS Amanda results, this can take a while...")
-#         csv_write_list = []
-#         total_docs = len(cached_msamanada_output)
-#         for cache_pos, m in enumerate(cached_msamanada_output):
-#             tmp = {}
-#             for header in headers:
-#                 translated_header = header_translations.get(header, header)
-#                 tmp[translated_header] = m[header]
-#             tmp["Sequence"] = tmp["Sequence"].upper()
-
-#             if cache_pos % 500 == 0:
-#                 logger.info(
-#                     "[ INFO ] Processing line number:    {0}/{1}".format(
-#                         cache_pos, total_docs
-#                     ),
-#                     end="\r",
-#                 )
-
-#             dict_2_write = copy.deepcopy(tmp)
-#             translated_mods = []
-#             # N-Term(Acetyl|42.010565|fixed);M1(Oxidation|15.994915|fixed);M23(Oxidation|15.994915|fixed)
-#             if dict_2_write["Modifications"] != "":
-#                 splitted_Modifications = dict_2_write["Modifications"].split(";")
-#                 for mod in splitted_Modifications:
-
-#                     (
-#                         position_or_aa_and_pos_unimod_name,
-#                         mod_mass,
-#                         fixed_or_opt,
-#                     ) = mod.split("|")
-#                     (
-#                         position_or_aa_and_pos,
-#                         unimod_name,
-#                     ) = position_or_aa_and_pos_unimod_name.split("(")
-#                     position_or_aa_and_pos = position_or_aa_and_pos.strip()
-#                     unimod_name = unimod_name.strip()
-
-#                     if position_or_aa_and_pos.upper() == "N-TERM":
-#                         position = 0
-#                     else:
-#                         position = position_or_aa_and_pos[1:]
-
-#                     translated_mods.append("{0}:{1}".format(unimod_name, position))
-
-#             dict_2_write["Modifications"] = ";".join(translated_mods)
-#             dict_2_write["Raw data location"] = udict["ufiles"][0]
-
-#             # protein_id = tmp['proteinacc_start_stop_pre_post_;']
-
-#             csv_write_list.append(dict_2_write)
-#         duplicity_buffer = set()
-#         for final_dict_2_write in csv_write_list:
-#             duplicity_key = (
-#                 final_dict_2_write["Sequence"],
-#                 final_dict_2_write["Modifications"],
-#                 final_dict_2_write["proteinacc_start_stop_pre_post_;"],
-#                 final_dict_2_write["Spectrum ID"],
-#             )
-#             if duplicity_key not in duplicity_buffer:
-#                 csv_dict_writer_object.writerow(final_dict_2_write)
-#                 duplicity_buffer.add(duplicity_key)
-#     logger.info("Writing MS Amanda results done!")
-#     return
-
