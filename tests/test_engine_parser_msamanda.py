@@ -9,17 +9,17 @@ from collections.abc import Iterable
 
 def test_engine_parsers_msamanda_init():
     input_file = (
-        Path(__file__).parent / "data" / "BSA1_msamanda_2_0_0_17442.csv"
+        Path(__file__).parent / "data" / "BSA_msamanda_2_0_0_17442.csv"
     )
-    rt_lookup_path = Path(__file__).parent / "data" / "_ursgal_lookup.csv.bz2"
-    db_path = Path(__file__).parent / "data" / "BSA1.fasta"
+    rt_lookup_path = Path(__file__).parent / "data" / "BSA_ursgal_lookup.csv.bz2"
+    db_path = Path(__file__).parent / "data" / "BSA.fasta"
 
     parser = MSamandaParser(
         input_file,
         params={
-            "scan_rt_lookup_file": rt_lookup_path,
+            "rt_pickle_name": rt_lookup_path,
             "database": db_path,
-            "Modifications": [
+            "modifications": [
                 "C,fix,any,Carbamidomethyl",
                 "M,opt,any,Oxidation",
                 "*,opt,Prot-N-term,Acetyl",
@@ -32,10 +32,10 @@ def test_engine_parsers_msamanda_init():
 def test_engine_parsers_msamanda_file_matches_parser():
     input_file = (
             Path(
-                __file__).parent / "data" / "BSA1_msamanda_2_0_0_17442.csv"
+                __file__).parent / "data" / "BSA_msamanda_2_0_0_17442.csv"
     )
-    rt_lookup_path = Path(__file__).parent / "data" / "_ursgal_lookup.csv.bz2"
-    db_path = Path(__file__).parent / "data" / "BSA1.fasta"
+    rt_lookup_path = Path(__file__).parent / "data" / "BSA_ursgal_lookup.csv.bz2"
+    db_path = Path(__file__).parent / "data" / "BSA.fasta"
 
     assert MSamandaParser.file_matches_parser(input_file) is True
 
@@ -43,17 +43,17 @@ def test_engine_parsers_msamanda_file_matches_parser():
 def test_engine_parsers_msamanda_iterable():
     input_file = (
             Path(
-                __file__).parent / "data" / "BSA1_msamanda_2_0_0_17442.csv"
+                __file__).parent / "data" / "BSA_msamanda_2_0_0_17442.csv"
     )
-    rt_lookup_path = Path(__file__).parent / "data" / "_ursgal_lookup.csv.bz2"
-    db_path = Path(__file__).parent / "data" / "BSA1.fasta"
+    rt_lookup_path = Path(__file__).parent / "data" / "BSA_ursgal_lookup.csv.bz2"
+    db_path = Path(__file__).parent / "data" / "BSA.fasta"
 
     parser = MSamandaParser(
         input_file,
         params={
-            "scan_rt_lookup_file": rt_lookup_path,
+            "rt_pickle_name": rt_lookup_path,
             "database": db_path,
-            "Modifications": [
+            "modifications": [
                 "C,fix,any,Carbamidomethyl",
                 "M,opt,any,Oxidation",
                 "*,opt,Prot-N-term,Acetyl",
@@ -68,17 +68,17 @@ def test_engine_parsers_msamanda_iterable():
 def test_engine_parsers_msamanda_unify_row():
     input_file = (
             Path(
-                __file__).parent / "data" / "BSA1_msamanda_2_0_0_17442.csv"
+                __file__).parent / "data" / "BSA_msamanda_2_0_0_17442.csv"
     )
-    rt_lookup_path = Path(__file__).parent / "data" / "_ursgal_lookup.csv.bz2"
-    db_path = Path(__file__).parent / "data" / "BSA1.fasta"
+    rt_lookup_path = Path(__file__).parent / "data" / "BSA_ursgal_lookup.csv.bz2"
+    db_path = Path(__file__).parent / "data" / "BSA.fasta"
 
     parser = MSamandaParser(
         input_file,
         params={
-            "scan_rt_lookup_file": rt_lookup_path,
+            "rt_pickle_name": rt_lookup_path,
             "database": db_path,
-            "Modifications": [
+            "modifications": [
                 "C,fix,any,Carbamidomethyl",
                 "M,opt,any,Oxidation",
                 "*,opt,Prot-N-term,Acetyl",
