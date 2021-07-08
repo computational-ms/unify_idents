@@ -2,7 +2,7 @@ from unify_idents.engine_parsers.msfragger3_parser import __BaseParser
 from pathlib import Path
 
 
-def test_engine_parsers_xtandem_init():
+def test_engine_parsers_BaseParser_init():
     input_file = (
         Path(__file__).parent / "data" / "test_Creinhardtii_QE_pH11_xtandem_alanine.xml"
     )
