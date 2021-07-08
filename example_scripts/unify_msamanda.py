@@ -7,22 +7,23 @@ def main():
     input_file = (
             Path(
                 __file__).parent.parent / "tests" / "data" /
-            "BSA1_msamanda_2_0_0_17442.csv"
+            "BSA_msamanda_2_0_0_17442.csv"
     )
-    rt_lookup_path = Path(__file__).parent.parent / "tests" / "data" / "_ursgal_lookup.csv.bz2"
-    db_path = Path(__file__).parent.parent / "tests" / "data" / "BSA1.fasta"
+    rt_lookup_path = Path(__file__).parent.parent / "tests" / "data" / \
+                     "BSA_ursgal_lookup.csv.bz2"
+    db_path = Path(__file__).parent.parent / "tests" / "data" / "BSA.fasta"
 
     u = Unify(
         input_file,
         {
-            "scan_rt_lookup_file": rt_lookup_path,
+            "rt_pickle_name": rt_lookup_path,
             "database": db_path,
-            "Modifications": [
+            "modifications": [
                 "C,fix,any,Carbamidomethyl",
                 "M,opt,any,Oxidation",
                 "*,opt,Prot-N-term,Acetyl",
             ],
-            "Raw file location": "BSA1.mzML",
+            "Raw file location": "BSA.mzML",
         },
     )
 
