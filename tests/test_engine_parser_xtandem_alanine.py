@@ -15,7 +15,7 @@ def test_engine_parsers_xtandem_init():
     parser = XTandemAlanine(
         input_file,
         params={
-            "scan_rt_lookup_file": rt_lookup_path,
+            "rt_pickle_name": rt_lookup_path,
             "database": db_path,
             "modifications": [
                 "C,fix,any,Carbamidomethyl",
@@ -58,7 +58,7 @@ def test_engine_parsers_xtandem_iterable():
     parser = XTandemAlanine(
         input_file,
         params={
-            "scan_rt_lookup_file": rt_lookup_path,
+            "rt_pickle_name": rt_lookup_path,
             "database": db_path,
             "modifications": [
                 "C,fix,any,Carbamidomethyl",
@@ -81,7 +81,7 @@ def test_engine_parsers_xtandem_unify_row():
     parser = XTandemAlanine(
         input_file,
         params={
-            "scan_rt_lookup_file": rt_lookup_path,
+            "rt_pickle_name": rt_lookup_path,
             "database": db_path,
             "modifications": [
                 "C,fix,any,Carbamidomethyl",
@@ -95,7 +95,7 @@ def test_engine_parsers_xtandem_unify_row():
     for row in parser:
         assert row["Sequence"] == "DDVHNMGADGIR"
         assert row["Modifications"] == "Oxidation:6"
-        assert row["Search Engine"] == "X!Tandem"
+        assert row["Search Engine"] == "X!TandemAlanine"
         break
 
 
@@ -109,7 +109,7 @@ def test_engine_parsers_xtandem_nterminal_mod():
     parser = XTandemAlanine(
         input_file,
         params={
-            "scan_rt_lookup_file": rt_lookup_path,
+            "rt_pickle_name": rt_lookup_path,
             "database": db_path,
             "modifications": [
                 "C,fix,any,Carbamidomethyl",

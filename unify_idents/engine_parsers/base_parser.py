@@ -9,6 +9,7 @@ from chemical_composition import ChemicalComposition
 
 from unify_idents import UnifiedRow
 from loguru import logger
+from decimal import Decimal
 
 # get from params
 
@@ -106,6 +107,23 @@ class __BaseParser:
                         self.fixed_mods["U"] = "Carbamidomethyl"
                 if mod_type == "opt":
                     self.opt_mods[aa] = name
+
+    def map_mod_names(self, row):
+        mods = []
+        for mod in row["Modifications"]:
+            mass, pos = mod.split(":")
+            potential_names = self.mod_mapper.appMass2name_list(
+                round(float(mass), 4), decimal_places=4
+            )
+            for name in potential_names:
+                if name in self.mod_dict:
+                    if row["Sequence"][int(pos)] in self.mod_dict[name]["aa"]:
+                        pos = int(pos) + 1
+                        mods.append(f"{name}:{pos}")  # minus
+                    elif "Prot-N-term" in self.mod_dict[name]["pos"]:
+                        # n-term mod
+                        mods.append(f"{name}:0")
+        return ";".join(mods)
 
     def map_peptides(self, row):
         starts = []
