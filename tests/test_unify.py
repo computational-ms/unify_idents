@@ -195,3 +195,30 @@ def test_unify_get_msamanda_parser():
     )
     parser = u._get_parser(p)
     assert isinstance(parser, MSamandaParser)
+
+def test_engine_parsers_msamanda_unified_frame():
+    input_file = Path(__file__).parent / "data" / "BSA_msamanda_2_0_0_17442.csv"
+    rt_lookup_path = Path(__file__).parent / "data" / "BSA_ursgal_lookup.csv.bz2"
+    db_path = Path(__file__).parent / "data" / "BSA.fasta"
+
+    u = Unify(
+        input_file,
+        params={
+            "rt_pickle_name": rt_lookup_path,
+            "database": db_path,
+            "modifications": [
+                "C,fix,any,Carbamidomethyl",
+                "M,opt,any,Oxidation",
+                "*,opt,Prot-N-term,Acetyl",
+            ],
+        },
+    )
+    df = u.get_dataframe()
+    assert isinstance(df, UnifiedDataFrame)
+    assert len(df) == 87
+    assert (
+        df.df.iloc[0]["Protein ID"]
+        == "sp|P02769|ALBU_BOVIN Serum albumin OS=Bos taurus GN=ALB PE=1 SV=4"
+    )
+    assert df.df.iloc[0]["Sequence Pre AA"] == "K"
+    assert df.df.iloc[0]["Sequence Post AA"] == "D"
