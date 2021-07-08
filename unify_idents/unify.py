@@ -60,7 +60,6 @@ class UnifiedDataFrame:
             exp_mass = self.calc_mass(float(row["Exp m/z"]), int(row["Charge"]))
             charge = int(row["Charge"])
             calc_mz = self.calc_mz(calc_mass, charge)
-            # exp m/z is actually the math
             self.df.at[_id, "uCalc m/z"] = calc_mz
             self.df.at[_id, "uCalc Mass"] = calc_mass
             self.df.at[_id, "Accuracy (ppm)"] = (exp_mass - calc_mass) / calc_mass * 1e6
@@ -125,17 +124,6 @@ class UnifiedRow:
     def to_dict(self):
         return self.data
 
-    # def __repr__(self):
-    #     return self.__str__()
-
-    # def calc_mz(self):
-    #     # use chemical composition
-    #     # do we really want a new CC object for every row?
-    #     self.data["uCalc m/z"] = 0
-    #     self.data["uCalc mass"] = 0
-    #     self.data["Mass Difference"] = 0
-    #     self.data["Accuracy (ppm)"] = 0
-
 
 class Unify:
     def __init__(self, input_file, params=None):
@@ -151,11 +139,6 @@ class Unify:
         else:
             self.params = params
 
-        # self.scan_rt_path = self.params.get("rt_pickle_name", None)
-        # if self.scan_rt_path is None:
-        #     raise Exception("Meaningfull error message")
-        # else:
-        #     self.scan_rt_lookup = self.read_rt_lookup_file(self.scan_rt_path)
         self.parser = self._get_parser(self.input_file)
 
     def __iter__(self):
@@ -163,9 +146,6 @@ class Unify:
 
     def __next__(self):
         line = next(self.parser)
-        # TODO
-        line = self.parser.general_fixes(line)
-        # do some magic here, like calling methods of row (e.g. calc_mz)
         return line
 
     def _get_parser_classes(self):
@@ -218,6 +198,5 @@ class Unify:
     def get_dataframe(self):
         data = []
         for unified_row in self:
-            # print(type(unified_row))
             data.append(unified_row.to_dict())
         return UnifiedDataFrame(data, db_path=self.params["database"])

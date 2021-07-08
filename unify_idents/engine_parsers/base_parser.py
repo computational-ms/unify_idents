@@ -38,6 +38,8 @@ class __BaseParser:
         no_decimals = 4
         self.mass_format_string = "{{0:3.{0}f}}".format(no_decimals)
 
+        self.PROTON = 1.00727646677
+
     def __iter__(self):
         return self
 
