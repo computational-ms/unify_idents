@@ -25,10 +25,16 @@ class __BaseParser:
         self.mod_mapper = UnimodMapper()
         self.cc = ChemicalComposition()
 
-        self.map_mods(self.params["Modifications"])
+        self.map_mods(self.params["modifications"])
 
-        self.scan_rt_path = self.params.get("scan_rt_lookup_file", None)
+        self.scan_rt_path = self.params.get("rt_pickle_name", None)
         self.scan_rt_lookup = self.read_rt_lookup_file(self.scan_rt_path)
+
+        self.cols_to_remove = []
+        self.cols_to_add = []
+
+    def __iter__(self):
+        return self
 
     def file_matches_parser(self):
         # needs to return False to dont be selected as engine parser during `get_parsers`
@@ -36,61 +42,38 @@ class __BaseParser:
 
     def general_fixes(self, row):
         row["Raw file location"] = row["Spectrum Title"].split(".")[0]
+        basename = row["Raw file location"].split(".")[0]
+        # breakpoint()
         row["Retention Time (s)"] = float(
-            self.scan_rt_lookup[row["Raw file location"]]["scan2rt"][row["Spectrum ID"]]
+            self.scan_rt_lookup[basename]["scan2rt"][int(row["Spectrum ID"])]
         )
         row["Sequence"] = row["Sequence"].upper()
-        # row = self.map_peptides(row)
-        # row = self.recalc_masses(row)
-        # seq_mod = row["Sequence"] + "#" + row["Modifications"]
-        # self.cc.use(sequence=row["Sequence"], modifications=row["Modifications"])
-        # row["uCalc m/z"] = self.calc_mz(self.cc.mass(), int(row["Charge"]))
-        # row["uCalc mass"] = self.cc.mass()
-        # and so on
 
         return row
 
+    def check_mod_positions(self, row):
+        return row
+
     def recalc_masses(row):
-        seq_mod = row["Sequence"] + "#" + row["Modifications"]
         self.cc.use(sequence=row["Sequence"], modifications=row["Modifications"])
         row["uCalc m/z"] = self.calc_mz(self.cc.mass(), int(row["Charge"]))
         row["uCalc mass"] = self.cc.mass()
         return row
 
-    # def calc_mz(self, mass, charge):
-    #     PROTON = 1.00727646677
-    #     return (mass + (charge * PROTON)) / charge
-
-    def map_peptides(self, row):
-        starts = []
-        ids = []
-        stops = []
-        pre = []
-        post = []
-        # we need to convert sequences to uppercase, e.g. omssa reports modified AAs in lowercase
-        mapped = self.peptide_mapper.map_peptides(
-            [row["Sequence"].upper()]
-        )  # uses 99% of time
-        for seq, data_list in mapped.items():
-            for data in data_list:
-                ids.append(data["id"])
-                starts.append(str(data["start"]))
-                stops.append(str(data["end"]))
-                pre.append(str(data["pre"]))
-                post.append(str(data["post"]))
-        row["Protein ID"] = DELIMITER.join(ids)
-        row["Sequence Pre AA"] = DELIMITER.join(pre)
-        row["Sequence Post AA"] = DELIMITER.join(post)
-        row["Sequence Start"] = DELIMITER.join(starts)
-        row["Sequence Stop"] = DELIMITER.join(stops)
-        return row
+    def calc_mz(self, mass, charge):
+        PROTON = 1.00727646677
+        return (float(mass) + (int(charge) * PROTON)) / int(charge)
 
     def read_rt_lookup_file(self, scan_rt_lookup_path):
+        # breakpoint()
         with bz2.open(scan_rt_lookup_path, "rt") as fin:
             lookup = {}
             reader = csv.DictReader(fin)
             for line in reader:
-                file = Path(line["File"]).stem
+                file = Path(line["File"])
+                file = str(file.stem).rstrip(
+                    "".join(file.suffixes)
+                )  # remove all suffixes, eg. idx.gz
                 lookup.setdefault(file, {"scan2rt": {}, "rt2scan": {}, "scan2mz": {}})
                 scan, rt, mz = (
                     line["Spectrum ID"],
@@ -103,17 +86,6 @@ class __BaseParser:
         return lookup
 
     def map_mods(self, mods):
-        """Maps modifications defined in params["modification"] using unimod.
-
-        Examples:
-
-             >>> [
-             ...    "M,opt,any,Oxidation",        # Met oxidation
-             ...    "C,fix,any,Carbamidomethyl",  # Carbamidomethylation
-             ...    "*,opt,Prot-N-term,Acetyl"    # N-Acteylation
-             ... ]
-
-        """
         # TODO remove logger.warning functions and replace by logger
         self.params["mods"] = {"fix": [], "opt": []}
         for ursgal_index, mod in enumerate(sorted(mods)):

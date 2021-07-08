@@ -15,9 +15,9 @@ def test_engine_parsers_omssa_init():
     parser = OmssaParser(
         input_file,
         params={
-            "scan_rt_lookup_file": rt_lookup_path,
+            "rt_pickle_name": rt_lookup_path,
             "database": db_path,
-            "Modifications": [
+            "modifications": [
                 "C,fix,any,Carbamidomethyl",
                 "M,opt,any,Oxidation",
                 "*,opt,Prot-N-term,Acetyl",
@@ -25,6 +25,16 @@ def test_engine_parsers_omssa_init():
             "omssa_mod_dir": Path(__file__).parent / "data",
         },
     )
+
+
+def test_engine_parsers_omssa_file_matches_parser():
+    input_file = (
+        Path(__file__).parent / "data" / "test_Creinhardtii_QE_pH11_omssa_2_1_9.csv"
+    )
+    rt_lookup_path = Path(__file__).parent / "data" / "_ursgal_lookup.csv.bz2"
+    db_path = Path(__file__).parent / "data" / "test_Creinhardtii_target_decoy.fasta"
+
+    assert OmssaParser.file_matches_parser(input_file) is True
 
 
 def test_engine_parsers_omssa_unify_row():
@@ -37,9 +47,9 @@ def test_engine_parsers_omssa_unify_row():
     parser = OmssaParser(
         input_file,
         params={
-            "scan_rt_lookup_file": rt_lookup_path,
+            "rt_pickle_name": rt_lookup_path,
             "database": db_path,
-            "Modifications": [
+            "modifications": [
                 "C,fix,any,Carbamidomethyl",
                 "M,opt,any,Oxidation",
                 "*,opt,Prot-N-term,Acetyl",
@@ -61,9 +71,9 @@ def test_engine_parsers_omssa_unify_row():
 #     parser = OmssaParser(
 #         input_file,
 #         params={
-#             "scan_rt_lookup_file": rt_lookup_path,
+#             "rt_pickle_name": rt_lookup_path,
 #             "database": db_path,
-#             "Modifications": [
+#             "modifications": [
 #                 "C,fix,any,Carbamidomethyl",
 #                 "M,opt,any,Oxidation",
 #             ],

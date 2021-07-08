@@ -26,6 +26,9 @@ class UnifiedDataFrame:
         mapped_peptides = self.mapper.map_peptides(all_peptides)
         self.update_protein_mapping(mapped_peptides)
 
+    def __len__(self):
+        return len(self.df)
+
     def __iter__(self):
         return iter(self.rows)
 
@@ -53,15 +56,15 @@ class UnifiedDataFrame:
 
             # also do the mass calc here?
             self.cc.use(sequence=row["Sequence"], modifications=row["Modifications"])
-            mass = self.cc.mass()
+            calc_mass = self.cc.mass()
+            exp_mass = self.calc_mass(float(row["Exp m/z"]), int(row["Charge"]))
             charge = int(row["Charge"])
-            mz = self.calc_mz(mass, charge)
+            calc_mz = self.calc_mz(calc_mass, charge)
             # exp m/z is actually the math
-            engine_mass = float(row["Exp m/z"])
-            self.df.at[_id, "uCalc m/z"] = mz
-            self.df.at[_id, "uCalc Mass"] = mass
-            self.df.at[_id, "Mass Difference"] = engine_mass - mass
-            self.df.at[_id, "Accuracy (ppm)"] = (engine_mass - mass) / mass / 5e-6
+            self.df.at[_id, "uCalc m/z"] = calc_mz
+            self.df.at[_id, "uCalc Mass"] = calc_mass
+            self.df.at[_id, "Accuracy (ppm)"] = (exp_mass - calc_mass) / calc_mass * 1e6
+
         return
 
     def calc_mz(self, mass, charge):
@@ -102,6 +105,14 @@ class UnifiedRow:
         ]
         self.string_repr = None
 
+    def __getitem__(self, key):
+        return self.data[key]
+
+    def __setitem__(self, key, value):
+        if key not in self.data:
+            raise KeyError("Cant add new key")
+        self.data[key] = value
+
     def __str__(self):
         # needs fix, only return unify cols and not Engine:name columns
         if self.string_repr is None:
@@ -140,11 +151,11 @@ class Unify:
         else:
             self.params = params
 
-        self.scan_rt_path = self.params.get("scan_rt_lookup_file", None)
-        if self.scan_rt_path is None:
-            raise Exception("Meaningfull error message")
-        else:
-            self.scan_rt_lookup = self.read_rt_lookup_file(self.scan_rt_path)
+        # self.scan_rt_path = self.params.get("rt_pickle_name", None)
+        # if self.scan_rt_path is None:
+        #     raise Exception("Meaningfull error message")
+        # else:
+        #     self.scan_rt_lookup = self.read_rt_lookup_file(self.scan_rt_path)
         self.parser = self._get_parser(self.input_file)
 
     def __iter__(self):
@@ -153,7 +164,7 @@ class Unify:
     def __next__(self):
         line = next(self.parser)
         # TODO
-        # line = self.parser.general_fixes(line)
+        line = self.parser.general_fixes(line)
         # do some magic here, like calling methods of row (e.g. calc_mz)
         return line
 
@@ -178,14 +189,14 @@ class Unify:
 
     def _get_parser(self, input_file):
         all_parsers = self._get_parser_classes()
-
         for parser_class in all_parsers:
-            parser = parser_class(input_file, params=self.params)
-            if parser.file_matches_parser() is True:
+            if parser_class.file_matches_parser(input_file) is True:
                 break
+        parser = parser_class(input_file, params=self.params)
         return parser
 
     def read_rt_lookup_file(self, scan_rt_lookup_path):
+        # breakpoint()
         with bz2.open(scan_rt_lookup_path, "rt") as fin:
             lookup = {}
             reader = csv.DictReader(fin)
@@ -207,5 +218,6 @@ class Unify:
     def get_dataframe(self):
         data = []
         for unified_row in self:
+            # print(type(unified_row))
             data.append(unified_row.to_dict())
         return UnifiedDataFrame(data, db_path=self.params["database"])
