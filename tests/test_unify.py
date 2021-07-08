@@ -6,6 +6,7 @@ import uparma
 from unify_idents.engine_parsers.omssa_parser import OmssaParser
 from unify_idents.unify import UnifiedDataFrame, Unify
 from unify_idents.engine_parsers.msgfplus_2021_03_22_parser import MSGFPlus_2021_03_22
+from unify_idents.engine_parsers.msamanda_parser import MSamandaParser
 
 
 def test_unify_get_parser_classes():
@@ -175,3 +176,22 @@ def test_unify_msfragger_df_masses():
     assert float(row["uCalc m/z"]) == pytest.approx(739.3601)
     assert float(row["uCalc Mass"]) == pytest.approx(1476.7056)
     assert float(row["Accuracy (ppm)"]) == pytest.approx(-2.182, 0.01)
+
+def test_unify_get_msamanda_parser():
+    rt_lookup_path = Path(__file__).parent / "data" / "BSA_ursgal_lookup.csv.bz2"
+    p = Path(__file__).parent / "data" / "BSA_msamanda_2_0_0_17442.csv"
+    db_path = Path(__file__).parent / "data" / "BSA.fasta"
+    u = Unify(
+        p,
+        {
+            "rt_pickle_name": rt_lookup_path,
+            "database": db_path,
+            "modifications": [
+                "C,fix,any,Carbamidomethyl",
+                "M,opt,any,Oxidation",
+                "*,opt,Prot-N-term,Acetyl",
+            ],
+        },
+    )
+    parser = u._get_parser(p)
+    assert isinstance(parser, MSamandaParser)
