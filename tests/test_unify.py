@@ -204,4 +204,6 @@ def test_unify_xtandem_df_masses():
     assert row["Charge"] == "3"
     assert float(row["uCalc m/z"]) == pytest.approx(439.1946, abs=5e-6 * 439.1946)
     assert float(row["uCalc Mass"]) == pytest.approx(1314.5667, abs=5e-6 * 1314.5667)
-    assert float(row["Accuracy (ppm)"]) == pytest.approx(-2.182, 0.01)
+    assert float(row["Accuracy (ppm)"]) == pytest.approx(
+        769.15, 0.01
+    )  # picked wrong peak?

@@ -62,7 +62,15 @@ class UnifiedDataFrame:
             calc_mz = self.calc_mz(calc_mass, charge)
             self.df.at[_id, "uCalc m/z"] = calc_mz
             self.df.at[_id, "uCalc Mass"] = calc_mass
-            self.df.at[_id, "Accuracy (ppm)"] = (exp_mass - calc_mass) / calc_mass * 1e6
+            # breakpoint()
+            # self.df.at[_id, "Accuracy (ppm)"] = (exp_mass - calc_mass) / calc_mass * 1e6
+            acc = (
+                (float(row["Exp m/z"]) - float(self.df.at[_id, "uCalc m/z"]))
+                / self.df.at[_id, "uCalc m/z"]
+                * 1e6
+            )
+            self.df.at[_id, "Accuracy (ppm)"] = acc
+            # breakpoint()
 
         return
 
