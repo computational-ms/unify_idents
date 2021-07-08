@@ -17,7 +17,7 @@ def test_engine_parsers_xtandem_init():
         params={
             "scan_rt_lookup_file": rt_lookup_path,
             "database": db_path,
-            "Modifications": [
+            "modifications": [
                 "C,fix,any,Carbamidomethyl",
                 "M,opt,any,Oxidation",
                 "*,opt,Prot-N-term,Acetyl",
@@ -60,7 +60,7 @@ def test_engine_parsers_xtandem_iterable():
         params={
             "scan_rt_lookup_file": rt_lookup_path,
             "database": db_path,
-            "Modifications": [
+            "modifications": [
                 "C,fix,any,Carbamidomethyl",
                 "M,opt,any,Oxidation",
                 "*,opt,Prot-N-term,Acetyl",
@@ -83,7 +83,7 @@ def test_engine_parsers_xtandem_unify_row():
         params={
             "scan_rt_lookup_file": rt_lookup_path,
             "database": db_path,
-            "Modifications": [
+            "modifications": [
                 "C,fix,any,Carbamidomethyl",
                 "M,opt,any,Oxidation",
                 "*,opt,Prot-N-term,Acetyl",
@@ -94,5 +94,34 @@ def test_engine_parsers_xtandem_unify_row():
     )
     for row in parser:
         assert row["Sequence"] == "DDVHNMGADGIR"
+        assert row["Modifications"] == "Oxidation:6"
         assert row["Search Engine"] == "X!Tandem"
         break
+
+
+def test_engine_parsers_xtandem_nterminal_mod():
+    input_file = (
+        Path(__file__).parent / "data" / "test_Creinhardtii_QE_pH11_xtandem_alanine.xml"
+    )
+    rt_lookup_path = Path(__file__).parent / "data" / "_ursgal_lookup.csv.bz2"
+    db_path = Path(__file__).parent / "data" / "test_Creinhardtii_target_decoy.fasta"
+
+    parser = XTandemAlanine(
+        input_file,
+        params={
+            "scan_rt_lookup_file": rt_lookup_path,
+            "database": db_path,
+            "modifications": [
+                "C,fix,any,Carbamidomethyl",
+                "M,opt,any,Oxidation",
+                "*,opt,Prot-N-term,Acetyl",
+            ],
+            "Raw file location": "test_Creinhardtii_QE_pH11.mzML",
+            "15N": False,
+        },
+    )
+    for row in parser:
+        if row["Sequence"] == "WGLVSSELQTSEAETPGLK":
+            break
+    assert row["Modifications"] == "Acetyl:0"
+    # breakpoint()
