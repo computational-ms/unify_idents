@@ -27,7 +27,7 @@ def test_unify_get_parser_classes():
         },
     )
     parsers = u._get_parser_classes()
-    assert len(parsers) == 5
+    assert len(parsers) == 6
 
 
 def test_unify_get_omssa_parser():
@@ -124,7 +124,7 @@ def test_engine_parsers_msfragger_unified_frame():
 
 def test_engine_parsers_msgf_unified_frame():
     input_file = Path(__file__).parent / "data" / "BSA1_msgfplus_2021_03_22.mzid"
-    rt_lookup_path = Path(__file__).parent / "data" / "BSA_ursgal_lookup.csv.bz2"
+    rt_lookup_path = Path(__file__).parent / "data" / "BSA1_ursgal_lookup.csv.bz2"
     db_path = Path(__file__).parent / "data" / "BSA.fasta"
 
     u = Unify(
@@ -179,7 +179,7 @@ def test_unify_msfragger_df_masses():
 
 
 def test_unify_get_msamanda_parser():
-    rt_lookup_path = Path(__file__).parent / "data" / "BSA_ursgal_lookup.csv.bz2"
+    rt_lookup_path = Path(__file__).parent / "data" / "BSA1_ursgal_lookup.csv.bz2"
     p = Path(__file__).parent / "data" / "BSA_msamanda_2_0_0_17442.csv"
     db_path = Path(__file__).parent / "data" / "BSA.fasta"
     u = Unify(
@@ -197,14 +197,22 @@ def test_unify_get_msamanda_parser():
     parser = u._get_parser(p)
     assert isinstance(parser, MSamandaParser)
 
+
 def test_engine_parsers_msamanda_unified_frame():
-    input_file = Path(__file__).parent / "data" / "BSA_msamanda_2_0_0_17442.csv"
-    rt_lookup_path = Path(__file__).parent / "data" / "BSA_ursgal_lookup.csv.bz2"
+    input_file = Path(__file__).parent / "data" / "BSA1_msamanda_2_0_0_17442.csv"
+    rt_lookup_path = Path(__file__).parent / "data" / "BSA1_ursgal_lookup.csv.bz2"
     db_path = Path(__file__).parent / "data" / "BSA.fasta"
 
     u = Unify(
         input_file,
         params={
+            "rt_pickle_name": rt_lookup_path,
+            "database": db_path,
+            "modifications": [
+                "C,fix,any,Carbamidomethyl",
+                "M,opt,any,Oxidation",
+                "*,opt,Prot-N-term,Acetyl",
+            ],
         },
     )
     df = u.get_dataframe()
