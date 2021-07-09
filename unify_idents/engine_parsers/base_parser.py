@@ -9,6 +9,7 @@ from chemical_composition import ChemicalComposition
 
 from unify_idents import UnifiedRow
 from loguru import logger
+from decimal import Decimal
 
 # get from params
 
@@ -29,14 +30,21 @@ class __BaseParser:
 
         self.scan_rt_path = self.params.get("rt_pickle_name", None)
         self.scan_rt_lookup = self.read_rt_lookup_file(self.scan_rt_path)
+        self.create_mod_dicts()
 
         self.cols_to_remove = []
         self.cols_to_add = []
 
+        no_decimals = 4
+        self.mass_format_string = "{{0:3.{0}f}}".format(no_decimals)
+
+        self.PROTON = 1.00727646677
+
     def __iter__(self):
         return self
 
-    def file_matches_parser(self):
+    @classmethod
+    def file_matches_parser(self, file):
         # needs to return False to dont be selected as engine parser during `get_parsers`
         return False
 
@@ -63,6 +71,87 @@ class __BaseParser:
     def calc_mz(self, mass, charge):
         PROTON = 1.00727646677
         return (float(mass) + (int(charge) * PROTON)) / int(charge)
+
+    def create_mod_dicts(self):
+        self.fixed_mods = {}
+        self.opt_mods = {}
+        self.mod_dict = {}
+        self.n_term_replacement = {
+            "Ammonia-loss": None,
+            "Trimethyl": None,
+            "Gly->Val": None,
+        }
+        self.mod_dict = {}
+        self.n_term_replacement = {}
+        # self.opt_mods
+        for mod_type in ["fix", "opt"]:
+            for modification in self.params["mods"][mod_type]:
+                aa = modification["aa"]
+                pos = modification["pos"]
+                name = modification["name"]
+                if name not in self.mod_dict.keys():
+                    self.mod_dict[name] = {
+                        "mass": modification["mass"],
+                        "aa": set(),
+                        "pos": set(),
+                    }
+                self.mod_dict[name]["aa"].add(aa)
+
+                self.mod_dict[name]["aa"].add(pos)
+                self.mod_dict[name]["pos"].add(pos)
+
+                if "N-term" in pos:
+                    self.n_term_replacement[name] = aa
+                if mod_type == "fix":
+                    self.fixed_mods[aa] = name
+                    if aa == "C" and name == "Carbamidomethyl":
+                        cam = True
+                        self.mod_dict["Carbamidomethyl"]["aa"].add("U")
+                        self.fixed_mods["U"] = "Carbamidomethyl"
+                if mod_type == "opt":
+                    self.opt_mods[aa] = name
+
+    def map_mod_names(self, row):
+        # 0 based indexing, is corrected in this method,
+        mods = []
+        for mod in row["Modifications"]:
+            mass, pos = mod.split(":")
+            potential_names = self.mod_mapper.appMass2name_list(
+                round(float(mass), 4), decimal_places=4
+            )
+            for name in potential_names:
+                if name in self.mod_dict:
+                    if row["Sequence"][int(pos)] in self.mod_dict[name]["aa"]:
+                        pos = int(pos) + 1
+                        mods.append(f"{name}:{pos}")  # minus
+                    elif "Prot-N-term" in self.mod_dict[name]["pos"]:
+                        # n-term mod
+                        mods.append(f"{name}:0")
+        return ";".join(mods)
+
+    def map_peptides(self, row):
+        starts = []
+        ids = []
+        stops = []
+        pre = []
+        post = []
+        # we need to convert sequences to uppercase, e.g. omssa reports modified AAs in lowercase
+        mapped = self.peptide_mapper.map_peptides(
+            [row["Sequence"].upper()]
+        )  # uses 99% of time
+        for seq, data_list in mapped.items():
+            for data in data_list:
+                ids.append(data["id"])
+                starts.append(str(data["start"]))
+                stops.append(str(data["end"]))
+                pre.append(str(data["pre"]))
+                post.append(str(data["post"]))
+        row["Protein ID"] = DELIMITER.join(ids)
+        row["Sequence Pre AA"] = DELIMITER.join(pre)
+        row["Sequence Post AA"] = DELIMITER.join(post)
+        row["Sequence Start"] = DELIMITER.join(starts)
+        row["Sequence Stop"] = DELIMITER.join(stops)
+        return row
 
     def read_rt_lookup_file(self, scan_rt_lookup_path):
         # breakpoint()
