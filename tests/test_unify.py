@@ -175,3 +175,35 @@ def test_unify_msfragger_df_masses():
     assert float(row["uCalc m/z"]) == pytest.approx(739.3601)
     assert float(row["uCalc Mass"]) == pytest.approx(1476.7056)
     assert float(row["Accuracy (ppm)"]) == pytest.approx(-2.182, 0.01)
+
+
+def test_unify_xtandem_df_masses():
+    input_file = (
+        Path(__file__).parent / "data" / "test_Creinhardtii_QE_pH11_xtandem_alanine.xml"
+    )
+    rt_lookup_path = Path(__file__).parent / "data" / "_ursgal_lookup.csv.bz2"
+    db_path = Path(__file__).parent / "data" / "test_Creinhardtii_target_decoy.fasta"
+
+    parser = Unify(
+        input_file,
+        {
+            "rt_pickle_name": rt_lookup_path,
+            "database": db_path,
+            "modifications": [
+                "C,fix,any,Carbamidomethyl",
+                "M,opt,any,Oxidation",
+                "*,opt,Prot-N-term,Acetyl",
+            ],
+            "Raw file location": "test_Creinhardtii_QE_pH11.mzML",
+            "15N": False,
+        },
+    )
+    res = parser.get_dataframe()
+    row = res.df.iloc[0]
+    assert row["Sequence"] == "DDVHNMGADGIR"
+    assert row["Charge"] == "3"
+    assert float(row["uCalc m/z"]) == pytest.approx(439.1946, abs=5e-6 * 439.1946)
+    assert float(row["uCalc Mass"]) == pytest.approx(1314.5667, abs=5e-6 * 1314.5667)
+    assert float(row["Accuracy (ppm)"]) == pytest.approx(
+        769.15, 0.01
+    )  # picked wrong peak?

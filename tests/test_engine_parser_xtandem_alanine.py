@@ -1,15 +1,18 @@
-from unify_idents.engine_parsers.msfragger3_parser import __BaseParser
+#!/usr/bin/env python
 from pathlib import Path
+from unify_idents.unify import UnifiedDataFrame
+from unify_idents.engine_parsers.xtandem_alanine import XTandemAlanine
+import uparma
 
 
-def test_engine_parsers_BaseParser_init():
+def test_engine_parsers_xtandem_init():
     input_file = (
         Path(__file__).parent / "data" / "test_Creinhardtii_QE_pH11_xtandem_alanine.xml"
     )
     rt_lookup_path = Path(__file__).parent / "data" / "_ursgal_lookup.csv.bz2"
     db_path = Path(__file__).parent / "data" / "test_Creinhardtii_target_decoy.fasta"
 
-    parser = __BaseParser(
+    parser = XTandemAlanine(
         input_file,
         params={
             "rt_pickle_name": rt_lookup_path,
@@ -23,19 +26,36 @@ def test_engine_parsers_BaseParser_init():
     )
 
 
-def test_engine_parsers_BaseParser_file_matches_parser():
-    # should always return False
-    __BaseParser.file_matches_parser("whatever") is False
-
-
-def test_engine_parsers_BaseParser_map_mod_names():
+def test_engine_parsers_xtandem_file_matches_xtandem_parser():
     input_file = (
         Path(__file__).parent / "data" / "test_Creinhardtii_QE_pH11_xtandem_alanine.xml"
     )
     rt_lookup_path = Path(__file__).parent / "data" / "_ursgal_lookup.csv.bz2"
     db_path = Path(__file__).parent / "data" / "test_Creinhardtii_target_decoy.fasta"
 
-    parser = __BaseParser(
+    assert XTandemAlanine.file_matches_parser(input_file) is True
+
+
+def test_engine_parsers_xtandem_file_not_matches_xtandem_parser():
+    input_file = (
+        Path(__file__).parent
+        / "data"
+        / "test_Creinhardtii_QE_pH11_mzml2mgf_0_0_1_msfragger_3.tsv"
+    )
+    rt_lookup_path = Path(__file__).parent / "data" / "_ursgal_lookup.csv.bz2"
+    db_path = Path(__file__).parent / "data" / "test_Creinhardtii_target_decoy.fasta"
+
+    assert XTandemAlanine.file_matches_parser(input_file) is False
+
+
+def test_engine_parsers_xtandem_iterable():
+    input_file = (
+        Path(__file__).parent / "data" / "test_Creinhardtii_QE_pH11_xtandem_alanine.xml"
+    )
+    rt_lookup_path = Path(__file__).parent / "data" / "_ursgal_lookup.csv.bz2"
+    db_path = Path(__file__).parent / "data" / "test_Creinhardtii_target_decoy.fasta"
+
+    parser = XTandemAlanine(
         input_file,
         params={
             "rt_pickle_name": rt_lookup_path,
@@ -47,19 +67,18 @@ def test_engine_parsers_BaseParser_map_mod_names():
             ],
         },
     )
+    for row in parser:
+        print(row)
 
-    row = {"Modifications": ["57.021464:0"], "Sequence": "CERK"}
-    assert parser.map_mod_names(row) == "Carbamidomethyl:1"
 
-
-def test_engine_parsers_BaseParser_map_mod_names_nterm():
+def test_engine_parsers_xtandem_unify_row():
     input_file = (
         Path(__file__).parent / "data" / "test_Creinhardtii_QE_pH11_xtandem_alanine.xml"
     )
     rt_lookup_path = Path(__file__).parent / "data" / "_ursgal_lookup.csv.bz2"
     db_path = Path(__file__).parent / "data" / "test_Creinhardtii_target_decoy.fasta"
 
-    parser = __BaseParser(
+    parser = XTandemAlanine(
         input_file,
         params={
             "rt_pickle_name": rt_lookup_path,
@@ -69,21 +88,25 @@ def test_engine_parsers_BaseParser_map_mod_names_nterm():
                 "M,opt,any,Oxidation",
                 "*,opt,Prot-N-term,Acetyl",
             ],
+            "Raw file location": "test_Creinhardtii_QE_pH11.mzML",
+            "15N": False,
         },
     )
+    for row in parser:
+        assert row["Sequence"] == "DDVHNMGADGIR"
+        assert row["Modifications"] == "Oxidation:6"
+        assert row["Search Engine"] == "X!TandemAlanine"
+        break
 
-    row = {"Modifications": ["57.021464:0", "42.010565:0"], "Sequence": "CERK"}
-    assert parser.map_mod_names(row) == "Carbamidomethyl:1;Acetyl:0"
 
-
-def test_engine_parsers_BaseParser_read_rt_lookup_file():
+def test_engine_parsers_xtandem_nterminal_mod():
     input_file = (
         Path(__file__).parent / "data" / "test_Creinhardtii_QE_pH11_xtandem_alanine.xml"
     )
     rt_lookup_path = Path(__file__).parent / "data" / "_ursgal_lookup.csv.bz2"
     db_path = Path(__file__).parent / "data" / "test_Creinhardtii_target_decoy.fasta"
 
-    parser = __BaseParser(
+    parser = XTandemAlanine(
         input_file,
         params={
             "rt_pickle_name": rt_lookup_path,
@@ -93,15 +116,12 @@ def test_engine_parsers_BaseParser_read_rt_lookup_file():
                 "M,opt,any,Oxidation",
                 "*,opt,Prot-N-term,Acetyl",
             ],
+            "Raw file location": "test_Creinhardtii_QE_pH11.mzML",
+            "15N": False,
         },
     )
-    fname = "test_Creinhardtii_QE_pH11"
-    lookup = parser.read_rt_lookup_file(rt_lookup_path)
-    assert "test_Creinhardtii_QE_pH11" in lookup
-    assert "scan2rt" in lookup[fname]
-    assert "rt2scan" in lookup[fname]
-    assert "scan2mz" in lookup[fname]
-
-    assert len(lookup[fname]["scan2rt"]) == 162
-    assert len(lookup[fname]["rt2scan"]) == 162
-    assert len(lookup[fname]["scan2mz"]) == 162
+    for row in parser:
+        if row["Sequence"] == "WGLVSSELQTSEAETPGLK":
+            break
+    assert row["Modifications"] == "Acetyl:0"
+    # breakpoint()
