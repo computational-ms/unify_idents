@@ -43,7 +43,8 @@ class __BaseParser:
     def __iter__(self):
         return self
 
-    def file_matches_parser(self):
+    @classmethod
+    def file_matches_parser(self, file):
         # needs to return False to dont be selected as engine parser during `get_parsers`
         return False
 
@@ -111,6 +112,7 @@ class __BaseParser:
                     self.opt_mods[aa] = name
 
     def map_mod_names(self, row):
+        # 0 based indexing, is corrected in this method,
         mods = []
         for mod in row["Modifications"]:
             mass, pos = mod.split(":")
