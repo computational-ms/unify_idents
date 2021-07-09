@@ -8,7 +8,7 @@ from collections.abc import Iterable
 
 
 def test_engine_parsers_msamanda_init():
-    input_file = Path(__file__).parent / "data" / "BSA_msamanda_2_0_0_17442.csv"
+    input_file = Path(__file__).parent / "data" / "BSA1_msamanda_2_0_0_17442.csv"
     rt_lookup_path = Path(__file__).parent / "data" / "BSA1_ursgal_lookup.csv.bz2"
     db_path = Path(__file__).parent / "data" / "BSA.fasta"
 
@@ -28,7 +28,7 @@ def test_engine_parsers_msamanda_init():
 
 
 def test_engine_parsers_msamanda_file_matches_parser():
-    input_file = Path(__file__).parent / "data" / "BSA_msamanda_2_0_0_17442.csv"
+    input_file = Path(__file__).parent / "data" / "BSA1_msamanda_2_0_0_17442.csv"
     rt_lookup_path = Path(__file__).parent / "data" / "BSA1_ursgal_lookup.csv.bz2"
     db_path = Path(__file__).parent / "data" / "BSA.fasta"
 
@@ -36,7 +36,7 @@ def test_engine_parsers_msamanda_file_matches_parser():
 
 
 def test_engine_parsers_msamanda_iterable():
-    input_file = Path(__file__).parent / "data" / "BSA_msamanda_2_0_0_17442.csv"
+    input_file = Path(__file__).parent / "data" / "BSA1_msamanda_2_0_0_17442.csv"
     rt_lookup_path = Path(__file__).parent / "data" / "BSA1_ursgal_lookup.csv.bz2"
     db_path = Path(__file__).parent / "data" / "BSA.fasta"
 
@@ -58,7 +58,7 @@ def test_engine_parsers_msamanda_iterable():
 
 
 def test_engine_parsers_msamanda_unify_row():
-    input_file = Path(__file__).parent / "data" / "BSA_msamanda_2_0_0_17442.csv"
+    input_file = Path(__file__).parent / "data" / "BSA1_msamanda_2_0_0_17442.csv"
     rt_lookup_path = Path(__file__).parent / "data" / "BSA1_ursgal_lookup.csv.bz2"
     db_path = Path(__file__).parent / "data" / "BSA.fasta"
 
