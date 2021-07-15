@@ -56,7 +56,7 @@ class UnifiedDataFrame:
 
             # also do the mass calc here?
             self.cc.use(sequence=row["Sequence"], modifications=row["Modifications"])
-            calc_mass = self.cc.mass()
+            calc_mass = self.cc.mass() + PROTON
             exp_mass = self.calc_mass(float(row["Exp m/z"]), int(row["Charge"]))
             charge = int(row["Charge"])
             calc_mz = self.calc_mz(calc_mass, charge)

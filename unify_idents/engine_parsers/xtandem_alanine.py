@@ -61,7 +61,7 @@ class XTandemAlanine(__BaseParser):
         return unified_line
 
     def _next(self):
-        row = {"Modifications": []}
+        row = {"Modifications": set()}
 
         while True:
             event, element = next(self.xml_iter, ("STOP", "STOP"))
@@ -78,25 +78,26 @@ class XTandemAlanine(__BaseParser):
                 )
                 row.update(element.attrib)
             elif event == "start" and element.tag.endswith("domain"):
-                # element.attrib["Calc m/z"] = (
-                #     float(element.attrib["mh"]) / float(row["z"]) + self.PROTON
-                # )
                 element.attrib["Calc m/z"] = self.calc_mz(
                     float(element.attrib["mh"]), float(row["z"])
                 )
-                # float(element.attrib["mh"]) / float(row["z"]) + self.PROTON
-                # )
                 row.update(element.attrib)
             elif event == "end" and element.tag.endswith("aa"):
                 mass = element.attrib["modified"]
                 pos = int(element.attrib["at"]) - int(row["start"])
-                row["Modifications"].append(f"{mass}:{pos}")
+                row["Modifications"].add(f"{mass}:{pos}")
+                # if row["seq"] == "MLNMLIVFRFLRIIPSMK":
+                #     breakpoint()
             elif (
                 element.tag.endswith("note")
                 and element.attrib["label"] == "Description"
             ):
                 row["Spectrum Title"] = element.text
-            elif event == "start" and element.tag.endswith("bioml"):
+            elif (
+                event == "start"
+                and element.tag.endswith("bioml")
+                and element.attrib["label"].startswith("models from")
+            ):
                 self.raw_file = element.attrib["label"].split("'")[1]
                 # breakpoint()
             elif (
@@ -104,21 +105,19 @@ class XTandemAlanine(__BaseParser):
                 and element.tag.endswith("group")
                 and element.attrib["type"] == "model"
             ):
-                row["Raw file"] = self.raw_file
+                row["Raw data location"] = self.raw_file
+                row["Modifications"] = list(row["Modifications"])
+                # breakpoint()
                 return row
 
     def _unify_row(self, row):
         for old_col, new_col in col_mapping.items():
             row[new_col] = row[old_col]
             del row[old_col]
-
         modstring = self.map_mod_names(row)
+
         row["Modifications"] = modstring
         row["Search Engine"] = "X!TandemAlanine"
-        # breakpoint()
-
-        # row["Spectrum Title"] = f"{file}.{spec_id}.{spec_id}.{charge}"
         row["Spectrum ID"] = row["Spectrum Title"].split(".")[1]
-        # breakpoint()
         row = self.general_fixes(row)
         return UnifiedRow(**row)

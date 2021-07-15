@@ -1,6 +1,7 @@
 import bz2
 import csv
 from pathlib import Path
+import os
 
 import uparma
 from peptide_mapper.mapper import UPeptideMapper
@@ -49,8 +50,13 @@ class __BaseParser:
         return False
 
     def general_fixes(self, row):
-        row["Raw file location"] = row["Spectrum Title"].split(".")[0]
-        basename = row["Raw file location"].split(".")[0]
+        if row.get("Raw data location") is None or row["Raw data location"] == "":
+            row["Raw data location"] = row["Spectrum Title"].split(".")[0]
+        if ".mgf" in row["Raw data location"]:
+            row["Raw data locations"] = row["Raw data location"].replace(
+                ".mgf", ".mzML"
+            )
+        basename = os.path.basename(row["Raw data location"]).split(".")[0]
         # breakpoint()
         row["Retention Time (s)"] = float(
             self.scan_rt_lookup[basename]["scan2rt"][int(row["Spectrum ID"])]

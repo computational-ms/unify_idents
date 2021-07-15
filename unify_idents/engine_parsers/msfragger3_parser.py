@@ -33,7 +33,7 @@ class MSFragger3Parser(__BaseParser):
         self.column_mapping = self.get_column_names()
 
         self.cols_to_add = [
-            "Raw file location",
+            "Raw data location",
             "Spectrum Title",
             "uCalc m/z",
             "uCalc Mass",
@@ -143,7 +143,7 @@ class MSFragger3Parser(__BaseParser):
             specid=new_row["Spectrum ID"],
             charge=new_row["Charge"],
         )
-        new_row["Raw file location"] = self.params["Raw file location"]
+        new_row["Raw data location"] = self.params["Raw file location"]
         new_row["Exp m/z"] = self.calc_mz(
             new_row["MSFragger:Precursor neutral mass (Da)"], new_row["Charge"]
         )

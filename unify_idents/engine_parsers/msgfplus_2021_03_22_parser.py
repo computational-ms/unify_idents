@@ -26,7 +26,7 @@ class MSGFPlus_2021_03_22(__BaseParser):
         self.peptide_lookup = self._get_peptide_lookup()
 
         self.cols_to_add = [
-            "Raw file location",
+            "Raw data location",
             "Spectrum Title",
             "uCalc m/z",
             "uCalc Mass",
