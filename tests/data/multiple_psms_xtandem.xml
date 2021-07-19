@@ -1,0 +1,397 @@
+<?xml version="1.0"?>
+<?xml-stylesheet type="text/xsl" href="tandem-style.xsl"?>
+<bioml label="models from '/Users/cellzome/Dev/Gits/Ursgal/ursgal2_dev/tests/data/test_Creinhardtii_QE_pH11.mgf'" xmlns:GAML="http://www.bioml.com/gaml/">
+	<group act="0" expect="9.3e+00" fI="188.281" id="498" label="sp|P31826|YDDA_ECOLI Inner membrane ABC transporter ATP-binding protein YddA OS=Escherichia..." maxI="18828.1" mh="1524.961908" rt="961.44531705474" sumI="5.07" type="model" z="3">
+		<protein expect="0.0" id="498.1" label="sp|P31826|YDDA_ECOLI Inner membrane ABC transporter ATP-binding protein YddA OS=Escherichia..." sumI="5.07" uid="7745">
+			<note label="description">sp|P31826|YDDA_ECOLI Inner membrane ABC transporter ATP-binding protein YddA OS=Escherichia coli (strain K12) OX=83333 GN=yddA PE=1 SV=2</note>
+			<file URL="/Users/cellzome/Data/fasta/human_ecoli_crap_target_decoy.fasta" type="peptide"/>
+			<peptide end="561" start="1">MITIPITLRM LIAKYLCLLK PFWLRKNNKT SVLLIIIILA MILGVVKIQV
+	WLNDWNNDFF NALSQKETDK LWQLVLWFPA LLGIFVLISV NKTWLIKLLT
+	IRWREWLTDY YLNRWFADKN YYFTQIYGEH KNTDNPDQRI AEDILLLISK
+	TLSLSFGFIQ SLSMLITFTV ILWESAGTLS FTVGGTEWNI QGYMVYTVVL
+	IVIGGTLFTH KVGKRIRPLN VEKQRSEATF RTNLVQHNKQ AELIALSNAE
+	SLQRQELSDN FHTIKENWHR LMNRQRWLDY WQNIYSRSLS VLPYFLLLPQ
+	FISGQINLGG LMKSRQAFML VSNNLSWFIY KYDELAELAA VIDRLYEFHQ
+	LTEQRPTNKP KNCQHAVQVA DASIRTPDNK IILENLNFHV SPGKWLLLKG
+	YSGAGKTTLL KTLSHCWPWF KGDISSPADS WYVSQTPLIK TGLLKEIICK
+	ALPLPVDDKS LSEVLHQVGL GKLAARIHDH DRWGDILSSG EKQRIALARL
+	ILRRPKWIFL DETTSHLEEQ EAIRLLRLVR EKLPTSGVIM VTHQPGVWNL
+	ADDICDISAV L
+
+				<domain b_ions="4" b_score="5.9" delta="0.0069" end="14" expect="9.3e+00" hyperscore="9.4" id="498.1.1" mh="1524.9550" missed_cleavages="1" nextscore="8.0" post="YLCL" pre="[M" seq="ITIPITLRMLIAK" start="2" y_ions="1" y_score="3.5">
+					<aa at="2" modified="42.01057" type="I"/>
+				</domain>
+			</peptide>
+		</protein>
+		<group label="supporting data" type="support">
+			<GAML:trace label="498.hyper" type="hyperscore expectation function">
+				<GAML:attribute type="a0">3.89662</GAML:attribute>
+				<GAML:attribute type="a1">-0.311729</GAML:attribute>
+				<GAML:Xdata label="498.hyper" units="score">
+					<GAML:values byteorder="INTEL" format="ASCII" numvalues="13">0 1 2 3 4 5 6 7 8 9 10 11 12 
+</GAML:values>
+				</GAML:Xdata>
+				<GAML:Ydata label="498.hyper" units="counts">
+					<GAML:values byteorder="INTEL" format="ASCII" numvalues="13">595 595 595 514 427 262 146 81 34 15 7 1 0 
+</GAML:values>
+				</GAML:Ydata>
+			</GAML:trace>
+			<GAML:trace label="498.convolute" type="convolution survival function">
+				<GAML:Xdata label="498.convolute" units="score">
+					<GAML:values byteorder="INTEL" format="ASCII" numvalues="10">0 1 2 3 4 5 6 7 8 9 
+</GAML:values>
+				</GAML:Xdata>
+				<GAML:Ydata label="498.convolute" units="counts">
+					<GAML:values byteorder="INTEL" format="ASCII" numvalues="10">595 595 595 514 416 226 114 35 1 0 
+</GAML:values>
+				</GAML:Ydata>
+			</GAML:trace>
+			<GAML:trace label="498.b" type="b ion histogram">
+				<GAML:Xdata label="498.b" units="number of ions">
+					<GAML:values byteorder="INTEL" format="ASCII" numvalues="7">0 1 2 3 4 5 6 
+</GAML:values>
+				</GAML:Xdata>
+				<GAML:Ydata label="498.b" units="counts">
+					<GAML:values byteorder="INTEL" format="ASCII" numvalues="7">189 283 88 22 7 6 0 
+</GAML:values>
+				</GAML:Ydata>
+			</GAML:trace>
+			<GAML:trace label="498.y" type="y ion histogram">
+				<GAML:Xdata label="498.y" units="number of ions">
+					<GAML:values byteorder="INTEL" format="ASCII" numvalues="6">0 1 2 3 4 5 
+</GAML:values>
+				</GAML:Xdata>
+				<GAML:Ydata label="498.y" units="counts">
+					<GAML:values byteorder="INTEL" format="ASCII" numvalues="6">304 225 57 7 2 0 
+</GAML:values>
+				</GAML:Ydata>
+			</GAML:trace>
+		</group>
+		<group label="fragment ion mass spectrum" type="support">
+			<note label="Description">test_Creinhardtii_QE_pH11.14525.14525.2 RTINSECONDS=961.44531705474 </note>
+			<GAML:trace id="498" label="498.spectrum" type="tandem mass spectrum">
+				<GAML:attribute type="M+H">1524.96</GAML:attribute>
+				<GAML:attribute type="charge">3</GAML:attribute>
+				<GAML:Xdata label="498.spectrum" units="MASSTOCHARGERATIO">
+					<GAML:values byteorder="INTEL" format="ASCII" numvalues="47">173.092 218.15 226.155 238.959 260.939 306.011 318.946 323.019 336.915 341.223 350.961 354.875 367.079 392.739 396.844 410.749 413.759 431.852 445.957 449.869 451.964 454.291 462.802 467.942 478.856 483.29 485.311 490.274 491.729 493.862
+497.315 500.309 503.32 506.322 509.659 514.337 577.369 601.365 604.063 612.891 646.755 654.415 676.94 681.435 689.932 699.444 826.515 
+</GAML:values>
+				</GAML:Xdata>
+				<GAML:Ydata label="498.spectrum" units="UNKNOWN">
+					<GAML:values byteorder="INTEL" format="ASCII" numvalues="47">6 8 5 3 3 8 7 6 18 3 7 19 3 7 5 5 15 20 4 72 16 4 16 4 6 5 13 14 6 19
+8 3 60 5 100 8 7 14 8 20 6 11 14 7 9 18 5 
+</GAML:values>
+				</GAML:Ydata>
+			</GAML:trace>
+		</group>
+	</group>
+	
+	<group act="0" expect="7.7e+00" fI="492.124" id="535" label="sp|Q15652|JHD2C_HUMAN Probable JmjC domain-containing histone demethylation protein..." maxI="49212.4" mh="1807.800507" rt="973.6023981819" sumI="5.50" type="model" z="3">
+		<protein expect="0.0" id="535.1" label="sp|Q15652|JHD2C_HUMAN Probable JmjC domain-containing histone demethylation protein..." sumI="8.35" uid="40875">
+			<note label="description">sp|Q15652|JHD2C_HUMAN Probable JmjC domain-containing histone demethylation protein 2C OS=Homo sapiens OX=9606 GN=JMJD1C PE=1 SV=2</note>
+			<file URL="/Users/cellzome/Data/fasta/human_ecoli_crap_target_decoy.fasta" type="peptide"/>
+			<peptide end="2540" start="1">MAVETRAELV GKRFLCVAVG DEARSERWES GRGWRSWRAG VIRAVSHRDS
+	RNPDLAVYVE FDDLEWDKRE WVKVYEDFST FLVEYHLIWA KRNDPSQTQG
+	SKSKQIQWPA LTFKPLVERN IPSSVTAVEF LVDKQLDFLT EDSAFQPYQD
+	DIDSLNPVLR DNPQLHEEVK VWVKEQKVQE IFMQGPYSLN GYRVRVYRQD
+	SATQWFTGII THHDLFTRTM IVMNDQVLEP QNVDPSMVQM TFLDDVVHSL
+	LKGENIGITS RRRSRANQNV NAVHSHYTRA QANSPRPAMN SQAAVPKQNT
+	HQQQQQRSIR PNKRKGSDSS IPDEEKMKEE KYDYISRGEN PKGKNKHLMN
+	KRRKPEEDEK KLNMKRLRTD NVSDFSESSD SENSNKRIID NSSEQKPENE
+	LKNKNTSKIN GEEGKPHNNE KAGEETLKNS QPPWDQIQED KKHEEAEKRK
+	SVDTQLQEDM IIHSSEQSTV SDHNSNDLLP QECNMDKTHT MELLPKEKFV
+	SRPPTPKCVI DITNDTNLEK VAQENSSTFG LQTLQKMDPN VSDSKHSIAN
+	AKFLETAKKD SDQSWVSDVV KVDLTQSSVT NASSGNDHLN MEKEKYVSYI
+	SPLSAVSVME DKLHKRSPPP ETIKSKLNTS VDTHKIKSSP SPEVVKPKIT
+	HSPDSVKSKA TYVNSQATGE RRLANKIEHE LSRCSFHPIP TRSSTLETTK
+	SPLIIDKNEH FTVYRDPALI GSETGANHIS PFLSQHPFPL HSSSHRTCLN
+	PGTHHPALTP APHLLAGSSS QTPLPTINTH PLTSGPHHAV HHPHLLPTVL
+	PGVPTASLLG GHPRLESAHA SSLSHLALAH QQQQQLLQHQ SPHLLGQAHP
+	SASYNQLGLY PIIWQYPNGT HAYSGLGLPS SKWVHPENAV NAEASLRRNS
+	PSPWLHQPTP VTSADGIGLL SHIPVRPSSA EPHRPLKITA HSSPPLTKTL
+	VDHHKEELER KAFMEPLRSV ASTSAKNDLD LNRSQTGKDC HLHRHFVDPV
+	LNQLQRPPQE TGERLNKYKE EHRRILQESI DVAPFTTKIK GLEGERENYS
+	RVASSSSSPK SHIIKQDMDV ERSVSDLYKM KHSVPQSLPQ SNYFTTLSNS
+	VVNEPPRSYP SKEVSNIYGD KQSNALAAAA ANPQTLTSFI TSLSKPPPLI
+	KHQPESEGLV GKIPEHLPHQ IASHSVTTFR NDCRSPTHLT VSSTNTLRSM
+	PALHRAPVFH PPIHHSLERK EGSYSSLSPP TLTPVMPVNA GGKVQESQKP
+	PTLIPEPKDS QANFKSSSEQ SLTEMWRPNN NLSKEKTEWH VEKSSGKLQA
+	AMASVIVRPS SSTKTDSMPA MQLASKDRVS ERSSAGAHKT DCLKLAEAGE
+	TGRIILPNVN SDSVHTKSEK NFQAVSQGSV PSSVMSAVNT MCNTKTDVIT
+	SAADTTSVSS WGGSEVISSL SNTILASTSS ECVSSKSVSQ PVAQKQECKV
+	STTAPVTLAS SKTGSVVQPS SGFSGTTDFI HLKKHKAALA AAQYKSSNAS
+	ETEPNAIKNQ TLSASLPLDS TVICSTINKA NSVGNGQASQ TSQPNYHTKL
+	KKAWLTRHSE EDKNTNKMEN SGNSVSEIIK PCSVNLIAST SSDIQNSVDS
+	KIIVDKYVKD DKVNRRKAKR TYESGSESGD SDESESKSEQ RTKRQPKPTY
+	KKKQNDLQKR KGEIEEDLKP NGVLSRSAKE RSKLKLQSNS NTGIPRSVLK
+	DWRKVKKLKQ TGESFLQDDS CCEIGPNLQK CRECRLIRSK KGEEPAHSPV
+	FCRFYYFRRL SFSKNGVVRI DGFSSPDQYD DEAMSLWTHE NFEDDELDIE
+	TSKYILDIIG DKFCQLVTSE KTALSWVKKD AKIAWKRAVR GVREMCDACE
+	ATLFNIHWVC QKCGFVVCLD CYKAKERKSS RDKELYAWMK CVKGQPHDHK
+	HLMPTQIIPG SVLTDLLDAM HTLREKYGIK SHCHCTNKQN LQVGNFPTMN
+	GVSQVLQNVL NHSNKISLCM PESQQQNTPP KSEKNGGSSP ESDVGTDNKL
+	TPPESQSPLH WLADLAEQKA REEKKENKEL TLENQIKEER EQDNSESPNG
+	RTSPLVSQNN EQGSTLRDLL TTTAGKLRVG STDAGIAFAP VYSMGAPSSK
+	SGRTMPNILD DIIASVVENK IPPSKTSKIN VKPELKEEPE ESIISAVDEN
+	NKLYSDIPHS WICEKHILWL KDYKNSSNWK LFKECWKQGQ PAVVSGVHKK
+	MNISLWKAES ISLDFGDHQA DLLNCKDSII SNANVKEFWD GFEEVSKRQK
+	NKSGETVVLK LKDWPSGEDF KTMMPARYED LLKSLPLPEY CNPEGKFNLA
+	SHLPGFFVRP DLGPRLCSAY GVVAAKDHDI GTTNLHIEVS DVVNILVYVG
+	IAKGNGILSK AGILKKFEEE DLDDILRKRL KDSSEIPGAL WHIYAGKDVD
+	KIREFLQKIS KEQGLEVLPE HDPIRDQSWY VNKKLRQRLL EEYGVRTCTL
+	IQFLGDAIVL PAGALHQVQN FHSCIQVTED FVSPEHLVES FHLTQELRLL
+	KEEINYDDKL QVKNILYHAV KEMVRALKIH EDEVEDMEEN 
+
+		<domain b_ions="4" b_score="4.4" delta="0.0060" end="1999" expect="7.7e+00" hyperscore="12.4" id="535.1.1" mh="1807.7945" missed_cleavages="1" nextscore="8.6" post="LTPP" pre="TPPK" seq="SMMNGGSSPESDVGTDNK" start="1982" y_ions="5" y_score="4.6">
+		</domain>
+		</peptide>
+		</protein>
+		<protein expect="0.0" id="535.2" label="tr|A0A1W2PNZ9|A0A1W2PNZ9_HUMAN Probable JmjC domain-containing histone demethylation..." sumI="8.35" uid="66783">
+			<note label="description">tr|A0A1W2PNZ9|A0A1W2PNZ9_HUMAN Probable JmjC domain-containing histone demethylation protein 2C OS=Homo sapiens OX=9606 GN=JMJD1C PE=1 SV=1</note>
+			<file URL="/Users/cellzome/Data/fasta/human_ecoli_crap_target_decoy.fasta" type="peptide"/>
+			<peptide end="2358" start="1">LQGPYSLNGY RVRVYRQDSA TQWFTGIITH HDLFTRTMIV MNDQVLEPQN
+	VDPSMVQMTF LDDVVHSLLK GENIGITSRR RSRANQNVNA VHSHYTRAQA
+	NSPRPAMNSQ AAVPKQNTHQ QQQQRSIRPN KRKGSDSSIP DEEKMKEEKY
+	DYISRGENPK GKNKHLMNKR RKPEEDEKKL NMKRLRTDNV SDFSESSDSE
+	NSNKRIIDNS SEQKPENELK NKNTSKINGE EGKPHNNEKA GEETLKNSQP
+	PWDQIQEDKK HEEAEKRKSV DTQLQEDMII HSSEQSTVSD HNSNDLLPQE
+	CNMDKTHTME LLPKEKFVSR PPTPKCVIDI TNDTNLEKVA QENSSTFGLQ
+	TLQKMDPNVS DSKHSIANAK FLETAKKDSD QSWVSDVVKV DLTQSSVTNA
+	SSGNDHLNME KEKYVSYISP LSAVSVMEDK LHKRSPPPET IKSKLNTSVD
+	THKIKSSPSP EVVKPKITHS PDSVKSKATY VNSQATGERR LANKIEHELS
+	RCSFHPIPTR SSTLETTKSP LIIDKNEHFT VYRDPALIGS ETGANHISPF
+	LSQHPFPLHS SSHRTCLNPG THHPALTPAP HLLAGSSSQT PLPTINTHPL
+	TSGPHHAVHH PHLLPTVLPG VPTASLLGGH PRLESAHASS LSHLALAHQQ
+	QQQLLQHQSP HLLGQAHPSA SYNQLGLYPI IWQYPNGTHA YSGLGLPSSK
+	WVHPENAVNA EASLRRNSPS PWLHQPTPVT SADGIGLLSH IPVRPSSAEP
+	HRPLKITAHS SPPLTKTLVD HHKEELERKA FMEPLRSVAS TSAKNDLDLN
+	RSQTGKDCHL HRHFVDPVLN QLQRPPQETG ERLNKYKEEH RRILQESIDV
+	APFTTKIKGL EGERENYSRV ASSSSSPKSH IIKQDMDVER SVSDLYKMKH
+	SVPQSLPQSN YFTTLSNSVV NEPPRSYPSK EVSNIYGDKQ SNALAAAAAN
+	PQTLTSFITS LSKPPPLIKH QPESEGLVGK IPEHLPHQIA SHSVTTFRND
+	CRSPTHLTVS STNTLRSMPA LHRAPVFHPP IHHSLERKEG SYSSLSPPTL
+	TPVMPVNAGG KVQESQKPPT LIPEPKDSQA NFKSSSEQSL TEMWRPNNNL
+	SKEKTEWHVE KSSGKLQAAM ASVIVRPSSS TKTDSMPAMQ LASKDRVSER
+	SSAGAHKTDC LKLAEAGETG RIILPNVNSD SVHTKSEKNF QAVSQGSVPS
+	SVMSAVNTMC NTKTDVITSA ADTTSVSSWG GSEVISSLSN TILASTSSEC
+	VSSKSVSQPV AQKQECKVST TAPVTLASSK TGSVVQPSSG FSGTTDFIHL
+	KKHKAALAAA QYKSSNASET EPNAIKNQTL SASLPLDSTV ICSTINKANS
+	VGNGQASQTS QPNYHTKLKK AWLTRHSEED KNTNKMENSG NSVSEIIKPC
+	SVNLIASTSS DIQNSVDSKI IVDKYVKDDK VNRRKAKRTY ESGSESGDSD
+	ESESKSEQRT KRQPKPTYKK KQNDLQKRKG EIEEDLKPNG VLSRSAKERS
+	KLKLQSNSNT GIPRSVLKDW RKVKKLKQTG ESFLQDDSCC EIGPNLQKCR
+	ECRLIRSKKG EEPAHSPVFC RFYYFRRLSF SKNGVVRIDG FSSPDQYDDE
+	AMSLWTHENF EDDELDIETS KYILDIIGDK FCQLVTSEKT ALSWVKKDAK
+	IAWKRAVRGV REMCDACEAT LFNIHWVCQK CGFVVCLDCY KAKERKSSRD
+	KELYAWMKCV KGQPHDHKHL MPTQIIPGSV LTDLLDAMHT LREKYGIKSH
+	CHCTNKQNLQ VGNFPTMNGV SQVLQNVLNH SNKISLCMPE SQQQNTPPKS
+	EKNGGSSPES DVGTDNKLTP PESQSPLHWL ADLAEQKARE EKKENKELTL
+	ENQIKEEREQ DNSESPNGRT SPLVSQNNEQ GSTLRDLLTT TAGKLRVGST
+	DAGIAFAPVY SMGAPSSKSG RTMPNILDDI IASVVENKIP PSKTSKINVK
+	PELKEEPEES IISAVDENNK LYSDIPHSWI CEKHILWLKD YKNSSNWKLF
+	KECWKQGQPA VVSGVHKKMN ISLWKAESIS LDFGDHQADL LNCKDSIISN
+	ANVKEFWDGF EEVSKRQKNK SGETVVLKLK DWPSGEDFKT MMPARYEDLL
+	KSLPLPEYCN PEGKFNLASH LPGFFVRPDL GPRLCSAYGV VAAKDHDIGT
+	TNLHIEVSDV VNILVYVGIA KGNGILSKAG ILKKFEEEDL DDILRKRLKD
+	SSEIPGALWH IYAGKDVDKI REFLQKISKE QGLEVLPEHD PIRDQSWYVN
+	KKLRQRLLEE YGVRTCTLIQ FLGDAIVLPA GALHQVQNFH SCIQVTEDFV
+	SPEHLVESFH LTQELRLLKE EINYDDKLQV KNILYHAVKE MVRALKIHED
+	EVEDMEEN
+
+				<domain b_ions="4" b_score="4.4" delta="0.0060" end="1817" expect="7.7e+00" hyperscore="12.4" id="535.2.1" mh="1807.7945" missed_cleavages="1" nextscore="8.6" post="LTPP" pre="TPPK" seq="SMMNGGSSPESDVGTDNK" start="1800" y_ions="5" y_score="4.6">
+					<aa at="1801" modified="15.99492" type="M"/></domain>
+			</peptide>
+		</protein>
+		<protein expect="0.0" id="535.3" label="tr|H7BXU7|H7BXU7_HUMAN Probable JmjC domain-containing histone demethylation protein..." sumI="5.50" uid="71401">
+			<note label="description">tr|H7BXU7|H7BXU7_HUMAN Probable JmjC domain-containing histone demethylation protein 2C (Fragment) OS=Homo sapiens OX=9606 GN=JMJD1C PE=1 SV=1</note>
+			<file URL="/Users/cellzome/Data/fasta/human_ecoli_crap_target_decoy.fasta" type="peptide"/>
+			<peptide end="956" start="1">XDSMPAMQLA SKDRVSERSS AGAHKTDCLK LAEAGETGRI ILPNVNSDSV
+	HTKSEKNFQA VSQGSVPSSV MSAVNTMCNT KTDVITSAAD TTSVSSWGGS
+	EVISSLSNTI LASTSSECVS SKSVSQPVAQ KQECKVSTTA PVTLASSKTG
+	SVVQPSSGFS GTTDFIHLKK HKAALAAAQY KSSNASETEP NAIKNQTLSA
+	SLPLDSTVIC STINKANSVG NGQASQTSQP NYHTKLKKAW LTRHSEEDKN
+	TNKMENSGNS VSEIIKPCSV NLIASTSSDI QNSVDSKIIV DKYVKDDKVN
+	RRKAKRTYES GSESGDSDES ESKSEQRTKR QPKPTYKKKQ NDLQKRKGEI
+	EEDLKPNGVL SRSAKERSKL KLQSNSNTKI AWKRAVRGVR EMCDACEATL
+	FNIHWVCQKC GFVVCLDCYK AKERKSSRDK ELYAWMKCVK GQPHDHKHLM
+	PTQIIPGSVL TDLLDAMHTL REKYGIKSHC HCTNKQNLQV GNFPTMNGVS
+	QVLQNVLNHS NKISLCMPES QQQNTPPKSE KNGGSSPESD VGTDNKLTPP
+	ESQSPLHWLA DLAEQKAREE KKENKELTLE NQIKEEREQD NSESPNGRTS
+	PLVSQNNEQG STLRDLLTTT AGKLRVGSTD AGIAFAPVYS MGAPSSKSGR
+	TMPNILDDII ASVVENKIPP SKTSKINVKP ELKEEPEESI ISAVDENNKL
+	YSDIPHSWIC EKHILWLKDY KNSSNWKLFK ECWKQGQPAV VSGVHKKMNI
+	SLWKAESISL DFGDHQADLL NCKDSIISNA NVKEFWDGFE EVSKRQKNKS
+	GETVVLKLKD WPSGEDFKTM MPARYEDLLK SLPLPEYCNP EGKFNLASHL
+	PGFFVRPDLG PRLCSAYGVV AAKDHDIGTT NLHIEVSDVV NILVYVGIAK
+	GNGILSKAGI LKKFEEEDLD DILRKRLKDS SEIPGALWHI YAGKDVDKIR
+	EFLQKV
+
+				<domain b_ions="4" b_score="4.4" delta="0.0060" end="546" expect="7.7e+00" hyperscore="12.4" id="535.3.1" mh="1807.7945" missed_cleavages="1" nextscore="8.6" post="LTPP" pre="TPPK" seq="SMMNGGSSPESDVGTDNK" start="529" y_ions="5" y_score="4.6">
+					<aa at="531" modified="15.99492" type="M"/></domain>
+			</peptide>
+		</protein>
+		<group label="supporting data" type="support">
+			<GAML:trace label="535.hyper" type="hyperscore expectation function">
+				<GAML:attribute type="a0">4.45703</GAML:attribute>
+				<GAML:attribute type="a1">-0.28755</GAML:attribute>
+				<GAML:Xdata label="535.hyper" units="score">
+					<GAML:values byteorder="INTEL" format="ASCII" numvalues="16">0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 
+</GAML:values>
+				</GAML:Xdata>
+				<GAML:Ydata label="535.hyper" units="counts">
+					<GAML:values byteorder="INTEL" format="ASCII" numvalues="16">2353 2353 2095 1767 1310 887 537 306 206 78 26 20 7 2 1 0 
+</GAML:values>
+				</GAML:Ydata>
+			</GAML:trace>
+			<GAML:trace label="535.convolute" type="convolution survival function">
+				<GAML:Xdata label="535.convolute" units="score">
+					<GAML:values byteorder="INTEL" format="ASCII" numvalues="10">0 1 2 3 4 5 6 7 8 9 
+</GAML:values>
+				</GAML:Xdata>
+				<GAML:Ydata label="535.convolute" units="counts">
+					<GAML:values byteorder="INTEL" format="ASCII" numvalues="10">2295 2295 2037 1687 1100 642 245 33 1 0 
+</GAML:values>
+				</GAML:Ydata>
+			</GAML:trace>
+			<GAML:trace label="535.b" type="b ion histogram">
+				<GAML:Xdata label="535.b" units="number of ions">
+					<GAML:values byteorder="INTEL" format="ASCII" numvalues="8">0 1 2 3 4 5 6 7 
+</GAML:values>
+				</GAML:Xdata>
+				<GAML:Ydata label="535.b" units="counts">
+					<GAML:values byteorder="INTEL" format="ASCII" numvalues="8">649 1067 412 154 55 15 2 0 
+</GAML:values>
+				</GAML:Ydata>
+			</GAML:trace>
+			<GAML:trace label="535.y" type="y ion histogram">
+				<GAML:Xdata label="535.y" units="number of ions">
+					<GAML:values byteorder="INTEL" format="ASCII" numvalues="7">0 1 2 3 4 5 6 
+</GAML:values>
+				</GAML:Xdata>
+				<GAML:Ydata label="535.y" units="counts">
+					<GAML:values byteorder="INTEL" format="ASCII" numvalues="7">908 1019 287 126 11 3 0 
+</GAML:values>
+				</GAML:Ydata>
+			</GAML:trace>
+		</group>
+		<group label="fragment ion mass spectrum" type="support">
+			<note label="Description">test_Creinhardtii_QE_pH11.12833.12833.2 RTINSECONDS=973.6023981819 </note>
+			<GAML:trace id="535" label="535.spectrum" type="tandem mass spectrum">
+				<GAML:attribute type="M+H">1807.8</GAML:attribute>
+				<GAML:attribute type="charge">3</GAML:attribute>
+				<GAML:Xdata label="535.spectrum" units="MASSTOCHARGERATIO">
+					<GAML:values byteorder="INTEL" format="ASCII" numvalues="90">156.076 159.076 187.071 195.087 200.14 223.195 226.153 228.133 239.114 245.077 263.086 271.176 300.637 313.149 338.145 373.177 376.174 396.197 400.143 418.186 431.177 439.69 444.707 447.802 452.21 466.207 470.878 479.539 485.216 491.318
+493.215 496.317 498.313 501.902 508.225 509.574 516.23 522.674 526.97 528.681 539.234 544.917 550.25 553.58 555.258 557.252 559.252 560.932 563.255 565.251 569.255 571.372 573.261 574.926 578.258 579.264 583.594 585.276 588.276 589.263
+592.251 594.279 595.276 597.921 600.386 604.377 624.238 637.29 650.276 658.788 671.261 673.428 675.318 678.77 684.308 686.942 697.317 704.95 708.332 720.324 727.32 735.337 743.345 751.345 761.999 774.338 835.38 870.396 878.372 931.404
+
+</GAML:values>
+				</GAML:Xdata>
+				<GAML:Ydata label="535.spectrum" units="UNKNOWN">
+					<GAML:values byteorder="INTEL" format="ASCII" numvalues="90">3 1 1 2 6 1 3 2 2 7 4 4 1 4 1 1 2 1 5 4 2 11 2 1 2 4 8 4 10 2
+3 1 2 3 8 3 3 2 6 2 2 9 2 5 2 2 14 2 5 3 4 30 3 17 5 4 30 14 4 100
+13 26 5 58 7 18 3 6 2 5 3 3 2 8 4 14 4 23 2 2 9 2 2 9 3 3 5 2 7 5
+
+</GAML:values>
+				</GAML:Ydata>
+			</GAML:trace>
+		</group>
+	</group>
+		<group label="input parameters" type="parameters">
+		<note label="list path, default parameters" type="input">/Users/cellzome/Data/NicoZinn_HLA/data/X040932/_flash_lfq_test/xtandem_alanine/default_input.xml</note>
+		<note label="list path, taxonomy information" type="input">/Users/cellzome/Data/NicoZinn_HLA/data/X040932/_flash_lfq_test/xtandem_alanine/taxonomy.xml</note>
+		<note label="output, histogram column width" type="input">30</note>
+		<note label="output, histograms" type="input">yes</note>
+		<note label="output, maximum valid expectation value" type="input">1.0</note>
+		<note label="output, parameters" type="input">yes</note>
+		<note label="output, path" type="input">/Users/cellzome/Data/NicoZinn_HLA/data/X040932/_flash_lfq_test/xtandem_alanine/test_Creinhardtii_QE_pH11_xtandem_alanine.xml</note>
+		<note label="output, path hashing" type="input">no</note>
+		<note label="output, performance" type="input">yes</note>
+		<note label="output, proteins" type="input">yes</note>
+		<note label="output, results" type="input">all</note>
+		<note label="output, sequences" type="input">yes</note>
+		<note label="output, spectra" type="input">yes</note>
+		<note label="output, xsl path" type="input">tandem-style.xsl</note>
+		<note label="protein, C-terminal residue modification mass" type="input">0.0</note>
+		<note label="protein, N-terminal residue modification mass" type="input">0.0</note>
+		<note label="protein, cleavage C-terminal mass change" type="input">17.00305</note>
+		<note label="protein, cleavage N-terminal mass change" type="input">1.00794</note>
+		<note label="protein, cleavage semi" type="input">no</note>
+		<note label="protein, cleavage site" type="input">nonspecific</note>
+		<note label="protein, modified residue mass file" type="input">no</note>
+		<note label="protein, ptm complexity" type="input">6.0</note>
+		<note label="protein, quick acetyl" type="input">yes</note>
+		<note label="protein, quick pyrolidone" type="input">no</note>
+		<note label="protein, saps" type="input">no</note>
+		<note label="protein, stP bias" type="input">no</note>
+		<note label="protein, taxon" type="input">all</note>
+		<note label="refine" type="input">no</note>
+		<note label="refine, maximum valid expectation value" type="input">0.1</note>
+		<note label="refine, spectrum synthesis" type="input">no</note>
+		<note label="residue, modification mass" type="input">57.021464@C</note>
+		<note label="residue, potential modification mass" type="input">15.994915@M</note>
+		<note label="scoring, a ions" type="input">no</note>
+		<note label="scoring, b ions" type="input">yes</note>
+		<note label="scoring, c ions" type="input">no</note>
+		<note label="scoring, include reverse" type="input">no</note>
+		<note label="scoring, maximum missed cleavage sites" type="input">2</note>
+		<note label="scoring, minimum ion count" type="input">4</note>
+		<note label="scoring, x ions" type="input">no</note>
+		<note label="scoring, y ions" type="input">yes</note>
+		<note label="scoring, z ions" type="input">no</note>
+		<note label="spectrum, dynamic range" type="input">100</note>
+		<note label="spectrum, fragment mass error" type="input">0.02</note>
+		<note label="spectrum, fragment mass error units" type="input">Daltons</note>
+		<note label="spectrum, fragment mass type" type="input">monoisotopic</note>
+		<note label="spectrum, minimum fragment mz" type="input">150</note>
+		<note label="spectrum, minimum parent m+h" type="input">400</note>
+		<note label="spectrum, minimum peaks" type="input">5</note>
+		<note label="spectrum, parent monoisotopic mass error minus" type="input">5</note>
+		<note label="spectrum, parent monoisotopic mass error plus" type="input">5</note>
+		<note label="spectrum, parent monoisotopic mass error units" type="input">ppm</note>
+		<note label="spectrum, parent monoisotopic mass isotope error" type="input">yes</note>
+		<note label="spectrum, path" type="input">/Users/cellzome/Data/NicoZinn_HLA/data/X040932/_flash_lfq_test/test_Creinhardtii_QE_pH11.mgf</note>
+		<note label="spectrum, sequence batch size" type="input">100000</note>
+		<note label="spectrum, threads" type="input">6</note>
+		<note label="spectrum, total peaks" type="input">150</note>
+		<note label="spectrum, use neutral loss window" type="input">no</note>
+	</group>
+	<group label="unused input parameters" type="parameters">
+		<note label="output, mzid" type="input">no</note>
+		<note label="protein, use minimal annotations" type="input">yes</note>
+		<note label="refine, point mutations" type="input">no</note>
+		<note label="refine, potential N-terminus modifications" type="input"/>
+		<note label="refine, potential modification mass" type="input"/>
+		<note label="refine, unanticipated cleavage" type="input">no</note>
+		<note label="refine, use potential modifications for full refinement" type="input">no</note>
+		<note label="scoring, cyclic permutations" type="input">no</note>
+		<note label="scoring, pluggable scoring" type="input">no</note>
+		<note label="spectrum, fragment monoisotopic mass error" type="input">0.02</note>
+		<note label="spectrum, fragment monoisotopic mass error units" type="input">Daltons</note>
+		<note label="spectrum, neutral loss mass" type="input">0</note>
+		<note label="spectrum, neutral loss window" type="input">0</note>
+		<note label="spectrum, use noise suppression" type="input">no</note>
+	</group>
+	<group label="performance parameters" type="parameters">
+		<note label="list path, sequence source #1">/Users/cellzome/Data/fasta/human_ecoli_crap_target_decoy.fasta</note>
+		<note label="list path, sequence source description #1">no description</note>
+		<note label="modelling, duplicate peptide ids">1</note>
+		<note label="modelling, duplicate proteins">26</note>
+		<note label="modelling, total peptides used">36157431</note>
+		<note label="modelling, total proteins used">164664</note>
+		<note label="modelling, total spectra used">21896</note>
+		<note label="process, start time">2021:07:16:12:06:56</note>
+		<note label="process, version">X! Tandem Alanine (2017.2.1.4)</note>
+		<note label="quality values">382 252 136 45 18 15 4 3 2 2 1 1 2 0 0 0 1 0 0 1</note>
+		<note label="refining, # input models">0</note>
+		<note label="refining, # input spectra">0</note>
+		<note label="refining, # partial cleavage">0</note>
+		<note label="refining, # point mutations">0</note>
+		<note label="refining, # potential C-terminii">0</note>
+		<note label="refining, # potential N-terminii">0</note>
+		<note label="refining, # unanticipated cleavage">0</note>
+		<note label="timing, initial modelling total (sec)">160.34</note>
+		<note label="timing, initial modelling/spectrum (sec)">0.0073</note>
+		<note label="timing, load sequence models (sec)">2.30</note>
+		<note label="timing, refinement/spectrum (sec)">0.0000</note>
+	</group>
+</bioml>

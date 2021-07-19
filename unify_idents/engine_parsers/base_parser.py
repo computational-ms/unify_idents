@@ -23,7 +23,7 @@ class __BaseParser:
             self.params = params
 
         self.param_mapper = uparma.UParma()
-        self.peptide_mapper = UPeptideMapper(params["database"])
+        # self.peptide_mapper = UPeptideMapper(params["database"])
         self.mod_mapper = UnimodMapper()
         self.cc = ChemicalComposition()
 
@@ -57,7 +57,6 @@ class __BaseParser:
                 ".mgf", ".mzML"
             )
         basename = os.path.basename(row["Raw data location"]).split(".")[0]
-        # breakpoint()
         row["Retention Time (s)"] = float(
             self.scan_rt_lookup[basename]["scan2rt"][int(row["Spectrum ID"])]
         )
@@ -160,7 +159,6 @@ class __BaseParser:
         return row
 
     def read_rt_lookup_file(self, scan_rt_lookup_path):
-        # breakpoint()
         with bz2.open(scan_rt_lookup_path, "rt") as fin:
             lookup = {}
             reader = csv.DictReader(fin)

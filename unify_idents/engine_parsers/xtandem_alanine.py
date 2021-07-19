@@ -7,6 +7,7 @@ from decimal import Decimal, getcontext, ROUND_UP
 import itertools
 from loguru import logger
 import xml.etree.ElementTree as ElementTree
+import copy
 
 
 col_mapping = {
@@ -53,62 +54,60 @@ class XTandemAlanine(__BaseParser):
         return ret_val
 
     def __iter__(self):
-        return self
+        while True:
+            try:
+                gen = self._next()
+                for x in gen():
+                    x = self._unify_row(x)
+                    yield x
+            except StopIteration:
+                break
 
     def __next__(self):
-        line = self._next()
-        unified_line = self._unify_row(line)
-        return unified_line
+        return next(self.__iter__())
 
     def _next(self):
-        row = {"Modifications": set()}
-
         while True:
             event, element = next(self.xml_iter, ("STOP", "STOP"))
             if event == "STOP":
                 raise StopIteration
-            elif (
+            if (
                 event == "start"
                 and element.tag.endswith("group")
-                and element.attrib["type"] == "model"
+                and "z" in element.attrib
             ):
-                # breakpoint()
-                element.attrib["Exp m/z"] = (
-                    float(element.attrib["mh"]) / int(element.attrib["z"]) + self.PROTON
-                )
-                row.update(element.attrib)
-            elif event == "start" and element.tag.endswith("domain"):
-                element.attrib["Calc m/z"] = self.calc_mz(
-                    float(element.attrib["mh"]), float(row["z"])
-                )
-                row.update(element.attrib)
-            elif event == "end" and element.tag.endswith("aa"):
-                mass = element.attrib["modified"]
-                pos = int(element.attrib["at"]) - int(row["start"])
-                row["Modifications"].add(f"{mass}:{pos}")
-                # if row["seq"] == "MLNMLIVFRFLRIIPSMK":
-                #     breakpoint()
-            elif (
-                element.tag.endswith("note")
-                and element.attrib["label"] == "Description"
-            ):
-                row["Spectrum Title"] = element.text
-            elif (
-                event == "start"
-                and element.tag.endswith("bioml")
-                and element.attrib["label"].startswith("models from")
-            ):
-                self.raw_file = element.attrib["label"].split("'")[1]
-                # breakpoint()
-            elif (
+                charge = element.attrib["z"]
+                prec_mz = element.attrib["mh"]
+
+            if (
                 event == "end"
                 and element.tag.endswith("group")
-                and element.attrib["type"] == "model"
+                and "z" in element.attrib
+                # and element.attrib["id"] == "552"
             ):
-                row["Raw data location"] = self.raw_file
-                row["Modifications"] = list(row["Modifications"])
-                # breakpoint()
-                return row
+                spec_title = element.findall('.//**[@label="Description"]')[0].text
+                charge = element.attrib["z"]
+
+                def result_iterator():
+                    for child in element.findall(".//protein"):
+                        # which mh is Exp m/z and which is Calc m/z??
+                        domain = child.findall(".//domain")[0]
+                        row = copy.copy(domain.attrib)
+                        row["Exp m/z"] = prec_mz
+                        row["Calc m/z"] = row["mh"]
+                        del row["mh"]
+                        row["Modifications"] = []
+                        row["Spectrum Title"] = spec_title
+                        row["z"] = charge
+                        mods = domain.findall(".//aa")
+                        for m in mods:
+                            mass, abs_pos = m.attrib["modified"], m.attrib["at"]
+                            # abs pos is pos in protein, rel pos is pos in peptide
+                            rel_pos = int(abs_pos) - int(row["start"])
+                            row["Modifications"].append(f"{mass}:{rel_pos}")
+                        yield row
+
+                return result_iterator
 
     def _unify_row(self, row):
         for old_col, new_col in col_mapping.items():

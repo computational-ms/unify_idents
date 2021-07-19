@@ -67,8 +67,9 @@ def test_engine_parsers_xtandem_iterable():
             ],
         },
     )
-    for row in parser:
+    for i, row in enumerate(parser):
         print(row)
+    # assert i == 79
 
 
 def test_engine_parsers_xtandem_unify_row():
@@ -124,4 +125,52 @@ def test_engine_parsers_xtandem_nterminal_mod():
         if row["Sequence"] == "WGLVSSELQTSEAETPGLK":
             break
     assert row["Modifications"] == "Acetyl:0"
-    # breakpoint()
+
+
+def test_engine_parsers_xtandem_multiple_psms():
+    input_file = (
+        # Path(__file__).parent / "data" / "08134_F1_R2_P0293612A01_xtandem_alanine.xml"
+        Path(__file__).parent
+        / "data"
+        / "multiple_psms_xtandem.xml"
+    )
+    rt_lookup_path = Path(__file__).parent / "data" / "_ursgal_lookup.csv.bz2"
+    db_path = Path(__file__).parent / "data" / "test_Creinhardtii_target_decoy.fasta"
+
+    parser = XTandemAlanine(
+        input_file,
+        params={
+            "rt_pickle_name": rt_lookup_path,
+            "database": db_path,
+            "modifications": [
+                "C,fix,any,Carbamidomethyl",
+                "M,opt,any,Oxidation",
+                "*,opt,Prot-N-term,Acetyl",
+            ],
+            "Raw file location": "test_Creinhardtii_QE_pH11.mzML",
+            "15N": False,
+        },
+    )
+
+    # Test file with:
+    #    - one sequence in first group
+    #    - 3 sequences in second group
+
+    rows = []
+    for i, row in enumerate(parser):
+        rows.append(row)
+    assert i == 3
+
+    assert sorted([r["Sequence"] for r in rows]) == [
+        "ITIPITLRMLIAK",
+        "SMMNGGSSPESDVGTDNK",
+        "SMMNGGSSPESDVGTDNK",
+        "SMMNGGSSPESDVGTDNK",
+    ]
+    assert set([r["Spectrum ID"] for r in rows]) == set(["12833", "14525"])
+    assert [r["Modifications"] for r in rows] == [
+        "Acetyl:0",
+        "",
+        "Oxidation:2",
+        "Oxidation:3",
+    ]
