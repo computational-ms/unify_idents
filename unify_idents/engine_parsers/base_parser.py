@@ -67,11 +67,12 @@ class __BaseParser:
     def check_mod_positions(self, row):
         return row
 
-    def recalc_masses(row):
-        self.cc.use(sequence=row["Sequence"], modifications=row["Modifications"])
-        row["uCalc m/z"] = self.calc_mz(self.cc.mass(), int(row["Charge"]))
-        row["uCalc mass"] = self.cc.mass()
-        return row
+    # currently not used
+    # def recalc_masses(row):
+    #     self.cc.use(sequence=row["Sequence"], modifications=row["Modifications"])
+    #     row["uCalc m/z"] = self.calc_mz(self.cc.mass(), int(row["Charge"]))
+    #     row["uCalc mass"] = self.cc.mass()
+    #     return row
 
     def calc_mz(self, mass, charge):
         PROTON = 1.00727646677
