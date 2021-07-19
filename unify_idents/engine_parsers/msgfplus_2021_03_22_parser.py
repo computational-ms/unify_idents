@@ -76,12 +76,25 @@ class MSGFPlus_2021_03_22(__BaseParser):
         return headers
 
     def __iter__(self):
-        return self
+        while True:
+            try:
+                gen = self._next()
+                for x in gen():
+                    x = self._unify_row(x)
+                    yield x
+            except StopIteration:
+                break
 
     def __next__(self):
-        for n in self._next():
-            u = self._unify_row(n)
-            return u
+        return next(self.__iter__())
+
+    # def __iter__(self):
+    #     return self
+
+    # def __next__(self):
+    #     for n in self._next():
+    #         u = self._unify_row(n)
+    #         return u
 
     def _next(self):
         data = []
@@ -132,7 +145,7 @@ class MSGFPlus_2021_03_22(__BaseParser):
                                 data[n] = child.attrib["value"]
                         yield data
 
-                return all_items()
+                return all_items
             if event == "STOP":
                 raise StopIteration
 
