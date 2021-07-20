@@ -173,6 +173,7 @@ def test_unify_msfragger_df_masses():
     row = res.df.iloc[0]
     assert row["Sequence"] == "ATTALTDDTLDGAGR"
     assert row["Charge"] == "2"
+    assert float(row["uCalc m/z"]) == pytest.approx(739.8637)
     assert float(row["uCalc m/z"]) == pytest.approx(739.3601)
     assert float(row["uCalc Mass"]) == pytest.approx(1477.7128)
     assert float(row["Accuracy (ppm)"]) == pytest.approx(-2.182, 0.01)
