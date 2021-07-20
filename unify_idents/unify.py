@@ -35,7 +35,6 @@ class UnifiedDataFrame:
     def update_protein_mapping(self, mapped_peptides):
         for _id, row in self.df.iterrows():
             mapping = mapped_peptides[row["Sequence"]]
-            # breakpoint()
             starts = []
             ids = []
             stops = []
@@ -56,21 +55,18 @@ class UnifiedDataFrame:
 
             # also do the mass calc here?
             self.cc.use(sequence=row["Sequence"], modifications=row["Modifications"])
-            calc_mass = self.cc.mass() + PROTON
+            calc_mass = self.cc.mass()
             exp_mass = self.calc_mass(float(row["Exp m/z"]), int(row["Charge"]))
             charge = int(row["Charge"])
             calc_mz = self.calc_mz(calc_mass, charge)
             self.df.at[_id, "uCalc m/z"] = calc_mz
-            self.df.at[_id, "uCalc Mass"] = calc_mass
-            # breakpoint()
-            # self.df.at[_id, "Accuracy (ppm)"] = (exp_mass - calc_mass) / calc_mass * 1e6
+            self.df.at[_id, "uCalc Mass"] = calc_mass + PROTON
             acc = (
                 (float(row["Exp m/z"]) - float(self.df.at[_id, "uCalc m/z"]))
                 / self.df.at[_id, "uCalc m/z"]
                 * 1e6
             )
             self.df.at[_id, "Accuracy (ppm)"] = acc
-            # breakpoint()
 
         return
 
@@ -119,6 +115,9 @@ class UnifiedRow:
         if key not in self.data:
             raise KeyError("Cant add new key")
         self.data[key] = value
+
+    def __contains__(self, key):
+        return key in self.data
 
     def __str__(self):
         # needs fix, only return unify cols and not Engine:name columns
@@ -184,7 +183,6 @@ class Unify:
         return parser
 
     def read_rt_lookup_file(self, scan_rt_lookup_path):
-        # breakpoint()
         with bz2.open(scan_rt_lookup_path, "rt") as fin:
             lookup = {}
             reader = csv.DictReader(fin)
@@ -206,5 +204,6 @@ class Unify:
     def get_dataframe(self):
         data = []
         for unified_row in self:
-            data.append(unified_row.to_dict())
+            if unified_row is not None:
+                data.append(unified_row.to_dict())
         return UnifiedDataFrame(data, db_path=self.params["database"])
