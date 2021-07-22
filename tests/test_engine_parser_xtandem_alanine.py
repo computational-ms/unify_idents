@@ -96,7 +96,7 @@ def test_engine_parsers_xtandem_unify_row():
     for row in parser:
         assert row["Sequence"] == "DDVHNMGADGIR"
         assert row["Modifications"] == "Oxidation:6"
-        assert row["Search Engine"] == "X!TandemAlanine"
+        assert row["Search Engine"] == "xtandem_alanine"
         break
 
 
