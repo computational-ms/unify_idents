@@ -15,7 +15,11 @@ PROTON = 1.00727646677
 
 # inherit from pd.DataFrame
 class UnifiedDataFrame:
-    def __init__(self, rows, db_path):
+    def __init__(self, rows, db_path, params=None):
+        if params is None:
+            self.params = {}
+        else:
+            self.params = params
         self.DELIMITER = "<|>"
         self.rows = rows
         self.df = pd.DataFrame(rows)
@@ -46,6 +50,12 @@ class UnifiedDataFrame:
                 stops.append(str(match["end"]))
                 pre.append(str(match["pre"]))
                 post.append(str(match["post"]))
+
+            self.df.at[_id, "Is decoy"] = False
+            for prot in ids:
+                if self.params.get("decoy_tag", "decoy_") in prot:
+                    self.df.at[_id, "Is decoy"] = True
+                    break
 
             self.df.at[_id, "Protein ID"] = self.DELIMITER.join(ids)
             self.df.at[_id, "Sequence Pre AA"] = self.DELIMITER.join(pre)
