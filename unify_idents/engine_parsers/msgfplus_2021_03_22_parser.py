@@ -79,7 +79,7 @@ class MSGFPlus_2021_03_22(__BaseParser):
         while True:
             try:
                 gen = self._next()
-                for x in gen():
+                for x in gen:
                     x = self._unify_row(x)
                     yield x
             except StopIteration:
@@ -145,7 +145,7 @@ class MSGFPlus_2021_03_22(__BaseParser):
                                 data[n] = child.attrib["value"]
                         yield data
 
-                return all_items
+                return all_items()
             if event == "STOP":
                 raise StopIteration
 
