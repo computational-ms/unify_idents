@@ -170,10 +170,23 @@ def test_unify_msfragger_df_masses():
         },
     )
     res = parser.get_dataframe()
+    # row = res.df[res.df["Sequence"] == "ASDGKYVDEYFAATYVCTDHGRGK"]
+    # assert row["Sequence"].iloc[0] == "ASDGKYVDEYFAATYVCTDHGRGK"
+    # assert row["Charge"].iloc[0] == "3"
+    # assert row["Modifications"].iloc[0] == "Carbamidomethyl:17"
+    # assert float(row["uCalc m/z"].iloc[0]) == pytest.approx(
+    #     904.0782, abs=5e-6 * 904.0782
+    # )
+    # assert float(row["Calc m/z"].iloc[0]) == pytest.approx(
+    #     904.0782, abs=5e-6 * 904.0782
+    # )
+    # assert float(row["uCalc Mass"].iloc[0]) == pytest.approx(
+    #     2710.2202, abs=5e-6 * 2710.2202
+    # )
     row = res.df.iloc[0]
     assert row["Sequence"] == "ATTALTDDTLDGAGR"
     assert row["Charge"] == "2"
-    assert float(row["uCalc m/z"]) == pytest.approx(739.8637)
+    assert float(row["uCalc m/z"]) == pytest.approx(739.3601)
     assert float(row["uCalc m/z"]) == pytest.approx(739.3601)
     assert float(row["uCalc Mass"]) == pytest.approx(1477.7128)
     assert float(row["Accuracy (ppm)"]) == pytest.approx(-2.182, 0.01)
@@ -262,6 +275,8 @@ def test_unify_xtandem_df_masses():
     assert float(row["uCalc Mass"].iloc[0]) == pytest.approx(
         2710.2202, abs=5e-6 * 2710.2202
     )
+    assert row["Modifications"].iloc[0] == "Carbamidomethyl:17"
+
     # assert float(row["Accuracy (ppm)"]) == pytest.approx(
     #     769.15, 0.01
     # )  # picked wrong peak?
@@ -294,6 +309,7 @@ def test_unify_msgf_df_masses():
     row = res.df[res.df["Sequence"] == "ASDGKYVDEYFAATYVCTDHGRGK"]
     assert row["Sequence"].iloc[0] == "ASDGKYVDEYFAATYVCTDHGRGK"
     assert row["Charge"].iloc[0] == "3"
+    assert row["Modifications"].iloc[0] == "Carbamidomethyl:17"
     assert float(row["uCalc m/z"].iloc[0]) == pytest.approx(
         904.0782, abs=5e-6 * 904.0782
     )

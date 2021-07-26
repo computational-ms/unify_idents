@@ -136,7 +136,7 @@ def test_engine_parsers_msgfplus_internal_next():
             "omssa_mod_dir": Path(__file__).parent / "data",
         },
     )
-    for row in parser._next()():
+    for row in parser._next():
         assert isinstance(row, dict)
         assert row["Peptide"] == "YICDNQDTISSK"
         assert row["Modifications"] == "Carbamidomethyl:3"
