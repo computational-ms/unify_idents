@@ -112,10 +112,15 @@ class XTandemAlanine(__BaseParser):
                         # which mh is Exp m/z and which is Calc m/z??
                         domain = child.findall(".//domain")[0]
                         row = copy.copy(domain.attrib)
-                        exp_mz = self.calc_mz(float(row["mh"]), int(charge))
-                        calc_mz = self.calc_mz(
-                            float(prec_mz) - self.PROTON, int(charge)
-                        )
+                        # calc_mz = self.calc_mz(float(row["mh"]), int(charge))
+                        # if row["seq"] == "ASDGKYVDEYFAATYVCTDHGRGK":
+                        #     breakpoint()
+                        calc_mz = (
+                            (float(row["mh"]) - self.PROTON) / float(charge)
+                        ) + self.PROTON
+                        exp_mz = (
+                            (float(prec_mz) - self.PROTON) / float(charge)
+                        ) + self.PROTON
 
                         row["Exp m/z"] = exp_mz
                         row["Calc m/z"] = calc_mz

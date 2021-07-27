@@ -61,6 +61,9 @@ class __BaseParser:
             self.scan_rt_lookup[basename]["scan2rt"][int(row["Spectrum ID"])]
         )
         row["Sequence"] = row["Sequence"].upper()
+        row["Exp m/z"] = self.scan_rt_lookup[basename]["scan2mz"][
+            int(row["Spectrum ID"])
+        ]
 
         return row
 
