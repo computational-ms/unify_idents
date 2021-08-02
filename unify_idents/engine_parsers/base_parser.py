@@ -208,9 +208,9 @@ Continue without modification {0} """.format(
             if len(mod_params) == 4:
                 try:
                     unimod_id = int(mod_params[3].strip())
-                    unimod_name = self.mod_mapper.id2name(unimod_id)
+                    unimod_name = self.mod_mapper.id2first_name(unimod_id)
                     mass = self.mod_mapper.id2mass(unimod_id)
-                    composition = self.mod_mapper.id2composition(unimod_id)
+                    composition = self.mod_mapper.id2first_composition(unimod_id)
                     if unimod_name is None:
                         logger.warning(
                             """
@@ -228,9 +228,9 @@ Continue without modification {0} """.format(
                     name = unimod_name
                 except:
                     unimod_name = mod_params[3].strip()
-                    unimod_id = self.mod_mapper.name2id(unimod_name)
-                    mass = self.mod_mapper.name2mass(unimod_name)
-                    composition = self.mod_mapper.name2composition(unimod_name)
+                    unimod_id = self.mod_mapper.name2first_id(unimod_name)
+                    mass = self.mod_mapper.name2first_mass(unimod_name)
+                    composition = self.mod_mapper.name2first_composition(unimod_name)
                     if unimod_id is None:
                         logger.warning(
                             """
@@ -260,7 +260,7 @@ Continue without modification {0} """.format(
                 unimod_id_list = self.mod_mapper.composition2id_list(
                     composition_unimod_style
                 )
-                mass = self.mod_mapper.composition2mass(composition_unimod_style)
+                mass = self.mod_mapper.composition2first_mass(composition_unimod_style)
                 for i, unimod_name in enumerate(unimod_name_list):
                     if unimod_name == name:
                         unimod_id = unimod_id_list[i]
