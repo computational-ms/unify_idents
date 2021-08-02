@@ -5,4 +5,4 @@ uparma==0.4.1
 unimod-mapper==0.4.5
 peptide-mapper==0.4.2
 chemical-composition==1.0.1
-pyahocorasick
+pyahocorasick==1.4.2
