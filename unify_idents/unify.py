@@ -167,21 +167,22 @@ class Unify:
 
     def _get_parser_classes(self):
         classes = []
-        fstring = "unify_idents.engine_parsers.{module}"
-        all_modules = []
-        p = Path(__file__).parent / "engine_parsers"
-        for child in p.iterdir():
-            if str(child).endswith(".py") and not str(child.stem).startswith("__"):
-                name = child.stem
-                formatted_string = fstring.format(module=name)
-                members = inspect.getmembers(import_module(formatted_string))
-                for name, obj in dict(members).items():
-                    if (
-                        inspect.isclass(obj)
-                        and obj.__module__ == formatted_string
-                        and not "__" in name
-                    ):
-                        classes.append(obj)
+        for eng_type in ["quant", "ident"]:
+            fstring = "unify_idents.engine_parsers.{eng_type}.{module}"
+            all_modules = []
+            p = Path(__file__).parent / "engine_parsers" / eng_type
+            for child in p.iterdir():
+                if str(child).endswith(".py") and not str(child.stem).startswith("__"):
+                    name = child.stem
+                    formatted_string = fstring.format(module=name, eng_type=eng_type)
+                    members = inspect.getmembers(import_module(formatted_string))
+                    for name, obj in dict(members).items():
+                        if (
+                            inspect.isclass(obj)
+                            and obj.__module__ == formatted_string
+                            and not "__" in name
+                        ):
+                            classes.append(obj)
         return classes
 
     def _get_parser(self, input_file):

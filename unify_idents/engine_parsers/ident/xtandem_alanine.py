@@ -1,5 +1,5 @@
 from unify_idents import UnifiedRow
-from unify_idents.engine_parsers.base_parser import __BaseParser
+from unify_idents.engine_parsers.base_parser import __IdentBaseParser
 from pathlib import Path
 import re
 import csv
@@ -26,7 +26,7 @@ col_mapping = {
 }
 
 
-class XTandemAlanine(__BaseParser):
+class XTandemAlanine(__IdentBaseParser):
     def __init__(self, input_file, params=None):
         super().__init__(input_file, params)
         if params is None:
@@ -36,6 +36,8 @@ class XTandemAlanine(__BaseParser):
         self.fin = open(input_file)
         self.xml_iter = iter(ElementTree.iterparse(self.fin, events=("end", "start")))
         self.raw_file = None
+        self.style = "xtandem_style_1"
+        self.column_mapping = self.get_column_names()
 
         self.cols_to_remove = [
             "id",
@@ -77,7 +79,7 @@ class XTandemAlanine(__BaseParser):
         while True:
             try:
                 gen = self._next()
-                for x in gen():
+                for x in gen:
                     x = self._unify_row(x)
                     yield x
             except StopIteration:
@@ -98,7 +100,8 @@ class XTandemAlanine(__BaseParser):
             ):
                 charge = element.attrib["z"]
                 prec_mz = element.attrib["mh"]
-
+            if event == "start" and element.tag.startswith("bioml"):
+                self.raw_data_location = element.attrib["label"].split("'")[1]
             if (
                 event == "end"
                 and element.tag.endswith("group")
@@ -129,6 +132,7 @@ class XTandemAlanine(__BaseParser):
                         del row["mh"]
                         row["Modifications"] = []
                         row["Spectrum Title"] = spec_title.split()[0]
+                        row["Raw data location"] = self.raw_data_location
                         row["z"] = charge
                         mods = domain.findall(".//aa")
                         for m in mods:
@@ -138,10 +142,10 @@ class XTandemAlanine(__BaseParser):
                             row["Modifications"].append(f"{mass}:{rel_pos}")
                         yield row
 
-                return result_iterator
+                return result_iterator()
 
     def _unify_row(self, row):
-        for new_col, old_col in col_mapping.items():
+        for new_col, old_col in self.column_mapping.items():
             row[new_col] = row[old_col]
             del row[old_col]
         for col in self.cols_to_remove:

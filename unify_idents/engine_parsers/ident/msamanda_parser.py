@@ -2,9 +2,10 @@
 import csv
 
 from unify_idents import UnifiedRow
-from unify_idents.engine_parsers.base_parser import __BaseParser
+from unify_idents.engine_parsers.base_parser import __IdentBaseParser
 
-class MSamandaParser(__BaseParser):
+
+class MSamandaParser(__IdentBaseParser):
     def __init__(self, input_file, params=None):
         super().__init__(input_file, params)
         if params is None:
@@ -15,21 +16,25 @@ class MSamandaParser(__BaseParser):
         try:
             result_file = open(input_file, "r")
             self.reader = csv.DictReader(
-            (row for row in result_file if not row.startswith("#")), delimiter="\t")
+                (row for row in result_file if not row.startswith("#")), delimiter="\t"
+            )
         except:
             self.reader = None
 
         self.style = "msamanda_style_1"
         self.column_mapping = self.get_column_names()
+        # breakpoint()
         self.cols_to_remove = [
             "proteinacc_start_stop_pre_post_;",
             "Filename",
-            "Rank",
+            # "Rank",
         ]
-    
+
         self.cols_to_add = [
             "uCalc m/z",
             "uCalc Mass",
+            "Calc m/z",
+            "Exp m/z",
             "Accuracy (ppm)",
             "Mass Difference",
             "Protein ID",
@@ -42,6 +47,7 @@ class MSamandaParser(__BaseParser):
             "Conflicting uparam",
             "Search Engine",
         ]
+
     #     if self.reader is not None:
     #         self.create_mod_lookup()
     #
@@ -55,19 +61,19 @@ class MSamandaParser(__BaseParser):
             if reader.fieldnames[0] == msamanda_version:
                 ret_val = True
             else:
-                ret_val = False   
+                ret_val = False
         return ret_val
 
     def __iter__(self):
         return self
-    
+
     def __next__(self):
         n = next(self.reader)
         u = self._unify_row(n)
         return u
-    
+
     def _unify_row(self, row):
-    
+
         new_row = {}
         for unify_name, engine_name in self.column_mapping.items():
             new_row[unify_name] = row[engine_name]
@@ -81,9 +87,9 @@ class MSamandaParser(__BaseParser):
         modstring = self.create_mod_string(new_row)
         new_row["Modifications"] = modstring
         new_row = self.general_fixes(new_row)
-    
+
         return UnifiedRow(**new_row)
-    
+
     def create_mod_string(self, new_row):
 
         mod_input = new_row["Modifications"]

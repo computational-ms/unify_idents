@@ -13,9 +13,27 @@ from loguru import logger
 from decimal import Decimal
 
 # get from params
+class __QuantBaseParser:
+    def __init__(self, input_file, params=None):
+        if params is None:
+            self.params = {}
+        else:
+            self.params = params
+        self.param_mapper = uparma.UParma()
+        self.cc = ChemicalComposition()
+
+    def __iter__(self):
+        return self
+
+    @classmethod
+    def file_matches_parser(self, file):
+        return False
+
+    def general_fixes(self, row):
+        raise NotImplementedError
 
 
-class __BaseParser:
+class __IdentBaseParser:
     def __init__(self, input_file, params=None):
         if params is None:
             self.params = {}
@@ -208,7 +226,7 @@ Continue without modification {0} """.format(
             if len(mod_params) == 4:
                 try:
                     unimod_id = int(mod_params[3].strip())
-                    unimod_name = self.mod_mapper.id2name(unimod_id)
+                    unimod_name = self.mod_mapper.id2first_name(unimod_id)
                     mass = self.mod_mapper.id2mass(unimod_id)
                     composition = self.mod_mapper.id2composition(unimod_id)
                     if unimod_name is None:
@@ -228,9 +246,9 @@ Continue without modification {0} """.format(
                     name = unimod_name
                 except:
                     unimod_name = mod_params[3].strip()
-                    unimod_id = self.mod_mapper.name2id(unimod_name)
-                    mass = self.mod_mapper.name2mass(unimod_name)
-                    composition = self.mod_mapper.name2composition(unimod_name)
+                    unimod_id = self.mod_mapper.name2first_id(unimod_name)
+                    mass = self.mod_mapper.name2first_mass(unimod_name)
+                    composition = self.mod_mapper.name2first_composition(unimod_name)
                     if unimod_id is None:
                         logger.warning(
                             """
@@ -306,3 +324,9 @@ This is not working with OMSSA so far""".format(
 
             self.params["mods"][mod_option].append(mod_dict)
         return self.params["mods"]
+
+    def get_column_names(self):
+        headers = self.param_mapper.get_default_params(style=self.style)[
+            "header_translations"
+        ]["translated_value"]
+        return headers

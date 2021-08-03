@@ -4,14 +4,14 @@ import csv
 import uparma
 
 from unify_idents import UnifiedRow
-from unify_idents.engine_parsers.base_parser import __BaseParser
+from unify_idents.engine_parsers.base_parser import __IdentBaseParser
 
 import xml.etree.ElementTree
 from pathlib import Path
 from loguru import logger
 
 
-class OmssaParser(__BaseParser):
+class OmssaParser(__IdentBaseParser):
     def __init__(self, input_file, params=None):
         super().__init__(input_file, params)
         if params is None:

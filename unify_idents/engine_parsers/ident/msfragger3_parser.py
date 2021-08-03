@@ -1,5 +1,5 @@
 from unify_idents import UnifiedRow
-from unify_idents.engine_parsers.base_parser import __BaseParser
+from unify_idents.engine_parsers.base_parser import __IdentBaseParser
 from pathlib import Path
 import re
 import csv
@@ -16,7 +16,7 @@ from loguru import logger
 """
 
 
-class MSFragger3Parser(__BaseParser):
+class MSFragger3Parser(__IdentBaseParser):
     def __init__(self, input_file, params=None):
         super().__init__(input_file, params)
         if params is None:
@@ -159,12 +159,6 @@ class MSFragger3Parser(__BaseParser):
 
         new_row = self.general_fixes(new_row)
         return UnifiedRow(**new_row)
-
-    def get_column_names(self):
-        headers = self.param_mapper.get_default_params(style=self.style)[
-            "header_translations"
-        ]["translated_value"]
-        return headers
 
     def prepare_mass_to_mod(self):
 
