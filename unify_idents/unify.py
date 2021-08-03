@@ -15,7 +15,11 @@ PROTON = 1.00727646677
 
 # inherit from pd.DataFrame
 class UnifiedDataFrame:
-    def __init__(self, rows, db_path):
+    def __init__(self, rows, db_path, params=None):
+        if params is None:
+            self.params = {}
+        else:
+            self.params = params
         self.DELIMITER = "<|>"
         self.rows = rows
         self.df = pd.DataFrame(rows)
@@ -35,7 +39,6 @@ class UnifiedDataFrame:
     def update_protein_mapping(self, mapped_peptides):
         for _id, row in self.df.iterrows():
             mapping = mapped_peptides[row["Sequence"]]
-            # breakpoint()
             starts = []
             ids = []
             stops = []
@@ -47,6 +50,12 @@ class UnifiedDataFrame:
                 stops.append(str(match["end"]))
                 pre.append(str(match["pre"]))
                 post.append(str(match["post"]))
+
+            self.df.at[_id, "Is decoy"] = False
+            for prot in ids:
+                if self.params.get("decoy_tag", "decoy_") in prot:
+                    self.df.at[_id, "Is decoy"] = True
+                    break
 
             self.df.at[_id, "Protein ID"] = self.DELIMITER.join(ids)
             self.df.at[_id, "Sequence Pre AA"] = self.DELIMITER.join(pre)
@@ -60,10 +69,14 @@ class UnifiedDataFrame:
             exp_mass = self.calc_mass(float(row["Exp m/z"]), int(row["Charge"]))
             charge = int(row["Charge"])
             calc_mz = self.calc_mz(calc_mass, charge)
-            # exp m/z is actually the math
             self.df.at[_id, "uCalc m/z"] = calc_mz
-            self.df.at[_id, "uCalc Mass"] = calc_mass
-            self.df.at[_id, "Accuracy (ppm)"] = (exp_mass - calc_mass) / calc_mass * 1e6
+            self.df.at[_id, "uCalc Mass"] = calc_mass + PROTON
+            acc = (
+                (float(row["Exp m/z"]) - float(self.df.at[_id, "uCalc m/z"]))
+                / self.df.at[_id, "uCalc m/z"]
+                * 1e6
+            )
+            self.df.at[_id, "Accuracy (ppm)"] = acc
 
         return
 
@@ -113,6 +126,9 @@ class UnifiedRow:
             raise KeyError("Cant add new key")
         self.data[key] = value
 
+    def __contains__(self, key):
+        return key in self.data
+
     def __str__(self):
         # needs fix, only return unify cols and not Engine:name columns
         if self.string_repr is None:
@@ -124,17 +140,6 @@ class UnifiedRow:
 
     def to_dict(self):
         return self.data
-
-    # def __repr__(self):
-    #     return self.__str__()
-
-    # def calc_mz(self):
-    #     # use chemical composition
-    #     # do we really want a new CC object for every row?
-    #     self.data["uCalc m/z"] = 0
-    #     self.data["uCalc mass"] = 0
-    #     self.data["Mass Difference"] = 0
-    #     self.data["Accuracy (ppm)"] = 0
 
 
 class Unify:
@@ -151,11 +156,6 @@ class Unify:
         else:
             self.params = params
 
-        # self.scan_rt_path = self.params.get("rt_pickle_name", None)
-        # if self.scan_rt_path is None:
-        #     raise Exception("Meaningfull error message")
-        # else:
-        #     self.scan_rt_lookup = self.read_rt_lookup_file(self.scan_rt_path)
         self.parser = self._get_parser(self.input_file)
 
     def __iter__(self):
@@ -163,9 +163,6 @@ class Unify:
 
     def __next__(self):
         line = next(self.parser)
-        # TODO
-        line = self.parser.general_fixes(line)
-        # do some magic here, like calling methods of row (e.g. calc_mz)
         return line
 
     def _get_parser_classes(self):
@@ -196,7 +193,6 @@ class Unify:
         return parser
 
     def read_rt_lookup_file(self, scan_rt_lookup_path):
-        # breakpoint()
         with bz2.open(scan_rt_lookup_path, "rt") as fin:
             lookup = {}
             reader = csv.DictReader(fin)
@@ -218,6 +214,6 @@ class Unify:
     def get_dataframe(self):
         data = []
         for unified_row in self:
-            # print(type(unified_row))
-            data.append(unified_row.to_dict())
+            if unified_row is not None:
+                data.append(unified_row.to_dict())
         return UnifiedDataFrame(data, db_path=self.params["database"])

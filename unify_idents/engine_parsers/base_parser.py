@@ -1,6 +1,7 @@
 import bz2
 import csv
 from pathlib import Path
+import os
 
 import uparma
 from peptide_mapper.mapper import UPeptideMapper
@@ -9,6 +10,7 @@ from chemical_composition import ChemicalComposition
 
 from unify_idents import UnifiedRow
 from loguru import logger
+from decimal import Decimal
 
 # get from params
 
@@ -21,7 +23,7 @@ class __BaseParser:
             self.params = params
 
         self.param_mapper = uparma.UParma()
-        self.peptide_mapper = UPeptideMapper(params["database"])
+        # self.peptide_mapper = UPeptideMapper(params["database"])
         self.mod_mapper = UnimodMapper()
         self.cc = ChemicalComposition()
 
@@ -29,43 +31,138 @@ class __BaseParser:
 
         self.scan_rt_path = self.params.get("rt_pickle_name", None)
         self.scan_rt_lookup = self.read_rt_lookup_file(self.scan_rt_path)
+        self.create_mod_dicts()
 
         self.cols_to_remove = []
         self.cols_to_add = []
 
+        no_decimals = 4
+        self.mass_format_string = "{{0:3.{0}f}}".format(no_decimals)
+
+        self.PROTON = 1.00727646677
+
     def __iter__(self):
         return self
 
-    def file_matches_parser(self):
+    @classmethod
+    def file_matches_parser(self, file):
         # needs to return False to dont be selected as engine parser during `get_parsers`
         return False
 
     def general_fixes(self, row):
-        row["Raw file location"] = row["Spectrum Title"].split(".")[0]
-        basename = row["Raw file location"].split(".")[0]
-        # breakpoint()
+        if row.get("Raw data location") is None or row["Raw data location"] == "":
+            row["Raw data location"] = row["Spectrum Title"].split(".")[0]
+        if ".mgf" in row["Raw data location"]:
+            row["Raw data locations"] = row["Raw data location"].replace(
+                ".mgf", ".mzML"
+            )
+        basename = os.path.basename(row["Raw data location"]).split(".")[0]
         row["Retention Time (s)"] = float(
             self.scan_rt_lookup[basename]["scan2rt"][int(row["Spectrum ID"])]
         )
         row["Sequence"] = row["Sequence"].upper()
+        row["Exp m/z"] = self.scan_rt_lookup[basename]["scan2mz"][
+            int(row["Spectrum ID"])
+        ]
 
         return row
 
     def check_mod_positions(self, row):
         return row
 
-    def recalc_masses(row):
-        self.cc.use(sequence=row["Sequence"], modifications=row["Modifications"])
-        row["uCalc m/z"] = self.calc_mz(self.cc.mass(), int(row["Charge"]))
-        row["uCalc mass"] = self.cc.mass()
-        return row
+    # currently not used
+    # def recalc_masses(row):
+    #     self.cc.use(sequence=row["Sequence"], modifications=row["Modifications"])
+    #     row["uCalc m/z"] = self.calc_mz(self.cc.mass(), int(row["Charge"]))
+    #     row["uCalc mass"] = self.cc.mass()
+    #     return row
 
     def calc_mz(self, mass, charge):
         PROTON = 1.00727646677
         return (float(mass) + (int(charge) * PROTON)) / int(charge)
 
+    def create_mod_dicts(self):
+        self.fixed_mods = {}
+        self.opt_mods = {}
+        self.mod_dict = {}
+        self.n_term_replacement = {
+            "Ammonia-loss": None,
+            "Trimethyl": None,
+            "Gly->Val": None,
+        }
+        self.mod_dict = {}
+        self.n_term_replacement = {}
+        # self.opt_mods
+        for mod_type in ["fix", "opt"]:
+            for modification in self.params["mods"][mod_type]:
+                aa = modification["aa"]
+                pos = modification["pos"]
+                name = modification["name"]
+                if name not in self.mod_dict.keys():
+                    self.mod_dict[name] = {
+                        "mass": modification["mass"],
+                        "aa": set(),
+                        "pos": set(),
+                    }
+                self.mod_dict[name]["aa"].add(aa)
+
+                self.mod_dict[name]["aa"].add(pos)
+                self.mod_dict[name]["pos"].add(pos)
+
+                if "N-term" in pos:
+                    self.n_term_replacement[name] = aa
+                if mod_type == "fix":
+                    self.fixed_mods[aa] = name
+                    if aa == "C" and name == "Carbamidomethyl":
+                        cam = True
+                        self.mod_dict["Carbamidomethyl"]["aa"].add("U")
+                        self.fixed_mods["U"] = "Carbamidomethyl"
+                if mod_type == "opt":
+                    self.opt_mods[aa] = name
+
+    def map_mod_names(self, row):
+        # 0 based indexing, is corrected in this method,
+        mods = []
+        for mod in row["Modifications"]:
+            mass, pos = mod.split(":")
+            potential_names = self.mod_mapper.appMass2name_list(
+                round(float(mass), 4), decimal_places=4
+            )
+            for name in potential_names:
+                if name in self.mod_dict:
+                    if row["Sequence"][int(pos)] in self.mod_dict[name]["aa"]:
+                        pos = int(pos) + 1
+                        mods.append(f"{name}:{pos}")  # minus
+                    elif "Prot-N-term" in self.mod_dict[name]["pos"]:
+                        # n-term mod
+                        mods.append(f"{name}:0")
+        return ";".join(mods)
+
+    def map_peptides(self, row):
+        starts = []
+        ids = []
+        stops = []
+        pre = []
+        post = []
+        # we need to convert sequences to uppercase, e.g. omssa reports modified AAs in lowercase
+        mapped = self.peptide_mapper.map_peptides(
+            [row["Sequence"].upper()]
+        )  # uses 99% of time
+        for seq, data_list in mapped.items():
+            for data in data_list:
+                ids.append(data["id"])
+                starts.append(str(data["start"]))
+                stops.append(str(data["end"]))
+                pre.append(str(data["pre"]))
+                post.append(str(data["post"]))
+        row["Protein ID"] = DELIMITER.join(ids)
+        row["Sequence Pre AA"] = DELIMITER.join(pre)
+        row["Sequence Post AA"] = DELIMITER.join(post)
+        row["Sequence Start"] = DELIMITER.join(starts)
+        row["Sequence Stop"] = DELIMITER.join(stops)
+        return row
+
     def read_rt_lookup_file(self, scan_rt_lookup_path):
-        # breakpoint()
         with bz2.open(scan_rt_lookup_path, "rt") as fin:
             lookup = {}
             reader = csv.DictReader(fin)
@@ -111,9 +208,9 @@ Continue without modification {0} """.format(
             if len(mod_params) == 4:
                 try:
                     unimod_id = int(mod_params[3].strip())
-                    unimod_name = self.mod_mapper.id2name(unimod_id)
+                    unimod_name = self.mod_mapper.id2first_name(unimod_id)
                     mass = self.mod_mapper.id2mass(unimod_id)
-                    composition = self.mod_mapper.id2composition(unimod_id)
+                    composition = self.mod_mapper.id2first_composition(unimod_id)
                     if unimod_name is None:
                         logger.warning(
                             """
@@ -131,9 +228,9 @@ Continue without modification {0} """.format(
                     name = unimod_name
                 except:
                     unimod_name = mod_params[3].strip()
-                    unimod_id = self.mod_mapper.name2id(unimod_name)
-                    mass = self.mod_mapper.name2mass(unimod_name)
-                    composition = self.mod_mapper.name2composition(unimod_name)
+                    unimod_id = self.mod_mapper.name2first_id(unimod_name)
+                    mass = self.mod_mapper.name2first_mass(unimod_name)
+                    composition = self.mod_mapper.name2first_composition(unimod_name)
                     if unimod_id is None:
                         logger.warning(
                             """
@@ -163,7 +260,7 @@ Continue without modification {0} """.format(
                 unimod_id_list = self.mod_mapper.composition2id_list(
                     composition_unimod_style
                 )
-                mass = self.mod_mapper.composition2mass(composition_unimod_style)
+                mass = self.mod_mapper.composition2first_mass(composition_unimod_style)
                 for i, unimod_name in enumerate(unimod_name_list):
                     if unimod_name == name:
                         unimod_id = unimod_id_list[i]

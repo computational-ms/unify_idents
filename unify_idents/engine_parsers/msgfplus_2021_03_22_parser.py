@@ -26,7 +26,7 @@ class MSGFPlus_2021_03_22(__BaseParser):
         self.peptide_lookup = self._get_peptide_lookup()
 
         self.cols_to_add = [
-            "Raw file location",
+            "Raw data location",
             "Spectrum Title",
             "uCalc m/z",
             "uCalc Mass",
@@ -76,12 +76,25 @@ class MSGFPlus_2021_03_22(__BaseParser):
         return headers
 
     def __iter__(self):
-        return self
+        while True:
+            try:
+                gen = self._next()
+                for x in gen:
+                    x = self._unify_row(x)
+                    yield x
+            except StopIteration:
+                break
 
     def __next__(self):
-        for n in self._next():
-            u = self._unify_row(n)
-            return u
+        return next(self.__iter__())
+
+    # def __iter__(self):
+    #     return self
+
+    # def __next__(self):
+    #     for n in self._next():
+    #         u = self._unify_row(n)
+    #         return u
 
     def _next(self):
         data = []
