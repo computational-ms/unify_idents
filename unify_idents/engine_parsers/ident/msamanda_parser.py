@@ -2,7 +2,7 @@
 import csv
 
 from unify_idents import UnifiedRow
-from unify_idents.engine_parsers.base_parser import __BaseParser
+from unify_idents.engine_parsers.base_parser import __IdentBaseParser
 
 
 class MSamandaParser(__BaseParser):
@@ -32,15 +32,18 @@ class MSamandaParser(__BaseParser):
 
         self.style = "msamanda_style_1"
         self.column_mapping = self.get_column_names()
+        # breakpoint()
         self.cols_to_remove = [
             "proteinacc_start_stop_pre_post_;",
             "Filename",
-            "Rank",
+            # "Rank",
         ]
 
         self.cols_to_add = [
             "uCalc m/z",
             "uCalc Mass",
+            "Calc m/z",
+            "Exp m/z",
             "Accuracy (ppm)",
             "Mass Difference",
             "Protein ID",

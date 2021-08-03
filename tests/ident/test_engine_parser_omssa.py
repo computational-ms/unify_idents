@@ -1,15 +1,25 @@
-from unify_idents.engine_parsers.msfragger3_parser import __BaseParser
+#!/usr/bin/env python
 from pathlib import Path
+from unify_idents.unify import UnifiedDataFrame, UnifiedRow
+from unify_idents.engine_parsers.omssa_parser import OmssaParser
+import uparma
+
+from collections.abc import Iterable
+import pytest
 
 
-def test_engine_parsers_BaseParser_init():
+def test_engine_parsers_omssa_init():
     input_file = (
-        Path(__file__).parent / "data" / "test_Creinhardtii_QE_pH11_xtandem_alanine.xml"
+        Path(__file__).parent.parent
+        / "data"
+        / "test_Creinhardtii_QE_pH11_omssa_2_1_9.csv"
     )
-    rt_lookup_path = Path(__file__).parent / "data" / "_ursgal_lookup.csv.bz2"
-    db_path = Path(__file__).parent / "data" / "test_Creinhardtii_target_decoy.fasta"
+    rt_lookup_path = Path(__file__).parent.parent / "data" / "_ursgal_lookup.csv.bz2"
+    db_path = (
+        Path(__file__).parent.parent / "data" / "test_Creinhardtii_target_decoy.fasta"
+    )
 
-    parser = __BaseParser(
+    parser = OmssaParser(
         input_file,
         params={
             "rt_pickle_name": rt_lookup_path,
@@ -34,23 +44,37 @@ def test_engine_parsers_BaseParser_init():
                     "name": "Acetyl",
                 },
             ],
+            "omssa_mod_dir": Path(__file__).parent.parent / "data",
         },
     )
 
 
-def test_engine_parsers_BaseParser_file_matches_parser():
-    # should always return False
-    __BaseParser.file_matches_parser("whatever") is False
-
-
-def test_engine_parsers_BaseParser_map_mod_names():
+def test_engine_parsers_omssa_file_matches_parser():
     input_file = (
-        Path(__file__).parent / "data" / "test_Creinhardtii_QE_pH11_xtandem_alanine.xml"
+        Path(__file__).parent.parent
+        / "data"
+        / "test_Creinhardtii_QE_pH11_omssa_2_1_9.csv"
     )
-    rt_lookup_path = Path(__file__).parent / "data" / "_ursgal_lookup.csv.bz2"
-    db_path = Path(__file__).parent / "data" / "test_Creinhardtii_target_decoy.fasta"
+    rt_lookup_path = Path(__file__).parent.parent / "data" / "_ursgal_lookup.csv.bz2"
+    db_path = (
+        Path(__file__).parent.parent / "data" / "test_Creinhardtii_target_decoy.fasta"
+    )
 
-    parser = __BaseParser(
+    assert OmssaParser.file_matches_parser(input_file) is True
+
+
+def test_engine_parsers_omssa_unify_row():
+    input_file = (
+        Path(__file__).parent.parent
+        / "data"
+        / "test_Creinhardtii_QE_pH11_omssa_2_1_9.csv"
+    )
+    rt_lookup_path = Path(__file__).parent.parent / "data" / "_ursgal_lookup.csv.bz2"
+    db_path = (
+        Path(__file__).parent.parent / "data" / "test_Creinhardtii_target_decoy.fasta"
+    )
+
+    parser = OmssaParser(
         input_file,
         params={
             "rt_pickle_name": rt_lookup_path,
@@ -75,21 +99,21 @@ def test_engine_parsers_BaseParser_map_mod_names():
                     "name": "Acetyl",
                 },
             ],
+            "omssa_mod_dir": Path(__file__).parent.parent / "data",
         },
     )
+    for row in parser:
+        print(row)
 
-    row = {"Modifications": ["57.021464:0"], "Sequence": "CERK"}
-    assert parser.map_mod_names(row) == "Carbamidomethyl:1"
 
-
-def test_engine_parsers_BaseParser_map_mod_names_nterm():
+def test_engine_parsers_omssa_is_iterable():
     input_file = (
-        Path(__file__).parent / "data" / "test_Creinhardtii_QE_pH11_xtandem_alanine.xml"
+        Path(__file__).parent / "data" / "test_Creinhardtii_QE_pH11_omssa_2_1_9.csv"
     )
-    rt_lookup_path = Path(__file__).parent / "data" / "_ursgal_lookup.csv.bz2"
+    rt_lookup_path = Path(__file__).parent / "data" / "BSA1_ursgal_lookup.csv.bz2"
     db_path = Path(__file__).parent / "data" / "test_Creinhardtii_target_decoy.fasta"
 
-    parser = __BaseParser(
+    parser = OmssaParser(
         input_file,
         params={
             "rt_pickle_name": rt_lookup_path,
@@ -114,21 +138,21 @@ def test_engine_parsers_BaseParser_map_mod_names_nterm():
                     "name": "Acetyl",
                 },
             ],
+            "omssa_mod_dir": Path(__file__).parent / "data",
+            "Raw data location": "/Users/cellzome/Dev/Gits/Ursgal/ursgal_master/example_data/test_Creinhardtii_QE_pH11.mgf",
         },
     )
-
-    row = {"Modifications": ["57.021464:0", "42.010565:0"], "Sequence": "CERK"}
-    assert parser.map_mod_names(row) == "Carbamidomethyl:1;Acetyl:0"
+    assert isinstance(parser, Iterable)
 
 
-def test_engine_parsers_BaseParser_read_rt_lookup_file():
+def test_engine_parsers_omssa_next():
     input_file = (
-        Path(__file__).parent / "data" / "test_Creinhardtii_QE_pH11_xtandem_alanine.xml"
+        Path(__file__).parent / "data" / "test_Creinhardtii_QE_pH11_omssa_2_1_9.csv"
     )
     rt_lookup_path = Path(__file__).parent / "data" / "_ursgal_lookup.csv.bz2"
     db_path = Path(__file__).parent / "data" / "test_Creinhardtii_target_decoy.fasta"
 
-    parser = __BaseParser(
+    parser = OmssaParser(
         input_file,
         params={
             "rt_pickle_name": rt_lookup_path,
@@ -153,15 +177,20 @@ def test_engine_parsers_BaseParser_read_rt_lookup_file():
                     "name": "Acetyl",
                 },
             ],
+            "omssa_mod_dir": Path(__file__).parent / "data",
+            "Raw data location": "/Users/cellzome/Dev/Gits/Ursgal/ursgal_master/example_data/test_Creinhardtii_QE_pH11.mgf",
         },
     )
-    fname = "test_Creinhardtii_QE_pH11"
-    lookup = parser.read_rt_lookup_file(rt_lookup_path)
-    assert "test_Creinhardtii_QE_pH11" in lookup
-    assert "scan2rt" in lookup[fname]
-    assert "rt2scan" in lookup[fname]
-    assert "scan2mz" in lookup[fname]
-
-    assert len(lookup[fname]["scan2rt"]) == 162
-    assert len(lookup[fname]["rt2scan"]) == 162
-    assert len(lookup[fname]["scan2mz"]) == 162
+    row = next(parser)
+    assert isinstance(row, UnifiedRow)
+    print(row.data.keys())
+    assert row["Sequence"] == "ALAMEWGPFPRLMVVACNDAINVCRK"
+    assert row["Modifications"] == "Oxidation:4;Carbamidomethyl:17;Carbamidomethyl:24"
+    assert (
+        row["Raw data location"]
+        == "/Users/cellzome/Dev/Gits/Ursgal/ursgal_master/example_data/test_Creinhardtii_QE_pH11.mgf"
+    )
+    assert row["Charge"] == "4"
+    assert float(row["OMSSA:pvalue"]) == pytest.approx(0.000166970504409832)
+    assert float(row["Calc mass"]) == pytest.approx(3033.491)
+    assert float(row["Calc m/z"]) == pytest.approx(759.38002646677)

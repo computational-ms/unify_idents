@@ -13,7 +13,17 @@ from loguru import logger
 from decimal import Decimal
 
 # get from params
+class __QuantBaseParser:
+    def __init__(self, input_file, params=None):
+        if params is None:
+            self.params = {}
+        else:
+            self.params = params
+        self.param_mapper = uparma.UParma()
+        self.cc = ChemicalComposition()
 
+    def __iter__(self):
+        return self
 
 class __BaseParser:
 

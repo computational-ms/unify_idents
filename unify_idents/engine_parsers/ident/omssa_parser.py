@@ -4,7 +4,7 @@ import csv
 import uparma
 
 from unify_idents import UnifiedRow
-from unify_idents.engine_parsers.base_parser import __BaseParser
+from unify_idents.engine_parsers.base_parser import __IdentBaseParser
 
 import xml.etree.ElementTree
 from pathlib import Path
