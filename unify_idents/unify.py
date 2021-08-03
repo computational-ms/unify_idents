@@ -102,7 +102,10 @@ class UnifiedDataFrame:
             charge = int(row["Charge"])
             calc_mz = self.calc_mz(calc_mass, charge)
             self.df.at[_id, "uCalc m/z"] = calc_mz
-            self.df.at[_id, "uCalc Mass"] = calc_mass  # + PROTON
+            self.df.at[_id, "uCalc Mass"] = calc_mass + PROTON
+            if self.df.at[_id, "Calc m/z"] == "":
+                self.df.at[_id, "Calc m/z"] = calc_mz
+                breakpoint()
             acc = (
                 (float(self.df.at[_id, "Exp m/z"]) - float(self.df.at[_id, "uCalc m/z"]))
                 / self.df.at[_id, "uCalc m/z"]

@@ -543,9 +543,7 @@ def test_unify_msamanda_df_masses():
     assert float(row["uCalc m/z"].iloc[0]) == pytest.approx(
         904.0782, abs=5e-6 * 904.0782
     )
-    assert float(row["Calc m/z"].iloc[0]) == pytest.approx(
-        904.0782, abs=5e-6 * 904.0782
-    )
+    assert float(row["Calc m/z"].iloc[0]) == pytest.approx(904.0782, abs=5e-6 * 904.0782)
     assert float(row["uCalc Mass"].iloc[0]) == pytest.approx(
         2710.2202, abs=5e-6 * 2710.2202
     )

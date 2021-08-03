@@ -11,9 +11,7 @@ from unify_idents import UnifiedRow
 
 def test_engine_parsers_msgfplus_init():
     input_file = Path(__file__).parent.parent / "data" / "BSA1_msgfplus_2021_03_22.mzid"
-    rt_lookup_path = (
-        Path(__file__).parent.parent / "data" / "BSA1_ursgal_lookup.csv.bz2"
-    )
+    rt_lookup_path = Path(__file__).parent.parent / "data" / "BSA1_ursgal_lookup.csv.bz2"
     db_path = (
         Path(__file__).parent.parent / "data" / "test_Creinhardtii_target_decoy.fasta"
     )
@@ -66,9 +64,7 @@ def test_engine_parsers_msgfplus_file_matches_parser_fail_with_omsa_file():
 
 def test_engine_parsers_msgfplus_is_iterable():
     input_file = Path(__file__).parent.parent / "data" / "BSA1_msgfplus_2021_03_22.mzid"
-    rt_lookup_path = (
-        Path(__file__).parent.parent / "data" / "BSA1_ursgal_lookup.csv.bz2"
-    )
+    rt_lookup_path = Path(__file__).parent.parent / "data" / "BSA1_ursgal_lookup.csv.bz2"
     db_path = (
         Path(__file__).parent.parent / "data" / "test_Creinhardtii_target_decoy.fasta"
     )
@@ -107,9 +103,7 @@ def test_engine_parsers_msgfplus_is_iterable():
 
 def test_engine_parsers_msgfplus_iter_items():
     input_file = Path(__file__).parent.parent / "data" / "BSA1_msgfplus_2021_03_22.mzid"
-    rt_lookup_path = (
-        Path(__file__).parent.parent / "data" / "BSA1_ursgal_lookup.csv.bz2"
-    )
+    rt_lookup_path = Path(__file__).parent.parent / "data" / "BSA1_ursgal_lookup.csv.bz2"
     db_path = (
         Path(__file__).parent.parent / "data" / "test_Creinhardtii_target_decoy.fasta"
     )
@@ -149,9 +143,7 @@ def test_engine_parsers_msgfplus_iter_items():
 
 def test_engine_parsers_msgfplus_get_peptide_lookup():
     input_file = Path(__file__).parent.parent / "data" / "BSA1_msgfplus_2021_03_22.mzid"
-    rt_lookup_path = (
-        Path(__file__).parent.parent / "data" / "BSA1_ursgal_lookup.csv.bz2"
-    )
+    rt_lookup_path = Path(__file__).parent.parent / "data" / "BSA1_ursgal_lookup.csv.bz2"
     db_path = (
         Path(__file__).parent.parent / "data" / "test_Creinhardtii_target_decoy.fasta"
     )
@@ -200,9 +192,7 @@ def test_engine_parsers_msgfplus_get_peptide_lookup():
 
 def test_engine_parsers_msgfplus_internal_next():
     input_file = Path(__file__).parent.parent / "data" / "BSA1_msgfplus_2021_03_22.mzid"
-    rt_lookup_path = (
-        Path(__file__).parent.parent / "data" / "BSA1_ursgal_lookup.csv.bz2"
-    )
+    rt_lookup_path = Path(__file__).parent.parent / "data" / "BSA1_ursgal_lookup.csv.bz2"
     db_path = (
         Path(__file__).parent.parent / "data" / "test_Creinhardtii_target_decoy.fasta"
     )
@@ -251,9 +241,7 @@ def test_engine_parsers_msgfplus_internal_next():
 
 def test_engine_parsers_msgfplus_next():
     input_file = Path(__file__).parent.parent / "data" / "BSA1_msgfplus_2021_03_22.mzid"
-    rt_lookup_path = (
-        Path(__file__).parent.parent / "data" / "BSA1_ursgal_lookup.csv.bz2"
-    )
+    rt_lookup_path = Path(__file__).parent.parent / "data" / "BSA1_ursgal_lookup.csv.bz2"
     db_path = (
         Path(__file__).parent.parent / "data" / "test_Creinhardtii_target_decoy.fasta"
     )
@@ -297,9 +285,7 @@ def test_engine_parsers_msgfplus_next():
 
 def test_engine_parsers_msgfplus_multiple_psms():
     input_file = Path(__file__).parent.parent / "data" / "BSA1_msgfplus_2021_03_22.mzid"
-    rt_lookup_path = (
-        Path(__file__).parent.parent / "data" / "BSA1_ursgal_lookup.csv.bz2"
-    )
+    rt_lookup_path = Path(__file__).parent.parent / "data" / "BSA1_ursgal_lookup.csv.bz2"
     db_path = (
         Path(__file__).parent.parent / "data" / "test_Creinhardtii_target_decoy.fasta"
     )
