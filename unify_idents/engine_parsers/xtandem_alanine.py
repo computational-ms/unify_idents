@@ -91,6 +91,11 @@ class XTandemAlanine(__BaseParser):
             event, element = next(self.xml_iter, ("STOP", "STOP"))
             if event == "STOP":
                 raise StopIteration
+
+            if event == "start" and element.tag.endswith("bioml"):
+                self.raw_data_location = element.attrib["label"].split("models from")[
+                    1
+                ][2:-1]
             if (
                 event == "start"
                 and element.tag.endswith("group")
@@ -130,6 +135,7 @@ class XTandemAlanine(__BaseParser):
                         row["Modifications"] = []
                         row["Spectrum Title"] = spec_title.split()[0]
                         row["z"] = charge
+                        row["Raw data location"] = self.raw_data_location
                         mods = domain.findall(".//aa")
                         for m in mods:
                             mass, abs_pos = m.attrib["modified"], m.attrib["at"]
