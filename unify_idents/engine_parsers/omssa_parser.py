@@ -127,6 +127,11 @@ class OmssaParser(__BaseParser):
             new_row[col] = ""
         new_row["Spectrum ID"] = int(new_row["Spectrum Title"].split(".")[1])
         new_row["Search Engine"] = "omssa_2_1_9"
+        new_row["uCalc mass"] = 0
+        new_row["uCalc m/z"] = 0
+        # breakpoint()
+        new_row["Calc m/z"] = self.calc_mz(float(row[" Mass"]), int(row[" Charge"]))
+        new_row["Calc mass"] = row[" Mass"]
 
         modstring = self.create_mod_string(new_row)
         new_row["Modifications"] = modstring
