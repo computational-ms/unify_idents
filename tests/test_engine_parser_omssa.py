@@ -62,14 +62,14 @@ def test_engine_parsers_omssa_unify_row():
         print(row)
 
 
-def test_engine_parsers_omssa_next():
+def test_engine_parsers_omssa_is_iterable():
     input_file = (
         Path(__file__).parent / "data" / "test_Creinhardtii_QE_pH11_omssa_2_1_9.csv"
     )
-    rt_lookup_path = Path(__file__).parent / "data" / "_ursgal_lookup.csv.bz2"
+    rt_lookup_path = Path(__file__).parent / "data" / "BSA1_ursgal_lookup.csv.bz2"
     db_path = Path(__file__).parent / "data" / "test_Creinhardtii_target_decoy.fasta"
 
-    parser = OmssaParser(
+    parser = MSGFPlus_2021_03_22(
         input_file,
         params={
             "rt_pickle_name": rt_lookup_path,
@@ -82,6 +82,17 @@ def test_engine_parsers_omssa_next():
             "omssa_mod_dir": Path(__file__).parent / "data",
         },
     )
+    assert isinstance(parser, Iterable)
+
+
+
+def test_engine_parsers_omssa_next():
+    input_file = (
+        Path(__file__).parent / "data" / "test_Creinhardtii_QE_pH11_omssa_2_1_9.csv"
+    )
+    rt_lookup_path = Path(__file__).parent / "data" / "_ursgal_lookup.csv.bz2"
+    db_path = Path(__file__).parent / "data" / "test_Creinhardtii_target_decoy.fasta"
+    parser = OmssaParser(
     row = next(parser)
     assert isinstance(row, UnifiedRow)
     print(row.data.keys())
@@ -101,24 +112,3 @@ def test_engine_parsers_omssa_next():
     # assert row["MS-GF:NumMatchedMainIons"] == "3"
     # assert row["Search Engine"] == "MSGFPlus_2021_03_22"
 
-
-# def test_engine_parsers_omssa_unified_frame():
-#     input_file = (
-#         Path(__file__).parent / "data" / "BSA1_mzml2mgf_0_0_1_omssa_2_1_9.csv_tmp"
-#     )
-#     rt_lookup_path = Path(__file__).parent / "data" / "_ursgal_lookup.csv.bz2"
-#     db_path = Path(__file__).parent / "data" / "test_Creinhardtii_target_decoy.fasta"
-
-#     parser = OmssaParser(
-#         input_file,
-#         params={
-#             "rt_pickle_name": rt_lookup_path,
-#             "database": db_path,
-#             "modifications": [
-#                 "C,fix,any,Carbamidomethyl",
-#                 "M,opt,any,Oxidation",
-#             ],
-#         },
-#     )
-#     df = parser.get_dataframe()
-#     assert isinstance(df, UnifiedDataFrame)
