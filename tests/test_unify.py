@@ -345,9 +345,9 @@ def test_unify_omssa_df_masses():
         },
     )
     res = parser.get_dataframe()
-    row = res.df[res.df["Sequence"] == "ASDGKYVDEYFAATYVCTDHGRGK"]
-    assert row["Sequence"].iloc[0] == "ASDGKYVDEYFAATYVCTDHGRGK"
-    assert row["Charge"].iloc[0] == "3"
+    row = res.df[res.df["Sequence"] == "ALAMEWGPFPRLMVVACNDAINVCRK"]
+    assert row["Sequence"].iloc[0] == "ALAMEWGPFPRLMVVACNDAINVCRK"
+    assert row["Charge"].iloc[0] == "4"
     assert row["Modifications"].iloc[0] == "Carbamidomethyl:17"
     assert float(row["uCalc m/z"].iloc[0]) == pytest.approx(
         904.0782, abs=5e-6 * 904.0782
