@@ -64,7 +64,10 @@ class MSGFPlus_2021_03_22(__BaseParser):
                     if ele.tag.endswith("AnalysisSoftware"):
                         name = ele.attrib.get("name", "")
                         version = ele.attrib.get("version", "")
-                        if name == "MS-GF+" and version == "Release (v2021.03.22)":
+                        if name == "MS-GF+" and version in [
+                            "Release (v2021.03.22)",
+                            "Release (v2019.07.03)",
+                        ]:
                             ret_val = True
                             break
         return ret_val
@@ -100,6 +103,7 @@ class MSGFPlus_2021_03_22(__BaseParser):
         data = []
         while True:
             event, ele = next(self.reader, ("STOP", "STOP"))
+            # print(ele.tag)
             if event == "end" and ele.tag.endswith("SpectrumIdentificationResult"):
                 for spec_result in list(
                     ele[::-1]
@@ -136,6 +140,7 @@ class MSGFPlus_2021_03_22(__BaseParser):
                             "Exp m/z": spec_result.attrib["experimentalMassToCharge"],
                             "Calc m/z": spec_result.attrib["calculatedMassToCharge"],
                             "Charge": spec_result.attrib["chargeState"],
+                            "Raw data location": self.raw_data_location,
                         }
                         for child in list(spec_result):
                             if child.tag.endswith("Param"):
@@ -167,6 +172,8 @@ class MSGFPlus_2021_03_22(__BaseParser):
         lookup = {}
         while True:
             event, ele = next(self.reader, ("STOP", "STOP"))
+            if event == "start" and ele.tag.endswith("SpectraData"):
+                self.raw_data_location = ele.attrib["location"]
             if event == "end" and ele.tag.endswith("Peptide"):
                 _id = ele.attrib.get("id", "")
                 lookup[_id] = {}

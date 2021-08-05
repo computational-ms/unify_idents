@@ -138,6 +138,10 @@ def test_engine_parsers_msgfplus_internal_next():
     )
     for row in parser._next():
         assert isinstance(row, dict)
+        assert (
+            row["Raw data location"]
+            == "/Users/cellzome/Dev/Gits/Ursgal/ursgal_master/example_data/BSA1.mgf"
+        )
         assert row["Peptide"] == "YICDNQDTISSK"
         assert row["Modifications"] == "Carbamidomethyl:3"
         assert row["MS-GF:RawScore"] == "40"

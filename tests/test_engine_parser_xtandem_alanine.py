@@ -94,6 +94,10 @@ def test_engine_parsers_xtandem_unify_row():
         },
     )
     for row in parser:
+        assert (
+            row["Raw data location"]
+            == "/Users/cellzome/Dev/Gits/Ursgal/ursgal2_dev/tests/data/test_Creinhardtii_QE_pH11.mgf"
+        )
         assert row["Sequence"] == "DDVHNMGADGIR"
         assert row["Modifications"] == "Oxidation:6"
         assert row["Search Engine"] == "xtandem_alanine"
