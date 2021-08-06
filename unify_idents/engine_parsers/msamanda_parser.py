@@ -65,7 +65,6 @@ class MSamandaParser(__BaseParser):
         return self
 
     def __next__(self):
-        breakpoint()
         n = next(self.reader)
         u = self._unify_row(n)
         return u
