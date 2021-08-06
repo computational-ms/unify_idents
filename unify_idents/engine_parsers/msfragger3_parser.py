@@ -139,11 +139,11 @@ class MSFragger3Parser(__BaseParser):
                 new_row[col] = ""
         new_row["Search Engine"] = "msfragger_3_0"
         new_row["Spectrum Title"] = "{file}.{specid}.{specid}.{charge}".format(
-            file=self.params["Raw file location"].split(".")[0],
+            file=str(self.params["Raw data location"]).split(".")[0],
             specid=new_row["Spectrum ID"],
             charge=new_row["Charge"],
         )
-        new_row["Raw data location"] = self.params["Raw file location"]
+        new_row["Raw data location"] = self.params["Raw data location"]
         new_row["Exp m/z"] = self.calc_mz(
             new_row["MSFragger:Precursor neutral mass (Da)"], new_row["Charge"]
         )

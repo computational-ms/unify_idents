@@ -164,7 +164,7 @@ class MSGFPlus_2021_03_22(__BaseParser):
             if old_key in row.keys() and old_key != new_key:
                 row[new_key] = row[old_key]
                 del row[old_key]
-        row["Search Engine"] = "MSGFPlus_2021_03_22"
+        row["Search Engine"] = "msgfplus_2021_03_22"
         new_row = self.general_fixes(row)
         return UnifiedRow(**new_row)
 
