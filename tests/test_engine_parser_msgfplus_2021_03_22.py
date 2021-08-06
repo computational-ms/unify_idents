@@ -174,7 +174,7 @@ def test_engine_parsers_msgfplus_next():
     assert row["Modifications"] == "Carbamidomethyl:3"
     assert row["MS-GF:RawScore"] == "40"
     assert row["MS-GF:NumMatchedMainIons"] == "3"
-    assert row["Search Engine"] == "MSGFPlus_2021_03_22"
+    assert row["Search Engine"] == "msgfplus_2021_03_22"
 
 
 def test_engine_parsers_msgfplus_multiple_psms():
