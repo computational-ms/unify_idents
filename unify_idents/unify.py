@@ -37,6 +37,8 @@ class UnifiedDataFrame:
         return iter(self.rows)
 
     def update_protein_mapping(self, mapped_peptides):
+        self.df["uCalc m/z"] = pd.Series(dtype=float)
+        self.df["uCalc Mass"] = pd.Series(dtype=float)
         for _id, row in self.df.iterrows():
             mapping = mapped_peptides[row["Sequence"]]
             starts = []
@@ -70,9 +72,12 @@ class UnifiedDataFrame:
             charge = int(row["Charge"])
             calc_mz = self.calc_mz(calc_mass, charge)
             self.df.at[_id, "uCalc m/z"] = calc_mz
-            self.df.at[_id, "uCalc Mass"] = calc_mass + PROTON
+            self.df.at[_id, "uCalc Mass"] = calc_mass  # + PROTON
             acc = (
-                (float(row["Exp m/z"]) - float(self.df.at[_id, "uCalc m/z"]))
+                (
+                    float(self.df.at[_id, "Exp m/z"])
+                    - float(self.df.at[_id, "uCalc m/z"])
+                )
                 / self.df.at[_id, "uCalc m/z"]
                 * 1e6
             )
