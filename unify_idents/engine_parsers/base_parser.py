@@ -52,10 +52,10 @@ class __BaseParser:
     def general_fixes(self, row):
         if row.get("Raw data location") is None or row["Raw data location"] == "":
             row["Raw data location"] = row["Spectrum Title"].split(".")[0]
-        if ".mgf" in row["Raw data location"]:
-            row["Raw data locations"] = row["Raw data location"].replace(
-                ".mgf", ".mzML"
-            )
+#         if ".mgf" in row["Raw data location"]:
+#             row["Raw data locations"] = row["Raw data location"].replace(
+#                 ".mgf", ".mzML"
+#             )
         basename = os.path.basename(row["Raw data location"]).split(".")[0]
         row["Retention Time (s)"] = float(
             self.scan_rt_lookup[basename]["scan2rt"][int(row["Spectrum ID"])]
