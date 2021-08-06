@@ -33,7 +33,7 @@ def test_engine_parsers_msgfplus_file_matches_parser():
     assert msgf_parser_class.file_matches_parser(input_file) is True
 
 
-def test_engine_parsers_msgfplus_file_matches_parser_fail_with_omssa_file():
+def test_engine_parsers_msgfplus_file_matches_parser_fail_with_omsa_file():
     msgf_parser_class = MSGFPlus_2021_03_22
     input_file = (
         Path(__file__).parent / "data" / "test_Creinhardtii_QE_pH11_omssa_2_1_9.csv"
