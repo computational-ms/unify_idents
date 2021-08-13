@@ -15,9 +15,24 @@ def test_engine_parsers_BaseParser_init():
             "rt_pickle_name": rt_lookup_path,
             "database": db_path,
             "modifications": [
-                "C,fix,any,Carbamidomethyl",
-                "M,opt,any,Oxidation",
-                "*,opt,Prot-N-term,Acetyl",
+                {
+                    "aa": "M",
+                    "type": "opt",
+                    "position": "any",
+                    "name": "Oxidation",
+                },
+                {
+                    "aa": "C",
+                    "type": "fix",
+                    "position": "any",
+                    "name": "Carbamidomethyl",
+                },
+                {
+                    "aa": "*",
+                    "type": "opt",
+                    "position": "Prot-N-term",
+                    "name": "Acetyl",
+                },
             ],
         },
     )
@@ -41,9 +56,24 @@ def test_engine_parsers_BaseParser_map_mod_names():
             "rt_pickle_name": rt_lookup_path,
             "database": db_path,
             "modifications": [
-                "C,fix,any,Carbamidomethyl",
-                "M,opt,any,Oxidation",
-                "*,opt,Prot-N-term,Acetyl",
+                {
+                    "aa": "M",
+                    "type": "opt",
+                    "position": "any",
+                    "name": "Oxidation",
+                },
+                {
+                    "aa": "C",
+                    "type": "fix",
+                    "position": "any",
+                    "name": "Carbamidomethyl",
+                },
+                {
+                    "aa": "*",
+                    "type": "opt",
+                    "position": "Prot-N-term",
+                    "name": "Acetyl",
+                },
             ],
         },
     )
@@ -65,9 +95,24 @@ def test_engine_parsers_BaseParser_map_mod_names_nterm():
             "rt_pickle_name": rt_lookup_path,
             "database": db_path,
             "modifications": [
-                "C,fix,any,Carbamidomethyl",
-                "M,opt,any,Oxidation",
-                "*,opt,Prot-N-term,Acetyl",
+                {
+                    "aa": "M",
+                    "type": "opt",
+                    "position": "any",
+                    "name": "Oxidation",
+                },
+                {
+                    "aa": "C",
+                    "type": "fix",
+                    "position": "any",
+                    "name": "Carbamidomethyl",
+                },
+                {
+                    "aa": "*",
+                    "type": "opt",
+                    "position": "Prot-N-term",
+                    "name": "Acetyl",
+                },
             ],
         },
     )
@@ -89,9 +134,24 @@ def test_engine_parsers_BaseParser_read_rt_lookup_file():
             "rt_pickle_name": rt_lookup_path,
             "database": db_path,
             "modifications": [
-                "C,fix,any,Carbamidomethyl",
-                "M,opt,any,Oxidation",
-                "*,opt,Prot-N-term,Acetyl",
+                {
+                    "aa": "M",
+                    "type": "opt",
+                    "position": "any",
+                    "name": "Oxidation",
+                },
+                {
+                    "aa": "C",
+                    "type": "fix",
+                    "position": "any",
+                    "name": "Carbamidomethyl",
+                },
+                {
+                    "aa": "*",
+                    "type": "opt",
+                    "position": "Prot-N-term",
+                    "name": "Acetyl",
+                },
             ],
         },
     )

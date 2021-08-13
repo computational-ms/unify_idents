@@ -96,18 +96,18 @@ class __BaseParser:
         for mod_type in ["fix", "opt"]:
             for modification in self.params["mods"][mod_type]:
                 aa = modification["aa"]
-                pos = modification["pos"]
+                pos = modification["position"]
                 name = modification["name"]
                 if name not in self.mod_dict.keys():
                     self.mod_dict[name] = {
                         "mass": modification["mass"],
                         "aa": set(),
-                        "pos": set(),
+                        "position": set(),
                     }
                 self.mod_dict[name]["aa"].add(aa)
 
                 self.mod_dict[name]["aa"].add(pos)
-                self.mod_dict[name]["pos"].add(pos)
+                self.mod_dict[name]["position"].add(pos)
 
                 if "N-term" in pos:
                     self.n_term_replacement[name] = aa
@@ -133,7 +133,7 @@ class __BaseParser:
                     if row["Sequence"][int(pos)] in self.mod_dict[name]["aa"]:
                         pos = int(pos) + 1
                         mods.append(f"{name}:{pos}")  # minus
-                    elif "Prot-N-term" in self.mod_dict[name]["pos"]:
+                    elif "Prot-N-term" in self.mod_dict[name]["position"]:
                         # n-term mod
                         mods.append(f"{name}:0")
         return ";".join(mods)
