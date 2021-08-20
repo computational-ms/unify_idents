@@ -2,7 +2,7 @@ loguru==0.5.3
 pandas==1.2.4
 pytest==6.2.4
 uparma==0.4.1
-unimod-mapper>=0.5.1
+unimod-mapper==0.6.0
 peptide-mapper==0.4.2
 chemical-composition==1.0.1
 pyahocorasick==1.4.2
