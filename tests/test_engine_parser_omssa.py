@@ -4,7 +4,7 @@ from unify_idents.unify import UnifiedDataFrame, UnifiedRow
 from unify_idents.engine_parsers.omssa_parser import OmssaParser
 import uparma
 
-from collections import Iterable
+from collections.abc import Iterable
 import pytest
 
 
@@ -21,9 +21,24 @@ def test_engine_parsers_omssa_init():
             "rt_pickle_name": rt_lookup_path,
             "database": db_path,
             "modifications": [
-                "C,fix,any,Carbamidomethyl",
-                "M,opt,any,Oxidation",
-                "*,opt,Prot-N-term,Acetyl",
+                {
+                    "aa": "M",
+                    "type": "opt",
+                    "position": "any",
+                    "name": "Oxidation",
+                },
+                {
+                    "aa": "C",
+                    "type": "fix",
+                    "position": "any",
+                    "name": "Carbamidomethyl",
+                },
+                {
+                    "aa": "*",
+                    "type": "opt",
+                    "position": "Prot-N-term",
+                    "name": "Acetyl",
+                },
             ],
             "omssa_mod_dir": Path(__file__).parent / "data",
             "Raw data location": "/Users/cellzome/Dev/Gits/Ursgal/ursgal_master/example_data/test_Creinhardtii_QE_pH11.mgf",
@@ -54,9 +69,24 @@ def test_engine_parsers_omssa_unify_row():
             "rt_pickle_name": rt_lookup_path,
             "database": db_path,
             "modifications": [
-                "C,fix,any,Carbamidomethyl",
-                "M,opt,any,Oxidation",
-                "*,opt,Prot-N-term,Acetyl",
+                {
+                    "aa": "M",
+                    "type": "opt",
+                    "position": "any",
+                    "name": "Oxidation",
+                },
+                {
+                    "aa": "C",
+                    "type": "fix",
+                    "position": "any",
+                    "name": "Carbamidomethyl",
+                },
+                {
+                    "aa": "*",
+                    "type": "opt",
+                    "position": "Prot-N-term",
+                    "name": "Acetyl",
+                },
             ],
             "omssa_mod_dir": Path(__file__).parent / "data",
             "Raw data location": "/Users/cellzome/Dev/Gits/Ursgal/ursgal_master/example_data/test_Creinhardtii_QE_pH11.mgf",
@@ -79,9 +109,24 @@ def test_engine_parsers_omssa_is_iterable():
             "rt_pickle_name": rt_lookup_path,
             "database": db_path,
             "modifications": [
-                "C,fix,any,Carbamidomethyl",
-                "M,opt,any,Oxidation",
-                "*,opt,Prot-N-term,Acetyl",
+                {
+                    "aa": "M",
+                    "type": "opt",
+                    "position": "any",
+                    "name": "Oxidation",
+                },
+                {
+                    "aa": "C",
+                    "type": "fix",
+                    "position": "any",
+                    "name": "Carbamidomethyl",
+                },
+                {
+                    "aa": "*",
+                    "type": "opt",
+                    "position": "Prot-N-term",
+                    "name": "Acetyl",
+                },
             ],
             "omssa_mod_dir": Path(__file__).parent / "data",
             "Raw data location": "/Users/cellzome/Dev/Gits/Ursgal/ursgal_master/example_data/test_Creinhardtii_QE_pH11.mgf",
@@ -103,9 +148,24 @@ def test_engine_parsers_omssa_next():
             "rt_pickle_name": rt_lookup_path,
             "database": db_path,
             "modifications": [
-                "C,fix,any,Carbamidomethyl",
-                "M,opt,any,Oxidation",
-                "*,opt,Prot-N-term,Acetyl",
+                {
+                    "aa": "M",
+                    "type": "opt",
+                    "position": "any",
+                    "name": "Oxidation",
+                },
+                {
+                    "aa": "C",
+                    "type": "fix",
+                    "position": "any",
+                    "name": "Carbamidomethyl",
+                },
+                {
+                    "aa": "*",
+                    "type": "opt",
+                    "position": "Prot-N-term",
+                    "name": "Acetyl",
+                },
             ],
             "omssa_mod_dir": Path(__file__).parent / "data",
             "Raw data location": "/Users/cellzome/Dev/Gits/Ursgal/ursgal_master/example_data/test_Creinhardtii_QE_pH11.mgf",

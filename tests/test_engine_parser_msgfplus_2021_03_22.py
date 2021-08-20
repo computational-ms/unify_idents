@@ -3,7 +3,7 @@ from pathlib import Path
 from unify_idents.unify import UnifiedDataFrame
 from unify_idents.engine_parsers.msgfplus_2021_03_22_parser import MSGFPlus_2021_03_22
 import uparma
-from collections import Iterable
+from collections.abc import Iterable
 from unify_idents import UnifiedRow
 
 
@@ -18,9 +18,24 @@ def test_engine_parsers_msgfplus_init():
             "rt_pickle_name": rt_lookup_path,
             "database": db_path,
             "modifications": [
-                "C,fix,any,Carbamidomethyl",
-                "M,opt,any,Oxidation",
-                "*,opt,Prot-N-term,Acetyl",
+                {
+                    "aa": "M",
+                    "type": "opt",
+                    "position": "any",
+                    "name": "Oxidation",
+                },
+                {
+                    "aa": "C",
+                    "type": "fix",
+                    "position": "any",
+                    "name": "Carbamidomethyl",
+                },
+                {
+                    "aa": "*",
+                    "type": "opt",
+                    "position": "Prot-N-term",
+                    "name": "Acetyl",
+                },
             ],
             "omssa_mod_dir": Path(__file__).parent / "data",
         },
@@ -52,9 +67,24 @@ def test_engine_parsers_msgfplus_is_iterable():
             "rt_pickle_name": rt_lookup_path,
             "database": db_path,
             "modifications": [
-                "C,fix,any,Carbamidomethyl",
-                "M,opt,any,Oxidation",
-                "*,opt,Prot-N-term,Acetyl",
+                {
+                    "aa": "M",
+                    "type": "opt",
+                    "position": "any",
+                    "name": "Oxidation",
+                },
+                {
+                    "aa": "C",
+                    "type": "fix",
+                    "position": "any",
+                    "name": "Carbamidomethyl",
+                },
+                {
+                    "aa": "*",
+                    "type": "opt",
+                    "position": "Prot-N-term",
+                    "name": "Acetyl",
+                },
             ],
             "omssa_mod_dir": Path(__file__).parent / "data",
         },
@@ -74,9 +104,24 @@ def test_engine_parsers_msgfplus_iter_items():
             "rt_pickle_name": rt_lookup_path,
             "database": db_path,
             "modifications": [
-                "C,fix,any,Carbamidomethyl",
-                "M,opt,any,Oxidation",
-                "*,opt,Prot-N-term,Acetyl",
+                {
+                    "aa": "M",
+                    "type": "opt",
+                    "position": "any",
+                    "name": "Oxidation",
+                },
+                {
+                    "aa": "C",
+                    "type": "fix",
+                    "position": "any",
+                    "name": "Carbamidomethyl",
+                },
+                {
+                    "aa": "*",
+                    "type": "opt",
+                    "position": "Prot-N-term",
+                    "name": "Acetyl",
+                },
             ],
             "omssa_mod_dir": Path(__file__).parent / "data",
         },
@@ -97,9 +142,24 @@ def test_engine_parsers_msgfplus_get_peptide_lookup():
             "rt_pickle_name": rt_lookup_path,
             "database": db_path,
             "modifications": [
-                "C,fix,any,Carbamidomethyl",
-                "M,opt,any,Oxidation",
-                "*,opt,Prot-N-term,Acetyl",
+                {
+                    "aa": "M",
+                    "type": "opt",
+                    "position": "any",
+                    "name": "Oxidation",
+                },
+                {
+                    "aa": "C",
+                    "type": "fix",
+                    "position": "any",
+                    "name": "Carbamidomethyl",
+                },
+                {
+                    "aa": "*",
+                    "type": "opt",
+                    "position": "Prot-N-term",
+                    "name": "Acetyl",
+                },
             ],
             "omssa_mod_dir": Path(__file__).parent / "data",
         },
@@ -129,9 +189,24 @@ def test_engine_parsers_msgfplus_internal_next():
             "rt_pickle_name": rt_lookup_path,
             "database": db_path,
             "modifications": [
-                "C,fix,any,Carbamidomethyl",
-                "M,opt,any,Oxidation",
-                "*,opt,Prot-N-term,Acetyl",
+                {
+                    "aa": "M",
+                    "type": "opt",
+                    "position": "any",
+                    "name": "Oxidation",
+                },
+                {
+                    "aa": "C",
+                    "type": "fix",
+                    "position": "any",
+                    "name": "Carbamidomethyl",
+                },
+                {
+                    "aa": "*",
+                    "type": "opt",
+                    "position": "Prot-N-term",
+                    "name": "Acetyl",
+                },
             ],
             "omssa_mod_dir": Path(__file__).parent / "data",
         },
@@ -161,9 +236,24 @@ def test_engine_parsers_msgfplus_next():
             "rt_pickle_name": rt_lookup_path,
             "database": db_path,
             "modifications": [
-                "C,fix,any,Carbamidomethyl",
-                "M,opt,any,Oxidation",
-                "*,opt,Prot-N-term,Acetyl",
+                {
+                    "aa": "M",
+                    "type": "opt",
+                    "position": "any",
+                    "name": "Oxidation",
+                },
+                {
+                    "aa": "C",
+                    "type": "fix",
+                    "position": "any",
+                    "name": "Carbamidomethyl",
+                },
+                {
+                    "aa": "*",
+                    "type": "opt",
+                    "position": "Prot-N-term",
+                    "name": "Acetyl",
+                },
             ],
             "omssa_mod_dir": Path(__file__).parent / "data",
         },
@@ -188,9 +278,24 @@ def test_engine_parsers_msgfplus_multiple_psms():
             "rt_pickle_name": rt_lookup_path,
             "database": db_path,
             "modifications": [
-                "C,fix,any,Carbamidomethyl",
-                "M,opt,any,Oxidation",
-                "*,opt,Prot-N-term,Acetyl",
+                {
+                    "aa": "M",
+                    "type": "opt",
+                    "position": "any",
+                    "name": "Oxidation",
+                },
+                {
+                    "aa": "C",
+                    "type": "fix",
+                    "position": "any",
+                    "name": "Carbamidomethyl",
+                },
+                {
+                    "aa": "*",
+                    "type": "opt",
+                    "position": "Prot-N-term",
+                    "name": "Acetyl",
+                },
             ],
             "omssa_mod_dir": Path(__file__).parent / "data",
         },

@@ -273,8 +273,8 @@ class MSFragger3Parser(__BaseParser):
                         meta_mod_info = self.mod_dict[new_name]
                         real_pos = pos
                         if (
-                            "Prot-N-term" in self.mod_dict[new_name]["pos"]
-                            or "N-term" in self.mod_dict[new_name]["pos"]
+                            "Prot-N-term" in self.mod_dict[new_name]["position"]
+                            or "N-term" in self.mod_dict[new_name]["position"]
                         ):
                             real_pos = 0  # should be 1 and is set to 0
                         final_mods.append(f"{new_name}:{real_pos}")
@@ -285,8 +285,8 @@ class MSFragger3Parser(__BaseParser):
                     if new_name in self.mod_dict:
                         real_pos = pos
                         if (
-                            "Prot-N-term" in self.mod_dict[new_name]["pos"]
-                            or "N-term" in self.mod_dict[new_name]["pos"]
+                            "Prot-N-term" in self.mod_dict[new_name]["position"]
+                            or "N-term" in self.mod_dict[new_name]["position"]
                         ):
                             real_pos = 0  # should be 1 and is set to 0
                         final_mods.append(f"{new_name}:{pos}")
