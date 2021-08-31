@@ -15,12 +15,32 @@ PROTON = 1.00727646677
 
 # inherit from pd.DataFrame
 class UnifiedDataFrame:
+
+    """Data container holding a `pd.DataFrame` with methods to augment with additional data
+
+    Attributes:
+        cc (ChemicalComposition): ChemicalCompostion object
+        df (pd.DataFrame): DataFrame holding ident info
+        mapper (UPeptideMapper): PeptideMapper object
+        params (dict): UnifiedDataFrame specific parameters
+            * delimiter (default <|>)
+        rows (list): list of objects to initialize pd.DataFrame
+    """
+
     def __init__(self, rows, db_path, params=None):
+        """Initialize UnifiedDataFrame
+
+        Args:
+            rows (list): list of objects to initialize pd.DataFrame
+            db_path (str): path to fasta file for mapping peptides
+            params (dict, optional): UnifiedDataFrame specific parameters
+                * delimiter (default <|>)
+        """
         if params is None:
             self.params = {}
         else:
             self.params = params
-        self.DELIMITER = "<|>"
+        self.DELIMITER = self.params.get("delimiter", "<|>")
         self.rows = rows
         self.df = pd.DataFrame(rows)
         # where do we get the database
@@ -31,12 +51,22 @@ class UnifiedDataFrame:
         self.update_protein_mapping(mapped_peptides)
 
     def __len__(self):
+        """Return length of dataframe
+
+        Returns:
+            int: Number of rows in dataframe
+        """
         return len(self.df)
 
     def __iter__(self):
         return iter(self.rows)
 
     def update_protein_mapping(self, mapped_peptides):
+        """Add protein ids and recalculated masses/mz/offsets for each row
+
+        Args:
+            mapped_peptides (list): list of peptide sequences to map
+        """
         self.df["uCalc m/z"] = pd.Series(dtype=float)
         self.df["uCalc Mass"] = pd.Series(dtype=float)
         for _id, row in self.df.iterrows():
@@ -86,9 +116,27 @@ class UnifiedDataFrame:
         return
 
     def calc_mz(self, mass, charge):
+        """Calculate mz value.
+
+        Args:
+            mass (float): Precursor mass
+            charge (TYPE): Precursor charge
+
+        Returns:
+            float: Precursor mz
+        """
         return (mass + (charge * PROTON)) / charge
 
     def calc_mass(self, mz, charge):
+        """Calculate mass.
+
+        Args:
+            mz (float): Precursor mz
+            charge (int): Precursor charge
+
+        Returns:
+            float: Precursor mass
+        """
         calc_mass = mz * charge - (charge * PROTON)
         return calc_mass
 
@@ -149,7 +197,17 @@ class UnifiedRow:
 
 class Unify:
     def __init__(self, input_file, params=None):
-        """Summary"""
+        """Interface to unify ident outputs from the following engines:
+            * MSAmanda
+            * MSFragger3
+            * MSGF+ (2021_03_22)
+            * OMSSA (2.1.9)
+            * X!Tandem (alanine)
+
+        Args:
+            input_file (str): path to file to unify
+            params (dict, optional): Description
+        """
         self.input_file = input_file
         self.params = params
         if not isinstance(self.input_file, Path):
@@ -171,6 +229,11 @@ class Unify:
         return line
 
     def _get_parser_classes(self):
+        """Return list of all implemented engine parsers.
+
+        Returns:
+            list: list of python classes
+        """
         classes = []
         fstring = "unify_idents.engine_parsers.{module}"
         all_modules = []
@@ -190,6 +253,14 @@ class Unify:
         return classes
 
     def _get_parser(self, input_file):
+        """Get the correct parser for a give ident file.
+
+        Args:
+            input_file (str): path to output file of a given search engine
+
+        Returns:
+            cls: Parser class matching the given input file
+        """
         all_parsers = self._get_parser_classes()
         for parser_class in all_parsers:
             if parser_class.file_matches_parser(input_file) is True:
@@ -198,6 +269,14 @@ class Unify:
         return parser
 
     def read_rt_lookup_file(self, scan_rt_lookup_path):
+        """Read RT lookup file and transform to dict.
+
+        Args:
+            scan_rt_lookup_path (str): path to bz2 compressed scan rt file
+
+        Returns:
+            dict: Dict mapping scan2rt, rt2scan and scan2mz grouped by filename
+        """
         with bz2.open(scan_rt_lookup_path, "rt") as fin:
             lookup = {}
             reader = csv.DictReader(fin)
@@ -217,6 +296,11 @@ class Unify:
         return lookup
 
     def get_dataframe(self):
+        """Create a UnifiedDataFrame object.
+
+        Returns:
+            UnifiedDataFrame
+        """
         data = []
         for unified_row in self:
             if unified_row is not None:
