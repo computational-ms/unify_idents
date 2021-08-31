@@ -1,11 +1,13 @@
+import csv
+import itertools
+import re
+from decimal import ROUND_UP, Decimal, getcontext
+from pathlib import Path
+
+from loguru import logger
+
 from unify_idents import UnifiedRow
 from unify_idents.engine_parsers.base_parser import __IdentBaseParser
-from pathlib import Path
-import re
-import csv
-from decimal import Decimal, getcontext, ROUND_UP
-import itertools
-from loguru import logger
 
 """
 1. Raw data location

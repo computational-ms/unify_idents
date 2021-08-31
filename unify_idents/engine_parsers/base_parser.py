@@ -1,57 +1,102 @@
 import bz2
 import csv
-from pathlib import Path
 import os
+from decimal import Decimal
+from pathlib import Path
 
 import uparma
+from chemical_composition import ChemicalComposition
+from loguru import logger
 from peptide_mapper.mapper import UPeptideMapper
 from unimod_mapper.unimod_mapper import UnimodMapper
-from chemical_composition import ChemicalComposition
 
 from unify_idents import UnifiedRow
-from loguru import logger
-from decimal import Decimal
+
+
+class BaseParser:
+    def __init__(self, input_file, params=None):
+        pass
+
+    def calc_mz(self, mass, charge):
+        PROTON = 1.00727646677
+        return (float(mass) + (int(charge) * PROTON)) / int(charge)
+
+    def get_column_names(self):
+        headers = self.param_mapper.get_default_params(style=self.style)[
+            "header_translations"
+        ]["translated_value"]
+        return headers
+
+    def read_rt_lookup_file(self, scan_rt_lookup_path):
+        with bz2.open(scan_rt_lookup_path, "rt") as fin:
+            lookup = {}
+            reader = csv.DictReader(fin)
+            for line in reader:
+                file = Path(line["File"])
+                file = str(file.stem).rstrip(
+                    "".join(file.suffixes)
+                )  # remove all suffixes, eg. idx.gz
+                lookup.setdefault(file, {"scan2rt": {}, "rt2scan": {}, "scan2mz": {}})
+                scan, rt, mz = (
+                    line["Spectrum ID"],
+                    line["RT"],
+                    line["Precursor mz"],
+                )
+                lookup[file]["scan2rt"][int(scan)] = float(rt)
+                lookup[file]["rt2scan"][float(rt)] = int(scan)
+                lookup[file]["scan2mz"][int(scan)] = float(mz)
+        return lookup
+
 
 # get from params
-class __QuantBaseParser:
+class __QuantBaseParser(BaseParser):
     def __init__(self, input_file, params=None):
+        super().__init__(input_file, params)
         if params is None:
             self.params = {}
         else:
             self.params = params
         self.param_mapper = uparma.UParma()
         self.cc = ChemicalComposition()
+        self.scan_rt_path = self.params.get("rt_pickle_name", None)
+        self.scan_rt_lookup = self.read_rt_lookup_file(self.scan_rt_path)
+        self.required_headers = set(
+            [
+                "Spectrum ID",
+                "Linked Spectrum ID",
+                "Raw data location",
+                "Retention Time (s)",
+                "Chemical Composition",
+                "Charge",
+                "Quant Value",
+                "Raw Quant Value",
+                "MZ Delta",
+                "PPM",
+                "FWHM",
+                "Label",
+                "Condition",
+                "Score",
+                "Quant Group",
+                "Processing Level",
+                "Quant Run ID",
+                "Coalescence",
+            ]
+        )
 
     def __iter__(self):
         return self
 
 class __BaseParser:
 
-    """BaseParser with common functionality for all parsers.
+    """BaseParser with common functionality for all parsers."""
 
-    Attributes:
-        cc (ChemicalComposition): ChemicalCompostion object
-        cols_to_add (list): columns to add to row_dict
-        cols_to_remove (list): columns to remove from row_dict
-        fixed_mods (dict): Dict describing static modifications
-        mass_format_string (str): fstring to format float masses to string
-        mod_dict (dict): Dict with metadata for each mod
-        mod_mapper (UnimodMapper): unimodmapper object
-        n_term_replacement (dict): Dict mapping N-term replacement to mods
-        opt_mods (dict): dict describing variable mods
-        param_mapper (uparma.UParma): uparma parameter mapper
-        params (dict): parser specific parameters
-        scan_rt_lookup (dict): formatted scan2rt, rt2scan, and scan2mz grouped by file
-        scan_rt_path (str): path to the scan rt lookup file (bz2 compressed)
-    """
+    def check_required_headers(self, row):
+        return self.required_headers.issubset(set(row.keys()))
 
+
+class __IdentBaseParser(BaseParser):
     def __init__(self, input_file, params=None):
-        """Initialize BaseParser
-
-        Args:
-            input_file (str): path to file to unify
-            params (dict, optional): parser specific parameters
-        """
+        super().__init__(input_file, params)
         if params is None:
             self.params = {}
         else:
@@ -104,6 +149,10 @@ class __BaseParser:
         """
         if row.get("Raw data location") is None or row["Raw data location"] == "":
             row["Raw data location"] = row["Spectrum Title"].split(".")[0]
+        if ".mgf" in row["Raw data location"]:
+            row["Raw data locations"] = row["Raw data location"].replace(
+                ".mgf", ".mzML"
+            )
         basename = os.path.basename(row["Raw data location"]).split(".")[0]
         row["Retention Time (s)"] = float(
             self.scan_rt_lookup[basename]["scan2rt"][int(row["Spectrum ID"])]
@@ -118,18 +167,16 @@ class __BaseParser:
     def check_mod_positions(self, row):
         return row
 
-    def calc_mz(self, mass, charge):
-        """Calculate precursor mz.
+    # currently not used
+    # def recalc_masses(row):
+    #     self.cc.use(sequence=row["Sequence"], modifications=row["Modifications"])
+    #     row["uCalc m/z"] = self.calc_mz(self.cc.mass(), int(row["Charge"]))
+    #     row["uCalc mass"] = self.cc.mass()
+    #     return row
 
-        Args:
-            mass (float): Description
-            charge (float/int): Description
-
-        Returns:
-            float: Precursor mz
-        """
-        PROTON = 1.00727646677
-        return (float(mass) + (int(charge) * PROTON)) / int(charge)
+    # def calc_mz(self, mass, charge):
+    #     PROTON = 1.00727646677
+    #     return (float(mass) + (int(charge) * PROTON)) / int(charge)
 
     def create_mod_dicts(self):
         """Create dict containing meta information about static and variable mods."""
@@ -229,30 +276,153 @@ class __BaseParser:
         row["Sequence Stop"] = DELIMITER.join(stops)
         return row
 
-    def read_rt_lookup_file(self, scan_rt_lookup_path):
-        """Parse rt lookup file into dict structure grouped by filename.
+    # def read_rt_lookup_file(self, scan_rt_lookup_path):
+    #     with bz2.open(scan_rt_lookup_path, "rt") as fin:
+    #         lookup = {}
+    #         reader = csv.DictReader(fin)
+    #         for line in reader:
+    #             file = Path(line["File"])
+    #             file = str(file.stem).rstrip(
+    #                 "".join(file.suffixes)
+    #             )  # remove all suffixes, eg. idx.gz
+    #             lookup.setdefault(file, {"scan2rt": {}, "rt2scan": {}, "scan2mz": {}})
+    #             scan, rt, mz = (
+    #                 line["Spectrum ID"],
+    #                 line["RT"],
+    #                 line["Precursor mz"],
+    #             )
+    #             lookup[file]["scan2rt"][int(scan)] = float(rt)
+    #             lookup[file]["rt2scan"][float(rt)] = int(scan)
+    #             lookup[file]["scan2mz"][int(scan)] = float(mz)
+    #     return lookup
 
-        Args:
-            scan_rt_lookup_path (str): path to rt lookup file (bz2 compressed)
-
-        Returns:
-            dict: rt_lookup
-        """
-        with bz2.open(scan_rt_lookup_path, "rt") as fin:
-            lookup = {}
-            reader = csv.DictReader(fin)
-            for line in reader:
-                file = Path(line["File"])
-                file = str(file.stem).rstrip(
-                    "".join(file.suffixes)
-                )  # remove all suffixes, eg. idx.gz
-                lookup.setdefault(file, {"scan2rt": {}, "rt2scan": {}, "scan2mz": {}})
-                scan, rt, mz = (
-                    line["Spectrum ID"],
-                    line["RT"],
-                    line["Precursor mz"],
+    def map_mods(self, mods):
+        # TODO remove logger.warning functions and replace by logger
+        self.params["mods"] = {"fix": [], "opt": []}
+        for ursgal_index, mod in enumerate(sorted(mods)):
+            mod_params = mod.split(",")
+            if len(mod_params) >= 6 or len(mod_params) <= 3:
+                logger.warning(
+                    """
+For modifications, please use the ursgal_style:
+'amino_acid,opt/fix,position,Unimod PSI-MS Name'
+or
+'amino_acid,opt/fix,position,name,chemical_composition'
+Continue without modification {0} """.format(
+                        mod
+                    )
                 )
-                lookup[file]["scan2rt"][int(scan)] = float(rt)
-                lookup[file]["rt2scan"][float(rt)] = int(scan)
-                lookup[file]["scan2mz"][int(scan)] = float(mz)
-        return lookup
+                continue
+            aa = mod_params[0].strip()
+            mod_option = mod_params[1].strip()
+            pos = mod_params[2].strip()
+            unimod = False
+            unimod_id = None
+
+            if len(mod_params) == 4:
+                try:
+                    unimod_id = int(mod_params[3].strip())
+                    unimod_name = self.mod_mapper.id2first_name(unimod_id)
+                    mass = self.mod_mapper.id2mass(unimod_id)
+                    composition = self.mod_mapper.id2composition(unimod_id)
+                    if unimod_name is None:
+                        logger.warning(
+                            """
+'{1}' is not a Unimod modification
+please change it to a valid Unimod Accession # or PSI-MS Unimod Name
+or add the chemical composition hill notation (including 1)
+e.g.: H-1N1O2
+ursgal_style: 'amino_acid,opt/fix,position,name,chemical_composition'
+Continue without modification {0} """.format(
+                                mod, unimod_id
+                            )
+                        )
+                        continue
+                    unimod = True
+                    name = unimod_name
+                except:
+                    unimod_name = mod_params[3].strip()
+                    unimod_id = self.mod_mapper.name2first_id(unimod_name)
+                    mass = self.mod_mapper.name2first_mass(unimod_name)
+                    composition = self.mod_mapper.name2first_composition(unimod_name)
+                    if unimod_id is None:
+                        logger.warning(
+                            """
+'{1}' is not a Unimod modification
+please change it to a valid PSI-MS Unimod Name or Unimod Accession #
+or add the chemical composition hill notation (including 1)
+e.g.: H-1N1O2
+ursgal_style: 'amino_acid,opt/fix,position,name,chemical_composition'
+Continue without modification {0} """.format(
+                                mod, unimod_name
+                            )
+                        )
+                        continue
+                    unimod = True
+                    name = unimod_name
+
+            elif len(mod_params) == 5:
+                name = mod_params[3].strip()
+                chemical_formula = mod_params[4].strip()
+                chemical_composition = ursgal.ChemicalComposition()
+                chemical_composition.add_chemical_formula(chemical_formula)
+                composition = chemical_composition
+                composition_unimod_style = chemical_composition.hill_notation_unimod()
+                unimod_name_list = self.mod_mapper.composition2name_list(
+                    composition_unimod_style
+                )
+                unimod_id_list = self.mod_mapper.composition2id_list(
+                    composition_unimod_style
+                )
+                mass = self.mod_mapper.composition2mass(composition_unimod_style)
+                for i, unimod_name in enumerate(unimod_name_list):
+                    if unimod_name == name:
+                        unimod_id = unimod_id_list[i]
+                        unimod = True
+                        break
+                if unimod == False and unimod_name_list != []:
+                    logger.warning(
+                        """
+'{0}' is not a Unimod modification
+but the chemical composition you specified is included in Unimod.
+Please use one of the Unimod names:
+{1}
+Continue without modification {2} """.format(
+                            name, unimod_name_list, mod
+                        )
+                    )
+                    continue
+                if unimod == False and unimod_name_list == []:
+                    logger.warning(
+                        """
+'{0}' is not a Unimod modification
+trying to continue with the chemical composition you specified
+This is not working with OMSSA so far""".format(
+                            mod,
+                        )
+                    )
+                    mass = chemical_composition._mass()
+                    # write new userdefined modifications Xml in unimod style
+
+            mod_dict = {
+                "_id": ursgal_index,
+                "aa": aa,
+                "mass": mass,
+                "pos": pos,
+                "name": name,
+                "composition": composition,
+                "org": mod,
+                "id": unimod_id,
+                "unimod": unimod,
+            }
+            if mod_dict["unimod"] == False:
+                self.mod_mapper.writeXML(mod_dict)
+
+            self.params["mods"][mod_option].append(mod_dict)
+        return self.params["mods"]
+
+    # def get_column_names(self):
+    #     headers = self.param_mapper.get_default_params(style=self.style)[
+    #         "header_translations"
+    #     ]["translated_value"]
+    #     return headers
