@@ -1,14 +1,13 @@
 #!/usr/bin/env python
 import csv
+import xml.etree.ElementTree as ElementTree
+from pathlib import Path
+from xml.etree.ElementTree import ParseError
 
 import uparma
 
 from unify_idents import UnifiedRow
 from unify_idents.engine_parsers.base_parser import __IdentBaseParser
-
-import xml.etree.ElementTree as ElementTree
-from xml.etree.ElementTree import ParseError
-from pathlib import Path
 
 
 class MSGFPlus_2021_03_22(__IdentBaseParser):

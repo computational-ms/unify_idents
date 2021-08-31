@@ -2,13 +2,12 @@
 import bz2
 import csv
 import inspect
-from peptide_mapper.mapper import UPeptideMapper
-from chemical_composition import ChemicalComposition
-
 from importlib import import_module
 from pathlib import Path
 
 import pandas as pd
+from chemical_composition import ChemicalComposition
+from peptide_mapper.mapper import UPeptideMapper
 
 PROTON = 1.00727646677
 

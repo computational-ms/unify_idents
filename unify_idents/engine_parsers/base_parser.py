@@ -1,26 +1,87 @@
 import bz2
 import csv
-from pathlib import Path
 import os
+from decimal import Decimal
+from pathlib import Path
 
 import uparma
+from chemical_composition import ChemicalComposition
+from loguru import logger
 from peptide_mapper.mapper import UPeptideMapper
 from unimod_mapper.unimod_mapper import UnimodMapper
-from chemical_composition import ChemicalComposition
 
 from unify_idents import UnifiedRow
-from loguru import logger
-from decimal import Decimal
+
+
+class BaseParser:
+    def __init__(self, input_file, params=None):
+        pass
+
+    def calc_mz(self, mass, charge):
+        PROTON = 1.00727646677
+        return (float(mass) + (int(charge) * PROTON)) / int(charge)
+
+    def get_column_names(self):
+        headers = self.param_mapper.get_default_params(style=self.style)[
+            "header_translations"
+        ]["translated_value"]
+        return headers
+
+    def read_rt_lookup_file(self, scan_rt_lookup_path):
+        with bz2.open(scan_rt_lookup_path, "rt") as fin:
+            lookup = {}
+            reader = csv.DictReader(fin)
+            for line in reader:
+                file = Path(line["File"])
+                file = str(file.stem).rstrip(
+                    "".join(file.suffixes)
+                )  # remove all suffixes, eg. idx.gz
+                lookup.setdefault(file, {"scan2rt": {}, "rt2scan": {}, "scan2mz": {}})
+                scan, rt, mz = (
+                    line["Spectrum ID"],
+                    line["RT"],
+                    line["Precursor mz"],
+                )
+                lookup[file]["scan2rt"][int(scan)] = float(rt)
+                lookup[file]["rt2scan"][float(rt)] = int(scan)
+                lookup[file]["scan2mz"][int(scan)] = float(mz)
+        return lookup
+
 
 # get from params
-class __QuantBaseParser:
+class __QuantBaseParser(BaseParser):
     def __init__(self, input_file, params=None):
+        super().__init__(input_file, params)
         if params is None:
             self.params = {}
         else:
             self.params = params
         self.param_mapper = uparma.UParma()
         self.cc = ChemicalComposition()
+        self.scan_rt_path = self.params.get("rt_pickle_name", None)
+        self.scan_rt_lookup = self.read_rt_lookup_file(self.scan_rt_path)
+        self.required_headers = set(
+            [
+                "Spectrum ID",
+                "Linked Spectrum ID",
+                "Raw data location",
+                "Retention Time (s)",
+                "Chemical Composition",
+                "Charge",
+                "Quant Value",
+                "Raw Quant Value",
+                "MZ Delta",
+                "PPM",
+                "FWHM",
+                "Label",
+                "Condition",
+                "Score",
+                "Quant Group",
+                "Processing Level",
+                "Quant Run ID",
+                "Coalescence",
+            ]
+        )
 
     def __iter__(self):
         return self
@@ -32,16 +93,19 @@ class __QuantBaseParser:
     def general_fixes(self, row):
         raise NotImplementedError
 
+    def check_required_headers(self, row):
+        return self.required_headers.issubset(set(row.keys()))
 
-class __IdentBaseParser:
+
+class __IdentBaseParser(BaseParser):
     def __init__(self, input_file, params=None):
+        super().__init__(input_file, params)
         if params is None:
             self.params = {}
         else:
             self.params = params
 
         self.param_mapper = uparma.UParma()
-        # self.peptide_mapper = UPeptideMapper(params["database"])
         self.mod_mapper = UnimodMapper()
         self.cc = ChemicalComposition()
 
@@ -71,7 +135,9 @@ class __IdentBaseParser:
         if row.get("Raw data location") is None or row["Raw data location"] == "":
             row["Raw data location"] = row["Spectrum Title"].split(".")[0]
         if ".mgf" in row["Raw data location"]:
-            row["Raw data locations"] = row["Raw data location"].replace(".mgf", ".mzML")
+            row["Raw data locations"] = row["Raw data location"].replace(
+                ".mgf", ".mzML"
+            )
         basename = os.path.basename(row["Raw data location"]).split(".")[0]
         row["Retention Time (s)"] = float(
             self.scan_rt_lookup[basename]["scan2rt"][int(row["Spectrum ID"])]
@@ -93,9 +159,9 @@ class __IdentBaseParser:
     #     row["uCalc mass"] = self.cc.mass()
     #     return row
 
-    def calc_mz(self, mass, charge):
-        PROTON = 1.00727646677
-        return (float(mass) + (int(charge) * PROTON)) / int(charge)
+    # def calc_mz(self, mass, charge):
+    #     PROTON = 1.00727646677
+    #     return (float(mass) + (int(charge) * PROTON)) / int(charge)
 
     def create_mod_dicts(self):
         self.fixed_mods = {}
@@ -178,25 +244,25 @@ class __IdentBaseParser:
         row["Sequence Stop"] = DELIMITER.join(stops)
         return row
 
-    def read_rt_lookup_file(self, scan_rt_lookup_path):
-        with bz2.open(scan_rt_lookup_path, "rt") as fin:
-            lookup = {}
-            reader = csv.DictReader(fin)
-            for line in reader:
-                file = Path(line["File"])
-                file = str(file.stem).rstrip(
-                    "".join(file.suffixes)
-                )  # remove all suffixes, eg. idx.gz
-                lookup.setdefault(file, {"scan2rt": {}, "rt2scan": {}, "scan2mz": {}})
-                scan, rt, mz = (
-                    line["Spectrum ID"],
-                    line["RT"],
-                    line["Precursor mz"],
-                )
-                lookup[file]["scan2rt"][int(scan)] = float(rt)
-                lookup[file]["rt2scan"][float(rt)] = int(scan)
-                lookup[file]["scan2mz"][int(scan)] = float(mz)
-        return lookup
+    # def read_rt_lookup_file(self, scan_rt_lookup_path):
+    #     with bz2.open(scan_rt_lookup_path, "rt") as fin:
+    #         lookup = {}
+    #         reader = csv.DictReader(fin)
+    #         for line in reader:
+    #             file = Path(line["File"])
+    #             file = str(file.stem).rstrip(
+    #                 "".join(file.suffixes)
+    #             )  # remove all suffixes, eg. idx.gz
+    #             lookup.setdefault(file, {"scan2rt": {}, "rt2scan": {}, "scan2mz": {}})
+    #             scan, rt, mz = (
+    #                 line["Spectrum ID"],
+    #                 line["RT"],
+    #                 line["Precursor mz"],
+    #             )
+    #             lookup[file]["scan2rt"][int(scan)] = float(rt)
+    #             lookup[file]["rt2scan"][float(rt)] = int(scan)
+    #             lookup[file]["scan2mz"][int(scan)] = float(mz)
+    #     return lookup
 
     def map_mods(self, mods):
         # TODO remove logger.warning functions and replace by logger
@@ -323,8 +389,8 @@ This is not working with OMSSA so far""".format(
             self.params["mods"][mod_option].append(mod_dict)
         return self.params["mods"]
 
-    def get_column_names(self):
-        headers = self.param_mapper.get_default_params(style=self.style)[
-            "header_translations"
-        ]["translated_value"]
-        return headers
+    # def get_column_names(self):
+    #     headers = self.param_mapper.get_default_params(style=self.style)[
+    #         "header_translations"
+    #     ]["translated_value"]
+    #     return headers

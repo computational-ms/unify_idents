@@ -30,8 +30,8 @@ def test_unify_get_parser_classes():
     )
     parsers = u._get_parser_classes()
     assert (
-        len(parsers) == 7
-    )  # currently msamanda, msfragger, msgfplus, omssa, xtandem and 2 dummies
+        len(parsers) == 8
+    )  # currently msamanda, msfragger, msgfplus, omssa, xtandem, flash_lfq and 2 dummies
 
 
 def test_unify_get_omssa_parser():
@@ -260,7 +260,9 @@ def test_unify_xtandem_df_masses():
     assert float(row["uCalc m/z"].iloc[0]) == pytest.approx(
         904.0782, abs=5e-6 * 904.0782
     )
-    assert float(row["Calc m/z"].iloc[0]) == pytest.approx(904.0782, abs=5e-6 * 904.0782)
+    assert float(row["Calc m/z"].iloc[0]) == pytest.approx(
+        904.0782, abs=5e-6 * 904.0782
+    )
     assert float(row["uCalc Mass"].iloc[0]) == pytest.approx(
         2710.2202, abs=5e-6 * 2710.2202
     )
@@ -298,7 +300,9 @@ def test_unify_msgf_df_masses():
     assert float(row["uCalc m/z"].iloc[0]) == pytest.approx(
         904.0782, abs=5e-6 * 904.0782
     )
-    assert float(row["Calc m/z"].iloc[0]) == pytest.approx(904.0782, abs=5e-6 * 904.0782)
+    assert float(row["Calc m/z"].iloc[0]) == pytest.approx(
+        904.0782, abs=5e-6 * 904.0782
+    )
     assert float(row["uCalc Mass"].iloc[0]) == pytest.approx(
         2710.2202, abs=5e-6 * 2710.2202
     )
@@ -335,7 +339,9 @@ def test_unify_msamanda_df_masses():
     assert float(row["uCalc m/z"].iloc[0]) == pytest.approx(
         904.0782, abs=5e-6 * 904.0782
     )
-    assert float(row["Calc m/z"].iloc[0]) == pytest.approx(904.0782, abs=5e-6 * 904.0782)
+    assert float(row["Calc m/z"].iloc[0]) == pytest.approx(
+        904.0782, abs=5e-6 * 904.0782
+    )
     assert float(row["uCalc Mass"].iloc[0]) == pytest.approx(
         2710.2202, abs=5e-6 * 2710.2202
     )
