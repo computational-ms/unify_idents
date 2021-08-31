@@ -22,6 +22,12 @@ col_mapping = {
 
 class FlashLFQ(__QuantBaseParser):
     def __init__(self, input_file, params=None):
+        """Summary
+
+        Args:
+            input_file (str): FlashLFQ QuantifiedPeaks.tsv
+            params (None, optional): FlashLFQ specific parameters
+        """
         super().__init__(input_file, params)
         self.style = "flash_lfq_style_1"
         self.column_mapping = self.get_column_names()
@@ -32,6 +38,14 @@ class FlashLFQ(__QuantBaseParser):
 
     @classmethod
     def file_matches_parser(cls, file):
+        """Check if `file` is a valid input file for this class
+
+        Args:
+            file (str): input file path
+
+        Returns:
+            bool: Wether the input file is a valida input or not
+        """
         flash_lfq_columns = set(
             [
                 "File Name",
@@ -74,6 +88,14 @@ class FlashLFQ(__QuantBaseParser):
         return line
 
     def _unify_row(self, row):
+        """Transform row into unified_quant format.
+
+        Args:
+            row (dict): Row as present in input file
+
+        Returns:
+            dict: Transformed row
+        """
         new_row = {}
         for flash_name, unify_name in col_mapping.items():
             new_row[unify_name] = row[flash_name]
@@ -101,10 +123,22 @@ class FlashLFQ(__QuantBaseParser):
         return new_row
 
     def extract_mods(self, full_sequence):
+        """Extract modifications from full_sequence and format as {mod_1}:{pos_1};{mod_n}:{pos_n}
+
+        Args:
+            full_sequence (str): sequence including mod (e.g. ELVISC[Carbamidomethyl]M[Oxidation])
+
+        Returns:
+            str: extracted mods as described in summary
+        """
+        # TODO extract C-terminal mods, position should be seq_len + 1
         cumulative_match_length = 0
         regex = re.compile("\[(.*?)\]")
         mods = []
         for match in regex.finditer(full_sequence):
+            print(match.group())
             mods.append(f"{match.group(1)}:{match.start() - cumulative_match_length}")
             cumulative_match_length += len(match.group())
+        print()
+
         return ";".join(mods)
