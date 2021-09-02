@@ -52,7 +52,9 @@ class __BaseParser:
         self.cc = ChemicalComposition()
 
         # self.map_mods(self.params["modifications"])
-        self.params["mods"] = self.mod_mapper.map_mods(mod_list=self.params["modifications"])
+        self.params["mods"] = self.mod_mapper.map_mods(
+            mod_list=self.params["modifications"]
+        )
         self.scan_rt_path = self.params.get("rt_pickle_name", None)
         self.scan_rt_lookup = self.read_rt_lookup_file(self.scan_rt_path)
         self.create_mod_dicts()
