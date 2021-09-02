@@ -255,21 +255,37 @@ def test_unify_msfragger_df_masses():
             "rt_pickle_name": rt_lookup_path,
             "database": db_path,
             "modifications": [
-                "C,fix,any,Carbamidomethyl",
-                "M,opt,any,Oxidation",
-                "*,opt,Prot-N-term,Acetyl",
+                {
+                    "aa": "M",
+                    "type": "opt",
+                    "position": "any",
+                    "name": "Oxidation",
+                },
+                {
+                    "aa": "C",
+                    "type": "fix",
+                    "position": "any",
+                    "name": "Carbamidomethyl",
+                },
+                {
+                    "aa": "*",
+                    "type": "opt",
+                    "position": "Prot-N-term",
+                    "name": "Acetyl",
+                },
             ],
-            "Raw file location": "test_Creinhardtii_QE_pH11.mzML",
+            "Raw data location": "test_Creinhardtii_QE_pH11.mzML",
             "15N": False,
         },
     )
     res = parser.get_dataframe()
     row = res.df.iloc[0]
     assert row["Sequence"] == "ATTALTDDTLDGAGR"
+    # assert row["Modifications"] == "Carbamidomethyl:17"
     assert row["Charge"] == "2"
     assert float(row["uCalc m/z"]) == pytest.approx(739.3601)
     assert float(row["uCalc m/z"]) == pytest.approx(739.3601)
-    assert float(row["uCalc Mass"]) == pytest.approx(1477.7128)
+    assert float(row["uCalc Mass"]) == pytest.approx(1476.7056154119998)
     assert float(row["Accuracy (ppm)"]) == pytest.approx(-2.182, 0.01)
 
 
@@ -389,7 +405,6 @@ def test_unify_xtandem_df_masses():
     )
     res = parser.get_dataframe()
     row = res.df[res.df["Sequence"] == "ASDGKYVDEYFAATYVCTDHGRGK"]
-    # breakpoint()
     assert row["Sequence"].iloc[0] == "ASDGKYVDEYFAATYVCTDHGRGK"
     assert row["Charge"].iloc[0] == "3"
     assert float(row["uCalc m/z"].iloc[0]) == pytest.approx(
@@ -531,9 +546,24 @@ def test_unify_msamanda_df_masses():
             "rt_pickle_name": rt_lookup_path,
             "database": db_path,
             "modifications": [
-                "C,fix,any,Carbamidomethyl",
-                "M,opt,any,Oxidation",
-                "*,opt,Prot-N-term,Acetyl",
+                {
+                    "aa": "M",
+                    "type": "opt",
+                    "position": "any",
+                    "name": "Oxidation",
+                },
+                {
+                    "aa": "C",
+                    "type": "fix",
+                    "position": "any",
+                    "name": "Carbamidomethyl",
+                },
+                {
+                    "aa": "*",
+                    "type": "opt",
+                    "position": "Prot-N-term",
+                    "name": "Acetyl",
+                },
             ],
             "Raw file location": "test_Creinhardtii_QE_pH11.mzML",
             "15N": False,
@@ -551,5 +581,5 @@ def test_unify_msamanda_df_masses():
         904.0782, abs=5e-6 * 904.0782
     )
     assert float(row["uCalc Mass"].iloc[0]) == pytest.approx(
-        2710.2202, abs=5e-6 * 2710.2202
+        2709.2129296404, abs=5e-6 * 2709.2129296404
     )

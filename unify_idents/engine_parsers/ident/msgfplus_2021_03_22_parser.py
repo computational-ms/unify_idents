@@ -10,7 +10,7 @@ from unify_idents import UnifiedRow
 from unify_idents.engine_parsers.base_parser import __IdentBaseParser
 
 
-class MSGFPlus_2021_03_22(__BaseParser):
+class MSGFPlus_2021_03_22(__IdentBaseParser):
 
     """Engine parser to unify MSGFPlus_2021_03_22 results."""
 
@@ -144,7 +144,9 @@ class MSGFPlus_2021_03_22(__BaseParser):
                     for spec_result in ele:
                         if not spec_result.tag.endswith("SpectrumIdentificationItem"):
                             continue
-                        pep_data = self.peptide_lookup[spec_result.attrib["peptide_ref"]]
+                        pep_data = self.peptide_lookup[
+                            spec_result.attrib["peptide_ref"]
+                        ]
                         mods = []
                         for m in pep_data["Modifications"]:
                             name = m["name"]

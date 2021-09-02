@@ -17,6 +17,19 @@ class BaseParser:
     def __init__(self, input_file, params=None):
         pass
 
+    @classmethod
+    def file_matches_parser(self, file):
+        """Check if file is compatible with parser.
+
+        Args:
+            file (str): path to file
+
+        Returns:
+            bool: Wether or not specified file can be converted by this parser.
+        """
+        # needs to return False to dont be selected as engine parser during `get_parsers`
+        return False
+
     def calc_mz(self, mass, charge):
         PROTON = 1.00727646677
         return (float(mass) + (int(charge) * PROTON)) / int(charge)
@@ -86,13 +99,6 @@ class __QuantBaseParser(BaseParser):
     def __iter__(self):
         return self
 
-class __BaseParser:
-
-    """BaseParser with common functionality for all parsers."""
-
-    def check_required_headers(self, row):
-        return self.required_headers.issubset(set(row.keys()))
-
 
 class __IdentBaseParser(BaseParser):
     def __init__(self, input_file, params=None):
@@ -125,19 +131,6 @@ class __IdentBaseParser(BaseParser):
     def __iter__(self):
         return self
 
-    @classmethod
-    def file_matches_parser(self, file):
-        """Check if file is compatible with parser.
-
-        Args:
-            file (str): path to file
-
-        Returns:
-            bool: Wether or not specified file can be converted by this parser.
-        """
-        # needs to return False to dont be selected as engine parser during `get_parsers`
-        return False
-
     def general_fixes(self, row):
         """Apply fixed applicable to all engine parsers.
 
@@ -166,17 +159,6 @@ class __IdentBaseParser(BaseParser):
 
     def check_mod_positions(self, row):
         return row
-
-    # currently not used
-    # def recalc_masses(row):
-    #     self.cc.use(sequence=row["Sequence"], modifications=row["Modifications"])
-    #     row["uCalc m/z"] = self.calc_mz(self.cc.mass(), int(row["Charge"]))
-    #     row["uCalc mass"] = self.cc.mass()
-    #     return row
-
-    # def calc_mz(self, mass, charge):
-    #     PROTON = 1.00727646677
-    #     return (float(mass) + (int(charge) * PROTON)) / int(charge)
 
     def create_mod_dicts(self):
         """Create dict containing meta information about static and variable mods."""
@@ -275,26 +257,6 @@ class __IdentBaseParser(BaseParser):
         row["Sequence Start"] = DELIMITER.join(starts)
         row["Sequence Stop"] = DELIMITER.join(stops)
         return row
-
-    # def read_rt_lookup_file(self, scan_rt_lookup_path):
-    #     with bz2.open(scan_rt_lookup_path, "rt") as fin:
-    #         lookup = {}
-    #         reader = csv.DictReader(fin)
-    #         for line in reader:
-    #             file = Path(line["File"])
-    #             file = str(file.stem).rstrip(
-    #                 "".join(file.suffixes)
-    #             )  # remove all suffixes, eg. idx.gz
-    #             lookup.setdefault(file, {"scan2rt": {}, "rt2scan": {}, "scan2mz": {}})
-    #             scan, rt, mz = (
-    #                 line["Spectrum ID"],
-    #                 line["RT"],
-    #                 line["Precursor mz"],
-    #             )
-    #             lookup[file]["scan2rt"][int(scan)] = float(rt)
-    #             lookup[file]["rt2scan"][float(rt)] = int(scan)
-    #             lookup[file]["scan2mz"][int(scan)] = float(mz)
-    #     return lookup
 
     def map_mods(self, mods):
         # TODO remove logger.warning functions and replace by logger
@@ -420,9 +382,3 @@ This is not working with OMSSA so far""".format(
 
             self.params["mods"][mod_option].append(mod_dict)
         return self.params["mods"]
-
-    # def get_column_names(self):
-    #     headers = self.param_mapper.get_default_params(style=self.style)[
-    #         "header_translations"
-    #     ]["translated_value"]
-    #     return headers

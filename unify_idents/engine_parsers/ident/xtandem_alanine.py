@@ -27,7 +27,7 @@ col_mapping = {
 }
 
 
-class XTandemAlanine(__BaseParser):
+class XTandemAlanine(__IdentBaseParser):
 
     """Engine parser to unify MSAmanda results."""
 
@@ -113,9 +113,9 @@ class XTandemAlanine(__BaseParser):
                 raise StopIteration
 
             if event == "start" and element.tag.endswith("bioml"):
-                self.raw_data_location = element.attrib["label"].split("models from")[1][
-                    2:-1
-                ]
+                self.raw_data_location = element.attrib["label"].split("models from")[
+                    1
+                ][2:-1]
             if (
                 event == "start"
                 and element.tag.endswith("group")
@@ -140,7 +140,6 @@ class XTandemAlanine(__BaseParser):
                         row = copy.copy(domain.attrib)
                         # calc_mz = self.calc_mz(float(row["mh"]), int(charge))
                         # if row["seq"] == "ASDGKYVDEYFAATYVCTDHGRGK":
-                        #     breakpoint()
                         calc_mz = (
                             (float(row["mh"]) - self.PROTON) / float(charge)
                         ) + self.PROTON
@@ -150,8 +149,6 @@ class XTandemAlanine(__BaseParser):
 
                         row["Exp m/z"] = exp_mz
                         row["Calc m/z"] = calc_mz
-                        # if row["seq"] == "ASDGKYVDEYFAATYVCTDHGRGK":
-                        #     breakpoint()
                         del row["mh"]
                         row["Modifications"] = []
                         row["Spectrum Title"] = spec_title.split()[0]

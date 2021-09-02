@@ -117,7 +117,6 @@ class FlashLFQ(__QuantBaseParser):
         new_row["Processing Level"] = "ChromatographicPeak"
         new_row["Quant Run ID"] = "XXX+FlashLFQ"
         new_row["Coalescence"] = ""
-        # breakpoint()
         if self.check_required_headers(new_row) is False:
             logger.error("Not all required headers are present!")
         return new_row
@@ -142,3 +141,6 @@ class FlashLFQ(__QuantBaseParser):
         print()
 
         return ";".join(mods)
+
+    def check_required_headers(self, row):
+        return False

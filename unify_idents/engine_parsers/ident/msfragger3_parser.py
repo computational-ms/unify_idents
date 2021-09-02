@@ -18,7 +18,7 @@ from unify_idents.engine_parsers.base_parser import __IdentBaseParser
 """
 
 
-class MSFragger3Parser(__BaseParser):
+class MSFragger3Parser(__IdentBaseParser):
 
     """Engine parser to unify MSAmanda results."""
 
