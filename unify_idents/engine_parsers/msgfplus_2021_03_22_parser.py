@@ -12,7 +12,16 @@ from pathlib import Path
 
 
 class MSGFPlus_2021_03_22(__BaseParser):
+
+    """Engine parser to unify MSGFPlus_2021_03_22 results."""
+
     def __init__(self, input_file, params=None):
+        """Initialize MSAmanda parser.
+
+        Args:
+            input_file (str): path to file to unify
+            params (dict, optional): parser specific parameters
+        """
         super().__init__(input_file, params)
         if params is None:
             params = {}
@@ -49,6 +58,14 @@ class MSGFPlus_2021_03_22(__BaseParser):
 
     @classmethod
     def file_matches_parser(cls, file):
+        """Check if file is compatible with parser.
+
+        Args:
+            file (str): path to file
+
+        Returns:
+            bool: Wether or not specified file can be converted by this parser.
+        """
         ret_val = False
         p = Path(file)
 
@@ -73,6 +90,11 @@ class MSGFPlus_2021_03_22(__BaseParser):
         return ret_val
 
     def get_column_names(self, style):
+        """Get column names from param mapper.
+
+        Returns:
+            dict: dict mapping new to old column names
+        """
         headers = self.param_mapper.get_default_params(style=style)[
             "header_translations"
         ]["translated_value"]
@@ -123,9 +145,7 @@ class MSGFPlus_2021_03_22(__BaseParser):
                     for spec_result in ele:
                         if not spec_result.tag.endswith("SpectrumIdentificationItem"):
                             continue
-                        pep_data = self.peptide_lookup[
-                            spec_result.attrib["peptide_ref"]
-                        ]
+                        pep_data = self.peptide_lookup[spec_result.attrib["peptide_ref"]]
                         mods = []
                         for m in pep_data["Modifications"]:
                             name = m["name"]
@@ -155,6 +175,14 @@ class MSGFPlus_2021_03_22(__BaseParser):
                 raise StopIteration
 
     def _unify_row(self, row):
+        """Convert row to unified format.
+
+        Args:
+            row (dict): dict containing psm based ident information.
+
+        Returns:
+            UnifiedRow: converted row
+        """
         for col_to_add in self.cols_to_add:
             if col_to_add not in row:
                 row[col_to_add] = ""
@@ -169,6 +197,11 @@ class MSGFPlus_2021_03_22(__BaseParser):
         return UnifiedRow(**new_row)
 
     def _get_peptide_lookup(self):
+        """Create lookup mapping peptide id to sequence, mass and mods.
+
+        Returns:
+            dict
+        """
         lookup = {}
         while True:
             event, ele = next(self.reader, ("STOP", "STOP"))

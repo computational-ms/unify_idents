@@ -5,12 +5,11 @@ import sys
 
 def main():
     input_file = (
-            Path(
-                __file__).parent.parent / "tests" / "data" /
-            "BSA_msamanda_2_0_0_17442.csv"
+        Path(__file__).parent.parent / "tests" / "data" / "BSA_msamanda_2_0_0_17442.csv"
     )
-    rt_lookup_path = Path(__file__).parent.parent / "tests" / "data" / \
-                     "BSA_ursgal_lookup.csv.bz2"
+    rt_lookup_path = (
+        Path(__file__).parent.parent / "tests" / "data" / "BSA_ursgal_lookup.csv.bz2"
+    )
     db_path = Path(__file__).parent.parent / "tests" / "data" / "BSA.fasta"
 
     u = Unify(
@@ -43,7 +42,10 @@ def main():
 
     df = u.get_dataframe()
     print(df.df)
-    df.df.to_csv(f'{Path(__file__).parent.parent / "tests" / "data" / "msamanda_unfiy_idents.csv"}')
+    df.df.to_csv(
+        f'{Path(__file__).parent.parent / "tests" / "data" / "msamanda_unfiy_idents.csv"}'
+    )
+
 
 if __name__ == "__main__":
     main()
