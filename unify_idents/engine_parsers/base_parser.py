@@ -16,14 +16,38 @@ from decimal import Decimal
 
 
 class __BaseParser:
+
+    """BaseParser with common functionality for all parsers.
+
+    Attributes:
+        cc (ChemicalComposition): ChemicalCompostion object
+        cols_to_add (list): columns to add to row_dict
+        cols_to_remove (list): columns to remove from row_dict
+        fixed_mods (dict): Dict describing static modifications
+        mass_format_string (str): fstring to format float masses to string
+        mod_dict (dict): Dict with metadata for each mod
+        mod_mapper (UnimodMapper): unimodmapper object
+        n_term_replacement (dict): Dict mapping N-term replacement to mods
+        opt_mods (dict): dict describing variable mods
+        param_mapper (uparma.UParma): uparma parameter mapper
+        params (dict): parser specific parameters
+        scan_rt_lookup (dict): formatted scan2rt, rt2scan, and scan2mz grouped by file
+        scan_rt_path (str): path to the scan rt lookup file (bz2 compressed)
+    """
+
     def __init__(self, input_file, params=None):
+        """Initialize BaseParser
+
+        Args:
+            input_file (str): path to file to unify
+            params (dict, optional): parser specific parameters
+        """
         if params is None:
             self.params = {}
         else:
             self.params = params
 
         self.param_mapper = uparma.UParma()
-        # self.peptide_mapper = UPeptideMapper(params["database"])
         self.mod_mapper = UnimodMapper()
         self.cc = ChemicalComposition()
 
@@ -46,16 +70,28 @@ class __BaseParser:
 
     @classmethod
     def file_matches_parser(self, file):
+        """Check if file is compatible with parser.
+
+        Args:
+            file (str): path to file
+
+        Returns:
+            bool: Wether or not specified file can be converted by this parser.
+        """
         # needs to return False to dont be selected as engine parser during `get_parsers`
         return False
 
     def general_fixes(self, row):
+        """Apply fixed applicable to all engine parsers.
+
+        Args:
+            row (dict): dict containing psm based data from engine file
+
+        Returns:
+            dict: row with applied fixes
+        """
         if row.get("Raw data location") is None or row["Raw data location"] == "":
             row["Raw data location"] = row["Spectrum Title"].split(".")[0]
-        # if ".mgf" in str(row["Raw data location"]):
-        #     row["Raw data locations"] = row["Raw data location"].str.replace(
-        #         ".mgf", ".mzML"
-        #     )
         basename = os.path.basename(row["Raw data location"]).split(".")[0]
         row["Retention Time (s)"] = float(
             self.scan_rt_lookup[basename]["scan2rt"][int(row["Spectrum ID"])]
@@ -70,18 +106,21 @@ class __BaseParser:
     def check_mod_positions(self, row):
         return row
 
-    # currently not used
-    # def recalc_masses(row):
-    #     self.cc.use(sequence=row["Sequence"], modifications=row["Modifications"])
-    #     row["uCalc m/z"] = self.calc_mz(self.cc.mass(), int(row["Charge"]))
-    #     row["uCalc mass"] = self.cc.mass()
-    #     return row
-
     def calc_mz(self, mass, charge):
+        """Calculate precursor mz.
+
+        Args:
+            mass (float): Description
+            charge (float/int): Description
+
+        Returns:
+            float: Precursor mz
+        """
         PROTON = 1.00727646677
         return (float(mass) + (int(charge) * PROTON)) / int(charge)
 
     def create_mod_dicts(self):
+        """Create dict containing meta information about static and variable mods."""
         self.fixed_mods = {}
         self.opt_mods = {}
         self.mod_dict = {}
@@ -121,6 +160,14 @@ class __BaseParser:
                     self.opt_mods[aa] = name
 
     def map_mod_names(self, row):
+        """Map massshifts to unimod names.
+
+        Args:
+            row (dict): dict containing psm based data from engine file
+
+        Returns:
+            str: Description
+        """
         # 0 based indexing, is corrected in this method,
         mods = []
         for mod in row["Modifications"]:
@@ -139,6 +186,14 @@ class __BaseParser:
         return ";".join(mods)
 
     def map_peptides(self, row):
+        """Map peptides to protein fasta.
+
+        Args:
+            row (dict): dict containing psm based data from engine file
+
+        Returns:
+            dict: augmented row
+        """
         starts = []
         ids = []
         stops = []
@@ -163,6 +218,14 @@ class __BaseParser:
         return row
 
     def read_rt_lookup_file(self, scan_rt_lookup_path):
+        """Parse rt lookup file into dict structure grouped by filename.
+
+        Args:
+            scan_rt_lookup_path (str): path to rt lookup file (bz2 compressed)
+
+        Returns:
+            dict: rt_lookup
+        """
         with bz2.open(scan_rt_lookup_path, "rt") as fin:
             lookup = {}
             reader = csv.DictReader(fin)
@@ -183,7 +246,9 @@ class __BaseParser:
         return lookup
 
     def map_mods(self, mods):
-        # TODO remove logger.warning functions and replace by logger
+        """
+        Soon to be deprecated.
+        """
         self.params["mods"] = {"fix": [], "opt": []}
         for ursgal_index, mod in enumerate(sorted(mods)):
             mod_params = mod.split(",")
