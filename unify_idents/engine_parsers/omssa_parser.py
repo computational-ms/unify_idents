@@ -305,7 +305,7 @@ class OmssaParser(__BaseParser):
                 else:
                     if mod["aa"] == "*":
                         search_target = [
-                            mod["pos"],
+                            mod["position"],
                         ]
                     else:
                         search_target = [
