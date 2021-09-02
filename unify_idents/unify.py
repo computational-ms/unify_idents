@@ -104,10 +104,7 @@ class UnifiedDataFrame:
             self.df.at[_id, "uCalc m/z"] = calc_mz
             self.df.at[_id, "uCalc Mass"] = calc_mass  # + PROTON
             acc = (
-                (
-                    float(self.df.at[_id, "Exp m/z"])
-                    - float(self.df.at[_id, "uCalc m/z"])
-                )
+                (float(self.df.at[_id, "Exp m/z"]) - float(self.df.at[_id, "uCalc m/z"]))
                 / self.df.at[_id, "uCalc m/z"]
                 * 1e6
             )

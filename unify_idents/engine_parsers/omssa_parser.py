@@ -323,9 +323,9 @@ class OmssaParser(__BaseParser):
                             ]
                             self.lookups[omssa_name] = {
                                 "name": mod["name"],
-                                "aa_targets": self.omssa_mod_mapper[mod["id"]][
-                                    omssa_id
-                                ]["aa_targets"],
+                                "aa_targets": self.omssa_mod_mapper[mod["id"]][omssa_id][
+                                    "aa_targets"
+                                ],
                                 "omssa_id": omssa_id,
                                 "id": mod["id"],
                             }

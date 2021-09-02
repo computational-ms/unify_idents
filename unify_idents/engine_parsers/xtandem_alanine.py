@@ -110,9 +110,9 @@ class XTandemAlanine(__BaseParser):
                 raise StopIteration
 
             if event == "start" and element.tag.endswith("bioml"):
-                self.raw_data_location = element.attrib["label"].split("models from")[
-                    1
-                ][2:-1]
+                self.raw_data_location = element.attrib["label"].split("models from")[1][
+                    2:-1
+                ]
             if (
                 event == "start"
                 and element.tag.endswith("group")
