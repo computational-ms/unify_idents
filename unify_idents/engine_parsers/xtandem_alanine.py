@@ -27,7 +27,16 @@ col_mapping = {
 
 
 class XTandemAlanine(__BaseParser):
+
+    """Engine parser to unify MSAmanda results."""
+
     def __init__(self, input_file, params=None):
+        """Initialize MSAmanda parser.
+
+        Args:
+            input_file (str): path to file to unify
+            params (dict, optional): parser specific parameters
+        """
         super().__init__(input_file, params)
         if params is None:
             params = {}
@@ -55,6 +64,14 @@ class XTandemAlanine(__BaseParser):
 
     @classmethod
     def file_matches_parser(cls, file):
+        """Check if file is compatible with parser.
+
+        Args:
+            file (str): path to file
+
+        Returns:
+            bool: Wether or not specified file can be converted by this parser.
+        """
         ret_val = False
 
         if not str(file).endswith(".xml"):
@@ -147,6 +164,14 @@ class XTandemAlanine(__BaseParser):
                 return result_iterator
 
     def _unify_row(self, row):
+        """Convert row to unified format.
+
+        Args:
+            row (dict): dict containing psm based ident information.
+
+        Returns:
+            UnifiedRow: converted row
+        """
         for new_col, old_col in col_mapping.items():
             row[new_col] = row[old_col]
             del row[old_col]

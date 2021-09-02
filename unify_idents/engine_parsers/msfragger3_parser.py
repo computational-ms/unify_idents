@@ -17,7 +17,16 @@ from loguru import logger
 
 
 class MSFragger3Parser(__BaseParser):
+
+    """Engine parser to unify MSAmanda results."""
+
     def __init__(self, input_file, params=None):
+        """Initialize MSAmanda parser.
+
+        Args:
+            input_file (str): path to file to unify
+            params (dict, optional): parser specific parameters
+        """
         super().__init__(input_file, params)
         if params is None:
             params = {}
@@ -94,6 +103,14 @@ class MSFragger3Parser(__BaseParser):
 
     @classmethod
     def file_matches_parser(cls, file):
+        """Check if file is compatible with parser.
+
+        Args:
+            file (str): path to file
+
+        Returns:
+            bool: Wether or not specified file can be converted by this parser.
+        """
         column_names = [
             "scannum",
             "peptide",
@@ -129,6 +146,14 @@ class MSFragger3Parser(__BaseParser):
         return ret_val
 
     def _unify_row(self, row):
+        """Convert row to unified format.
+
+        Args:
+            row (dict): dict containing psm based ident information.
+
+        Returns:
+            UnifiedRow: converted row
+        """
         new_row = {}
         for unify_name, omssa_name in self.column_mapping.items():
             new_row[unify_name] = row[omssa_name]
@@ -161,50 +186,25 @@ class MSFragger3Parser(__BaseParser):
         return UnifiedRow(**new_row)
 
     def get_column_names(self):
+        """Get column names from param mapper.
+
+        Returns:
+            dict: dict mapping new to old column names
+        """
         headers = self.param_mapper.get_default_params(style=self.style)[
             "header_translations"
         ]["translated_value"]
         return headers
 
     def prepare_mass_to_mod(self):
+        """Map massshifts to unimod names.
 
-        # self.fixed_mods = {}
-        # self.opt_mods = {}
-        # self.mod_dict = {}
-        # self.n_term_replacement = {
-        #     "Ammonia-loss": None,
-        #     "Trimethyl": None,
-        #     "Gly->Val": None,
-        # }
+        Args:
+            row (dict): dict containing psm based data from engine file
 
-        # # 1.1 Create mod_dict with name as key and mass, aa, and pos as subkeys
-        # for mod_type in ["fix", "opt"]:
-        #     for modification in self.params["mods"][mod_type]:
-        #         aa = modification["aa"]
-        #         pos = modification["pos"]
-        #         name = modification["name"]
-        #         if name not in self.mod_dict.keys():
-        #             self.mod_dict[name] = {
-        #                 "mass": modification["mass"],
-        #                 "aa": set(),
-        #                 "pos": set(),
-        #             }
-        #         self.mod_dict[name]["aa"].add(aa)
-
-        #         # self.mod_dict[name]["aa"].add(pos)
-        #         self.mod_dict[name]["pos"].add(pos)
-
-        #         if "N-term" in pos:
-        #             self.n_term_replacement[name] = aa
-        #         if mod_type == "fix":
-        #             self.fixed_mods[aa] = name
-        #             if aa == "C" and name == "Carbamidomethyl":
-        #                 cam = True
-        #                 self.mod_dict["Carbamidomethyl"]["aa"].add("U")
-        #                 self.fixed_mods["U"] = "Carbamidomethyl"
-        #         if mod_type == "opt":
-        #             self.opt_mods[aa] = name
-
+        Returns:
+            str: Description
+        """
         # rounding using Decimal (stdlib)
         getcontext().prec = 8
         getcontext().rounding = ROUND_UP
@@ -253,6 +253,14 @@ class MSFragger3Parser(__BaseParser):
         return mass_to_mod_combo
 
     def format_mods(self, row):
+        """Convert mods to unified modstring.
+
+        Args:
+            new_row (dict): unified row
+
+        Returns:
+            str: unified modstring
+        """
         final_mods = []
         for single_mod in row["Modifications"].split(", "):
             if single_mod.strip() == "":

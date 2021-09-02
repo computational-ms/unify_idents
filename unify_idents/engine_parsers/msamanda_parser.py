@@ -6,7 +6,16 @@ from unify_idents.engine_parsers.base_parser import __BaseParser
 
 
 class MSamandaParser(__BaseParser):
+
+    """Engine parser to unify MSAmanda results."""
+
     def __init__(self, input_file, params=None):
+        """Initialize MSAmanda parser.
+
+        Args:
+            input_file (str): path to file to unify
+            params (dict, optional): parser specific parameters
+        """
         super().__init__(input_file, params)
         if params is None:
             params = {}
@@ -45,13 +54,16 @@ class MSamandaParser(__BaseParser):
             "Search Engine",
         ]
 
-    #     if self.reader is not None:
-    #         self.create_mod_lookup()
-    #
     @classmethod
     def file_matches_parser(cls, file):
-        # TODO implement file sensing
-        # use get column names
+        """Check if file is compatible with parser.
+
+        Args:
+            file (str): path to file
+
+        Returns:
+            bool: Wether or not specified file can be converted by this parser.
+        """
         msamanda_version = "#version: 2.0.0.17442"
         with open(file) as fh:
             reader = csv.DictReader(fh)
@@ -70,7 +82,14 @@ class MSamandaParser(__BaseParser):
         return u
 
     def _unify_row(self, row):
+        """Convert row to unified format.
 
+        Args:
+            row (dict): dict containing psm based ident information.
+
+        Returns:
+            UnifiedRow: converted row
+        """
         new_row = {}
         for unify_name, engine_name in self.column_mapping.items():
             new_row[unify_name] = row[engine_name]
@@ -88,7 +107,14 @@ class MSamandaParser(__BaseParser):
         return UnifiedRow(**new_row)
 
     def create_mod_string(self, new_row):
+        """Convert mods to unified modstring.
 
+        Args:
+            new_row (dict): unified row
+
+        Returns:
+            str: unified modstring
+        """
         mod_input = new_row["Modifications"]
         translated_mods = []
         # N-Term(Acetyl|42.010565|fixed);M1(Oxidation|15.994915|fixed);M23(Oxidation|15.994915|fixed)
@@ -119,6 +145,11 @@ class MSamandaParser(__BaseParser):
         return modstring
 
     def get_column_names(self):
+        """Get column names from param mapper.
+
+        Returns:
+            dict: dict mapping new to old column names
+        """
         # create own uparma mapper
         headers = self.param_mapper.get_default_params(style=self.style)[
             "header_translations"

@@ -12,7 +12,16 @@ from loguru import logger
 
 
 class OmssaParser(__BaseParser):
+
+    """Engine parser to unify MSAmanda results."""
+
     def __init__(self, input_file, params=None):
+        """Initialize MSAmanda parser.
+
+        Args:
+            input_file (str): path to file to unify
+            params (dict, optional): parser specific parameters
+        """
         super().__init__(input_file, params)
         if params is None:
             params = {}
@@ -80,6 +89,14 @@ class OmssaParser(__BaseParser):
 
     @classmethod
     def file_matches_parser(cls, file):
+        """Check if file is compatible with parser.
+
+        Args:
+            file (str): path to file
+
+        Returns:
+            bool: Wether or not specified file can be converted by this parser.
+        """
         # TODO implement file sensing
         # use get column names
         fn = [
@@ -117,7 +134,14 @@ class OmssaParser(__BaseParser):
         return u
 
     def _unify_row(self, row):
+        """Convert row to unified format.
 
+        Args:
+            row (dict): dict containing psm based ident information.
+
+        Returns:
+            UnifiedRow: converted row
+        """
         new_row = {}
         for unify_name, omssa_name in self.column_mapping.items():
             new_row[unify_name] = row[omssa_name]
@@ -143,6 +167,14 @@ class OmssaParser(__BaseParser):
         return UnifiedRow(**new_row)
 
     def create_mod_string(self, new_row):
+        """Convert mods to unified modstring.
+
+        Args:
+            new_row (dict): unified row
+
+        Returns:
+            str: unified modstring
+        """
         fixed_mods = []
         for pos, aa in enumerate(new_row["Sequence"]):
             pos += 1  # start counting at 1, 0 is N-term
@@ -175,14 +207,18 @@ class OmssaParser(__BaseParser):
         return all_mods
 
     def get_column_names(self):
-        # create own uparma mapper
+        """Get column names from param mapper.
+
+        Returns:
+            dict: dict mapping new to old column names
+        """
         headers = self.param_mapper.get_default_params(style=self.style)[
             "header_translations"
         ]["translated_value"]
         return headers
 
     def _load_omssa_xml(self):
-        """Parsing through omssa mods to map omssa mods on unimods"""
+        """Parse through omssa mods to map omssa mods on unimods."""
         self.omssa_mod_mapper = {}
 
         def _create_empty_tmp():
@@ -254,6 +290,7 @@ class OmssaParser(__BaseParser):
         return
 
     def create_mod_lookup(self):
+        """Create lookup mapping omssa to mod meta information."""
         self._load_omssa_xml()
         self.lookups = {}
         for param_key in ["_fixed_mods", "_opt_mods"]:
