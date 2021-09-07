@@ -76,28 +76,34 @@ def test_engine_parsers_flashLFQ_unify_row_all_keys_present():
         params={"rt_pickle_name": rt_lookup_path},
     )
     for row in parser:
-        assert row.keys() == set(
+        # breakpoint()
+        keys = set(
             [
+                "Raw data location",
+                "Sequence",
+                "Protein IDs",
+                "Mass",
+                "Retention Time (s)",
+                "Charge",
+                "Calc m/z",
+                "Quant Value",
+                "PPM",
                 "Spectrum ID",
                 "Linked Spectrum ID",
-                "Raw data location",
-                "Retention Time (s)",
                 "Chemical Composition",
-                "Charge",
-                "Quant Value",
                 "Raw Quant Value",
                 "MZ Delta",
-                "PPM",
                 "FWHM",
                 "Label",
                 "Condition",
-                "Score",
                 "Quant Group",
+                "Score",
                 "Processing Level",
                 "Quant Run ID",
                 "Coalescence",
             ]
         )
+        assert row.keys() == keys
         break
 
 
