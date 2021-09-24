@@ -12,15 +12,14 @@ from unify_idents.engine_parsers.base_parser import __IdentBaseParser
 
 class OmssaParser(__IdentBaseParser):
 
-    """Engine parser to unify MSAmanda results."""
+    """Engine parser to unify Omssa results.
+
+    Args:
+        input_file (str): path to file to unify
+        params (dict, optional): parser specific parameters
+    """
 
     def __init__(self, input_file, params=None):
-        """Initialize MSAmanda parser.
-
-        Args:
-            input_file (str): path to file to unify
-            params (dict, optional): parser specific parameters
-        """
         super().__init__(input_file, params)
         if params is None:
             params = {}
@@ -128,6 +127,11 @@ class OmssaParser(__IdentBaseParser):
         return self
 
     def __next__(self):
+        """Return next unified line from reader.
+
+        Returns:
+            UnifiedRow: unified PSM level data.
+        """
         n = next(self.reader)
         u = self._unify_row(n)
         return u

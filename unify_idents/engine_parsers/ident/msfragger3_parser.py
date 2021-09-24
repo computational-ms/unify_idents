@@ -20,15 +20,14 @@ from unify_idents.engine_parsers.base_parser import __IdentBaseParser
 
 class MSFragger3Parser(__IdentBaseParser):
 
-    """Engine parser to unify MSAmanda results."""
+    """Initialize MSFragger parser.
+
+    Args:
+        input_file (str): path to file to unify
+        params (dict, optional): parser specific parameters
+    """
 
     def __init__(self, input_file, params=None):
-        """Initialize MSAmanda parser.
-
-        Args:
-            input_file (str): path to file to unify
-            params (dict, optional): parser specific parameters
-        """
         super().__init__(input_file, params)
         if params is None:
             params = {}
@@ -99,6 +98,11 @@ class MSFragger3Parser(__IdentBaseParser):
         self.mass_to_mod_combo = self.prepare_mass_to_mod()
 
     def __next__(self):
+        """Return next unified line from reader.
+
+        Returns:
+            UnifiedRow: unified PSM level data.
+        """
         line = next(self.reader)
         line = self._unify_row(line)
         return line

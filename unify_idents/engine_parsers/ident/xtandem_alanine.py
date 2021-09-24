@@ -29,15 +29,14 @@ col_mapping = {
 
 class XTandemAlanine(__IdentBaseParser):
 
-    """Engine parser to unify MSAmanda results."""
+    """Engine parser to unify X!TandemAlanine results.
+
+    Args:
+        input_file (str): path to file to unify
+        params (dict, optional): parser specific parameters
+    """
 
     def __init__(self, input_file, params=None):
-        """Initialize MSAmanda parser.
-
-        Args:
-            input_file (str): path to file to unify
-            params (dict, optional): parser specific parameters
-        """
         super().__init__(input_file, params)
         if params is None:
             params = {}
@@ -94,6 +93,11 @@ class XTandemAlanine(__IdentBaseParser):
         return ret_val
 
     def __iter__(self):
+        """Yield a unified line from `_next`.
+
+        Yields:
+            UnifiedRow: converted row
+        """
         while True:
             try:
                 gen = self._next()
@@ -107,6 +111,14 @@ class XTandemAlanine(__IdentBaseParser):
         return next(self.__iter__())
 
     def _next(self):
+        """Iterate lines and assemble a closure with all PSM related data.
+
+        Returns:
+            function: Closure yielding PSM level data.
+
+        Raises:
+            StopIteration: Stops iteration if EOF is reached.
+        """
         while True:
             event, element = next(self.xml_iter, ("STOP", "STOP"))
             if event == "STOP":
