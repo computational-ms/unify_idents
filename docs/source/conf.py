@@ -19,7 +19,7 @@
 
 project = "ProteomicsResultUnifier"
 copyright = "2021, Manuel Kösters"
-author = "Manuel Kösters"
+author = "Manuel Kösters, Artyom Vlasov, Christian Fufezan"
 
 # The full version, including alpha/beta/rc tags
 release = "0.1.0"
