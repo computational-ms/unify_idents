@@ -19,7 +19,7 @@ setup(
     install_requires=["pytest", "uparma"],
     description="Unify PSM idents",
     long_description="Unifying PSM identifications of different peptide search engines",
-    author="M. Koesters",
+    author="M. Koesters, A. Vlasov, C. Fufezan",
     url="http://computational-ms.github.com",
     license="The MIT license",
     platforms="any that supports python 3.7",
