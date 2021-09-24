@@ -1,14 +1,15 @@
-from unify_idents import UnifiedRow
-from unify_idents.engine_parsers.base_parser import __BaseParser
-from pathlib import Path
-import re
-import csv
-from decimal import Decimal, getcontext, ROUND_UP
-import itertools
-from loguru import logger
-import xml.etree.ElementTree as ElementTree
 import copy
+import csv
+import itertools
+import re
+import xml.etree.ElementTree as ElementTree
+from decimal import ROUND_UP, Decimal, getcontext
+from pathlib import Path
 
+from loguru import logger
+
+from unify_idents import UnifiedRow
+from unify_idents.engine_parsers.base_parser import __IdentBaseParser
 
 col_mapping = {"seq": "Sequence", "z": "Charge", "hyperscore": "X!Tandem:Hyperscore"}
 
@@ -26,7 +27,7 @@ col_mapping = {
 }
 
 
-class XTandemAlanine(__BaseParser):
+class XTandemAlanine(__IdentBaseParser):
 
     """Engine parser to unify MSAmanda results."""
 
@@ -45,6 +46,8 @@ class XTandemAlanine(__BaseParser):
         self.fin = open(input_file)
         self.xml_iter = iter(ElementTree.iterparse(self.fin, events=("end", "start")))
         self.raw_file = None
+        self.style = "xtandem_style_1"
+        self.column_mapping = self.get_column_names()
 
         self.cols_to_remove = [
             "id",
@@ -94,7 +97,7 @@ class XTandemAlanine(__BaseParser):
         while True:
             try:
                 gen = self._next()
-                for x in gen():
+                for x in gen:
                     x = self._unify_row(x)
                     yield x
             except StopIteration:
@@ -110,9 +113,9 @@ class XTandemAlanine(__BaseParser):
                 raise StopIteration
 
             if event == "start" and element.tag.endswith("bioml"):
-                self.raw_data_location = element.attrib["label"].split("models from")[1][
-                    2:-1
-                ]
+                self.raw_data_location = element.attrib["label"].split("models from")[
+                    1
+                ][2:-1]
             if (
                 event == "start"
                 and element.tag.endswith("group")
@@ -120,7 +123,8 @@ class XTandemAlanine(__BaseParser):
             ):
                 charge = element.attrib["z"]
                 prec_mz = element.attrib["mh"]
-
+            if event == "start" and element.tag.startswith("bioml"):
+                self.raw_data_location = element.attrib["label"].split("'")[1]
             if (
                 event == "end"
                 and element.tag.endswith("group")
@@ -136,7 +140,6 @@ class XTandemAlanine(__BaseParser):
                         row = copy.copy(domain.attrib)
                         # calc_mz = self.calc_mz(float(row["mh"]), int(charge))
                         # if row["seq"] == "ASDGKYVDEYFAATYVCTDHGRGK":
-                        #     breakpoint()
                         calc_mz = (
                             (float(row["mh"]) - self.PROTON) / float(charge)
                         ) + self.PROTON
@@ -146,11 +149,10 @@ class XTandemAlanine(__BaseParser):
 
                         row["Exp m/z"] = exp_mz
                         row["Calc m/z"] = calc_mz
-                        # if row["seq"] == "ASDGKYVDEYFAATYVCTDHGRGK":
-                        #     breakpoint()
                         del row["mh"]
                         row["Modifications"] = []
                         row["Spectrum Title"] = spec_title.split()[0]
+                        row["Raw data location"] = self.raw_data_location
                         row["z"] = charge
                         row["Raw data location"] = self.raw_data_location
                         mods = domain.findall(".//aa")
@@ -161,7 +163,7 @@ class XTandemAlanine(__BaseParser):
                             row["Modifications"].append(f"{mass}:{rel_pos}")
                         yield row
 
-                return result_iterator
+                return result_iterator()
 
     def _unify_row(self, row):
         """Convert row to unified format.
@@ -172,7 +174,7 @@ class XTandemAlanine(__BaseParser):
         Returns:
             UnifiedRow: converted row
         """
-        for new_col, old_col in col_mapping.items():
+        for new_col, old_col in self.column_mapping.items():
             row[new_col] = row[old_col]
             del row[old_col]
         for col in self.cols_to_remove:

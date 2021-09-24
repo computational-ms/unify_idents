@@ -1,0 +1,125 @@
+{
+    "meta" : {
+        "version" : "1.0.0",
+        "primary_keys" : ["spectrum_id", "raw_name", "label"],
+        "indexes" : [["spectrum_id", "raw_name", "label"]],
+        "uniques": [],
+        "linkages": [
+            {
+                "columns" : ["spectrum_id", "raw_name"],
+                "referenced_table_columns" : ["aulos.precursors.spectrum_id", "aulos.precursors.raw_name"]
+            }
+        ],
+        "tags" : "quant_pots"
+    },
+    "columns" : [
+        {
+            "column_name" : "spectrum_id",
+            "type": "integer",
+            "precision": 64,
+            "description": "0212"
+        },
+        {
+            "column_name" : "linked_spectrum_id",
+            "type": "integer",
+            "precision": 64,
+            "description": "spectrum_id of linked ident spectrum"
+        },
+        {
+            "column_name" : "raw_name",
+            "type": "string",
+            "precision": 512,
+            "description": ".raw quant"
+        },
+        {
+            "column_name" : "retention_time",
+            "type" : "float",
+            "precision": 64,
+            "description" : ""
+        },
+        {
+            "column_name" : "chemical_composition",
+            "type" : "string",
+            "precision": 2000,
+            "description" : "13C(3)H(3)O(2) - for now used in MS1 to identify co-eluting peptide events"
+        },
+        {
+            "column_name" : "charge",
+            "type" : "integer",
+            "precision": 64,
+            "description" : ""
+        },
+        {
+            "column_name" : "quant_value",
+            "type" : "float",
+            "precision": 64,
+            "description" : "26645.0371"
+        },
+        {
+            "column_name" : "raw_quant_value",
+            "type" : "float",
+            "precision": 64,
+            "description" : "26645.0371"
+        },
+        {
+            "column_name" : "mz_delta",
+            "type" : "float",
+            "precision": 64,
+            "description" : "26645.0371"
+        },
+        {
+            "column_name" : "ppm",
+            "type" : "float",
+            "precision": 64,
+            "description" : "26645.0371"
+        },
+        {
+            "column_name" : "fwhm",
+            "type" : "float",
+            "precision": 64,
+            "description" : "peak width of MS1 quant exctracted data"
+        },
+        {
+            "column_name" : "label",
+            "type" : "string",
+            "precision": 500,
+            "description" : "126 / SILAC H / DIA"
+        },
+        {
+            "column_name" : "condition",
+            "type" : "string",
+            "precision": 500,
+            "description" : "P02020, WT, DMSO"
+        },
+        {
+            "column_name" : "score",
+            "type" : "float",
+            "precision": 64,
+            "description" : "score for the quantification"
+        },
+        {
+            "column_name" : "quant_group",
+            "type" : "integer",
+            "precision": 64,
+            "description" : "Can be used to group multiple quant events for one Ident together"
+        },
+                {
+            "column_name": "processing_level",
+            "type": "string",
+            "precision": 32,
+            "description": "Level of processing"
+        },
+        {
+            "column_name" : "quant_run_id",
+            "type" : "string",
+            "precision": 1000,
+            "description" : "search + QuantEngine_id"
+        },
+        {
+            "column_name" : "coalescence",
+            "type" : "float",
+            "precision": 64,
+            "description" : "The measured degree of coalescence between adjacent label ions.  Scale between 0 no and 1 fully coalesced."
+        }
+    ]
+}

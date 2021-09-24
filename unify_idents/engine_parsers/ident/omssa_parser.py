@@ -1,17 +1,16 @@
 #!/usr/bin/env python
 import csv
-
-import uparma
-
-from unify_idents import UnifiedRow
-from unify_idents.engine_parsers.base_parser import __BaseParser
-
 import xml.etree.ElementTree
 from pathlib import Path
+
+import uparma
 from loguru import logger
 
+from unify_idents import UnifiedRow
+from unify_idents.engine_parsers.base_parser import __IdentBaseParser
 
-class OmssaParser(__BaseParser):
+
+class OmssaParser(__IdentBaseParser):
 
     """Engine parser to unify MSAmanda results."""
 
@@ -156,7 +155,6 @@ class OmssaParser(__BaseParser):
         new_row["Search Engine"] = "omssa_2_1_9"
         new_row["uCalc mass"] = 0
         new_row["uCalc m/z"] = 0
-        # breakpoint()
         new_row["Calc m/z"] = self.calc_mz(float(row[" Mass"]), int(row[" Charge"]))
         new_row["Calc mass"] = row[" Mass"]
 
@@ -323,9 +321,9 @@ class OmssaParser(__BaseParser):
                             ]
                             self.lookups[omssa_name] = {
                                 "name": mod["name"],
-                                "aa_targets": self.omssa_mod_mapper[mod["id"]][omssa_id][
-                                    "aa_targets"
-                                ],
+                                "aa_targets": self.omssa_mod_mapper[mod["id"]][
+                                    omssa_id
+                                ]["aa_targets"],
                                 "omssa_id": omssa_id,
                                 "id": mod["id"],
                             }

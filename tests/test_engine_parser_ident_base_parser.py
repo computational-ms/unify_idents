@@ -1,15 +1,15 @@
-from unify_idents.engine_parsers.msfragger3_parser import __BaseParser
+from unify_idents.engine_parsers.base_parser import __IdentBaseParser
 from pathlib import Path
 
 
-def test_engine_parsers_BaseParser_init():
+def test_engine_parsers_IdentBaseParser_init():
     input_file = (
         Path(__file__).parent / "data" / "test_Creinhardtii_QE_pH11_xtandem_alanine.xml"
     )
     rt_lookup_path = Path(__file__).parent / "data" / "_ursgal_lookup.csv.bz2"
     db_path = Path(__file__).parent / "data" / "test_Creinhardtii_target_decoy.fasta"
 
-    parser = __BaseParser(
+    parser = __IdentBaseParser(
         input_file,
         params={
             "rt_pickle_name": rt_lookup_path,
@@ -38,19 +38,26 @@ def test_engine_parsers_BaseParser_init():
     )
 
 
-def test_engine_parsers_BaseParser_file_matches_parser():
+def test_engine_parsers_IdentBaseParser_file_matches_parser_non_existing():
     # should always return False
-    __BaseParser.file_matches_parser("whatever") is False
+    __IdentBaseParser.file_matches_parser("whatever") is False
 
 
-def test_engine_parsers_BaseParser_map_mod_names():
+def test_engine_parsers_IdentBaseParser_file_matches_parser_existing():
+    # should always return False
+    __IdentBaseParser.file_matches_parser(
+        Path(__file__).parent / "data" / "test_Creinhardtii_QE_pH11_xtandem_alanine.xml"
+    ) is False
+
+
+def test_engine_parsers_IdentBaseParser_map_mod_names():
     input_file = (
         Path(__file__).parent / "data" / "test_Creinhardtii_QE_pH11_xtandem_alanine.xml"
     )
     rt_lookup_path = Path(__file__).parent / "data" / "_ursgal_lookup.csv.bz2"
     db_path = Path(__file__).parent / "data" / "test_Creinhardtii_target_decoy.fasta"
 
-    parser = __BaseParser(
+    parser = __IdentBaseParser(
         input_file,
         params={
             "rt_pickle_name": rt_lookup_path,
@@ -82,14 +89,14 @@ def test_engine_parsers_BaseParser_map_mod_names():
     assert parser.map_mod_names(row) == "Carbamidomethyl:1"
 
 
-def test_engine_parsers_BaseParser_map_mod_names_nterm():
+def test_engine_parsers_IdentBaseParser_map_mod_names_nterm():
     input_file = (
         Path(__file__).parent / "data" / "test_Creinhardtii_QE_pH11_xtandem_alanine.xml"
     )
     rt_lookup_path = Path(__file__).parent / "data" / "_ursgal_lookup.csv.bz2"
     db_path = Path(__file__).parent / "data" / "test_Creinhardtii_target_decoy.fasta"
 
-    parser = __BaseParser(
+    parser = __IdentBaseParser(
         input_file,
         params={
             "rt_pickle_name": rt_lookup_path,
@@ -121,14 +128,14 @@ def test_engine_parsers_BaseParser_map_mod_names_nterm():
     assert parser.map_mod_names(row) == "Carbamidomethyl:1;Acetyl:0"
 
 
-def test_engine_parsers_BaseParser_read_rt_lookup_file():
+def test_engine_parsers_IdentBaseParser_read_rt_lookup_file():
     input_file = (
         Path(__file__).parent / "data" / "test_Creinhardtii_QE_pH11_xtandem_alanine.xml"
     )
     rt_lookup_path = Path(__file__).parent / "data" / "_ursgal_lookup.csv.bz2"
     db_path = Path(__file__).parent / "data" / "test_Creinhardtii_target_decoy.fasta"
 
-    parser = __BaseParser(
+    parser = __IdentBaseParser(
         input_file,
         params={
             "rt_pickle_name": rt_lookup_path,

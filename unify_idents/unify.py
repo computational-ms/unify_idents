@@ -2,13 +2,12 @@
 import bz2
 import csv
 import inspect
-from peptide_mapper.mapper import UPeptideMapper
-from chemical_composition import ChemicalComposition
-
 from importlib import import_module
 from pathlib import Path
 
 import pandas as pd
+from chemical_composition import ChemicalComposition
+from peptide_mapper.mapper import UPeptideMapper
 
 PROTON = 1.00727646677
 
@@ -103,8 +102,13 @@ class UnifiedDataFrame:
             calc_mz = self.calc_mz(calc_mass, charge)
             self.df.at[_id, "uCalc m/z"] = calc_mz
             self.df.at[_id, "uCalc Mass"] = calc_mass  # + PROTON
+            if self.df.at[_id, "Calc m/z"] == "":
+                self.df.at[_id, "Calc m/z"] = calc_mz
             acc = (
-                (float(self.df.at[_id, "Exp m/z"]) - float(self.df.at[_id, "uCalc m/z"]))
+                (
+                    float(self.df.at[_id, "Exp m/z"])
+                    - float(self.df.at[_id, "uCalc m/z"])
+                )
                 / self.df.at[_id, "uCalc m/z"]
                 * 1e6
             )
@@ -232,21 +236,22 @@ class Unify:
             list: list of python classes
         """
         classes = []
-        fstring = "unify_idents.engine_parsers.{module}"
-        all_modules = []
-        p = Path(__file__).parent / "engine_parsers"
-        for child in p.iterdir():
-            if str(child).endswith(".py") and not str(child.stem).startswith("__"):
-                name = child.stem
-                formatted_string = fstring.format(module=name)
-                members = inspect.getmembers(import_module(formatted_string))
-                for name, obj in dict(members).items():
-                    if (
-                        inspect.isclass(obj)
-                        and obj.__module__ == formatted_string
-                        and not "__" in name
-                    ):
-                        classes.append(obj)
+        for eng_type in ["quant", "ident"]:
+            fstring = "unify_idents.engine_parsers.{eng_type}.{module}"
+            all_modules = []
+            p = Path(__file__).parent / "engine_parsers" / eng_type
+            for child in p.iterdir():
+                if str(child).endswith(".py") and not str(child.stem).startswith("__"):
+                    name = child.stem
+                    formatted_string = fstring.format(module=name, eng_type=eng_type)
+                    members = inspect.getmembers(import_module(formatted_string))
+                    for name, obj in dict(members).items():
+                        if (
+                            inspect.isclass(obj)
+                            and obj.__module__ == formatted_string
+                            and not "__" in name
+                        ):
+                            classes.append(obj)
         return classes
 
     def _get_parser(self, input_file):
@@ -265,32 +270,32 @@ class Unify:
         parser = parser_class(input_file, params=self.params)
         return parser
 
-    def read_rt_lookup_file(self, scan_rt_lookup_path):
-        """Read RT lookup file and transform to dict.
+    # def read_rt_lookup_file(self, scan_rt_lookup_path):
+    #     """Read RT lookup file and transform to dict.
 
-        Args:
-            scan_rt_lookup_path (str): path to bz2 compressed scan rt file
+    #     Args:
+    #         scan_rt_lookup_path (str): path to bz2 compressed scan rt file
 
-        Returns:
-            dict: Dict mapping scan2rt, rt2scan and scan2mz grouped by filename
-        """
-        with bz2.open(scan_rt_lookup_path, "rt") as fin:
-            lookup = {}
-            reader = csv.DictReader(fin)
-            for line in reader:
-                lookup.setdefault(
-                    line["File"], {"scan2rt": {}, "rt2scan": {}, "scan2mz": {}}
-                )
-                file, scan, rt, mz = (
-                    line["File"],
-                    line["Spectrum ID"],
-                    line["RT"],
-                    line["Precursor mz"],
-                )
-                lookup[file]["scan2rt"][int(scan)] = float(rt)
-                lookup[file]["rt2scan"][float(rt)] = int(scan)
-                lookup[file]["scan2mz"][int(scan)] = float(mz)
-        return lookup
+    #     Returns:
+    #         dict: Dict mapping scan2rt, rt2scan and scan2mz grouped by filename
+    #     """
+    #     with bz2.open(scan_rt_lookup_path, "rt") as fin:
+    #         lookup = {}
+    #         reader = csv.DictReader(fin)
+    #         for line in reader:
+    #             lookup.setdefault(
+    #                 line["File"], {"scan2rt": {}, "rt2scan": {}, "scan2mz": {}}
+    #             )
+    #             file, scan, rt, mz = (
+    #                 line["File"],
+    #                 line["Spectrum ID"],
+    #                 line["RT"],
+    #                 line["Precursor mz"],
+    #             )
+    #             lookup[file]["scan2rt"][int(scan)] = float(rt)
+    #             lookup[file]["rt2scan"][float(rt)] = int(scan)
+    #             lookup[file]["scan2mz"][int(scan)] = float(mz)
+    #     return lookup
 
     def get_dataframe(self):
         """Create a UnifiedDataFrame object.

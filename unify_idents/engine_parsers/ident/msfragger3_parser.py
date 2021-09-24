@@ -1,11 +1,13 @@
-from unify_idents import UnifiedRow
-from unify_idents.engine_parsers.base_parser import __BaseParser
-from pathlib import Path
-import re
 import csv
-from decimal import Decimal, getcontext, ROUND_UP
 import itertools
+import re
+from decimal import ROUND_UP, Decimal, getcontext
+from pathlib import Path
+
 from loguru import logger
+
+from unify_idents import UnifiedRow
+from unify_idents.engine_parsers.base_parser import __IdentBaseParser
 
 """
 1. Raw data location
@@ -16,7 +18,7 @@ from loguru import logger
 """
 
 
-class MSFragger3Parser(__BaseParser):
+class MSFragger3Parser(__IdentBaseParser):
 
     """Engine parser to unify MSAmanda results."""
 
@@ -184,17 +186,6 @@ class MSFragger3Parser(__BaseParser):
 
         new_row = self.general_fixes(new_row)
         return UnifiedRow(**new_row)
-
-    def get_column_names(self):
-        """Get column names from param mapper.
-
-        Returns:
-            dict: dict mapping new to old column names
-        """
-        headers = self.param_mapper.get_default_params(style=self.style)[
-            "header_translations"
-        ]["translated_value"]
-        return headers
 
     def prepare_mass_to_mod(self):
         """Map massshifts to unimod names.

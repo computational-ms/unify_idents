@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 from pathlib import Path
 from unify_idents.unify import UnifiedDataFrame, UnifiedRow
-from unify_idents.engine_parsers.omssa_parser import OmssaParser
+from unify_idents.engine_parsers.ident.omssa_parser import OmssaParser
 import uparma
 
 from collections.abc import Iterable
@@ -10,10 +10,14 @@ import pytest
 
 def test_engine_parsers_omssa_init():
     input_file = (
-        Path(__file__).parent / "data" / "test_Creinhardtii_QE_pH11_omssa_2_1_9.csv"
+        Path(__file__).parent.parent
+        / "data"
+        / "test_Creinhardtii_QE_pH11_omssa_2_1_9.csv"
     )
-    rt_lookup_path = Path(__file__).parent / "data" / "_ursgal_lookup.csv.bz2"
-    db_path = Path(__file__).parent / "data" / "test_Creinhardtii_target_decoy.fasta"
+    rt_lookup_path = Path(__file__).parent.parent / "data" / "_ursgal_lookup.csv.bz2"
+    db_path = (
+        Path(__file__).parent.parent / "data" / "test_Creinhardtii_target_decoy.fasta"
+    )
 
     parser = OmssaParser(
         input_file,
@@ -40,28 +44,35 @@ def test_engine_parsers_omssa_init():
                     "name": "Acetyl",
                 },
             ],
-            "omssa_mod_dir": Path(__file__).parent / "data",
-            "Raw data location": "/Users/cellzome/Dev/Gits/Ursgal/ursgal_master/example_data/test_Creinhardtii_QE_pH11.mgf",
+            "omssa_mod_dir": Path(__file__).parent.parent / "data",
         },
     )
 
 
 def test_engine_parsers_omssa_file_matches_parser():
     input_file = (
-        Path(__file__).parent / "data" / "test_Creinhardtii_QE_pH11_omssa_2_1_9.csv"
+        Path(__file__).parent.parent
+        / "data"
+        / "test_Creinhardtii_QE_pH11_omssa_2_1_9.csv"
     )
-    rt_lookup_path = Path(__file__).parent / "data" / "_ursgal_lookup.csv.bz2"
-    db_path = Path(__file__).parent / "data" / "test_Creinhardtii_target_decoy.fasta"
+    rt_lookup_path = Path(__file__).parent.parent / "data" / "_ursgal_lookup.csv.bz2"
+    db_path = (
+        Path(__file__).parent.parent / "data" / "test_Creinhardtii_target_decoy.fasta"
+    )
 
     assert OmssaParser.file_matches_parser(input_file) is True
 
 
 def test_engine_parsers_omssa_unify_row():
     input_file = (
-        Path(__file__).parent / "data" / "test_Creinhardtii_QE_pH11_omssa_2_1_9.csv"
+        Path(__file__).parent.parent
+        / "data"
+        / "test_Creinhardtii_QE_pH11_omssa_2_1_9.csv"
     )
-    rt_lookup_path = Path(__file__).parent / "data" / "_ursgal_lookup.csv.bz2"
-    db_path = Path(__file__).parent / "data" / "test_Creinhardtii_target_decoy.fasta"
+    rt_lookup_path = Path(__file__).parent.parent / "data" / "_ursgal_lookup.csv.bz2"
+    db_path = (
+        Path(__file__).parent.parent / "data" / "test_Creinhardtii_target_decoy.fasta"
+    )
 
     parser = OmssaParser(
         input_file,
@@ -88,8 +99,7 @@ def test_engine_parsers_omssa_unify_row():
                     "name": "Acetyl",
                 },
             ],
-            "omssa_mod_dir": Path(__file__).parent / "data",
-            "Raw data location": "/Users/cellzome/Dev/Gits/Ursgal/ursgal_master/example_data/test_Creinhardtii_QE_pH11.mgf",
+            "omssa_mod_dir": Path(__file__).parent.parent / "data",
         },
     )
     for row in parser:
@@ -98,10 +108,16 @@ def test_engine_parsers_omssa_unify_row():
 
 def test_engine_parsers_omssa_is_iterable():
     input_file = (
-        Path(__file__).parent / "data" / "test_Creinhardtii_QE_pH11_omssa_2_1_9.csv"
+        Path(__file__).parent.parent
+        / "data"
+        / "test_Creinhardtii_QE_pH11_omssa_2_1_9.csv"
     )
-    rt_lookup_path = Path(__file__).parent / "data" / "BSA1_ursgal_lookup.csv.bz2"
-    db_path = Path(__file__).parent / "data" / "test_Creinhardtii_target_decoy.fasta"
+    rt_lookup_path = (
+        Path(__file__).parent.parent / "data" / "BSA1_ursgal_lookup.csv.bz2"
+    )
+    db_path = (
+        Path(__file__).parent.parent / "data" / "test_Creinhardtii_target_decoy.fasta"
+    )
 
     parser = OmssaParser(
         input_file,
@@ -128,7 +144,7 @@ def test_engine_parsers_omssa_is_iterable():
                     "name": "Acetyl",
                 },
             ],
-            "omssa_mod_dir": Path(__file__).parent / "data",
+            "omssa_mod_dir": Path(__file__).parent.parent / "data",
             "Raw data location": "/Users/cellzome/Dev/Gits/Ursgal/ursgal_master/example_data/test_Creinhardtii_QE_pH11.mgf",
         },
     )
@@ -137,10 +153,14 @@ def test_engine_parsers_omssa_is_iterable():
 
 def test_engine_parsers_omssa_next():
     input_file = (
-        Path(__file__).parent / "data" / "test_Creinhardtii_QE_pH11_omssa_2_1_9.csv"
+        Path(__file__).parent.parent
+        / "data"
+        / "test_Creinhardtii_QE_pH11_omssa_2_1_9.csv"
     )
-    rt_lookup_path = Path(__file__).parent / "data" / "_ursgal_lookup.csv.bz2"
-    db_path = Path(__file__).parent / "data" / "test_Creinhardtii_target_decoy.fasta"
+    rt_lookup_path = Path(__file__).parent.parent / "data" / "_ursgal_lookup.csv.bz2"
+    db_path = (
+        Path(__file__).parent.parent / "data" / "test_Creinhardtii_target_decoy.fasta"
+    )
 
     parser = OmssaParser(
         input_file,
@@ -167,7 +187,7 @@ def test_engine_parsers_omssa_next():
                     "name": "Acetyl",
                 },
             ],
-            "omssa_mod_dir": Path(__file__).parent / "data",
+            "omssa_mod_dir": Path(__file__).parent.parent / "data",
             "Raw data location": "/Users/cellzome/Dev/Gits/Ursgal/ursgal_master/example_data/test_Creinhardtii_QE_pH11.mgf",
         },
     )
