@@ -56,6 +56,18 @@ def test_engine_parsers_omssa_file_matches_parser():
     assert OmssaParser.file_matches_parser(input_file) is True
 
 
+def test_engine_parsers_omssa_file_not_matches_parser():
+    input_file = (
+        Path(__file__).parent
+        / "data"
+        / "test_Creinhardtii_QE_pH11_mzml2mgf_0_0_1_msfragger_3.tsv"
+    )
+    rt_lookup_path = Path(__file__).parent / "data" / "_ursgal_lookup.csv.bz2"
+    db_path = Path(__file__).parent / "data" / "test_Creinhardtii_target_decoy.fasta"
+
+    assert OmssaParser.file_matches_parser(input_file) is False
+
+
 def test_engine_parsers_omssa_unify_row():
     input_file = (
         Path(__file__).parent / "data" / "test_Creinhardtii_QE_pH11_omssa_2_1_9.csv"
@@ -184,3 +196,19 @@ def test_engine_parsers_omssa_next():
     assert float(row["OMSSA:pvalue"]) == pytest.approx(0.000166970504409832)
     assert float(row["Calc mass"]) == pytest.approx(3033.491)
     assert float(row["Calc m/z"]) == pytest.approx(759.38002646677)
+
+
+def test_engine_parsers_omssa_create_modstring():
+    row = {
+        "Sequence": "",
+        "Modifications": "",
+    }
+    assert 1 == 2
+
+
+def test_engine_parsers_omssa_load_omssa_xml():
+    assert 1 == 2
+
+
+def test_engine_parsers_omssa_create_mod_lookup():
+    pass
