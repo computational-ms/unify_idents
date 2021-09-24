@@ -101,6 +101,11 @@ class MSGFPlus_2021_03_22(__BaseParser):
         return headers
 
     def __iter__(self):
+        """Yield a unified line from `_next`.
+
+        Yields:
+            UnifiedRow: converted row
+        """
         while True:
             try:
                 gen = self._next()
@@ -122,6 +127,14 @@ class MSGFPlus_2021_03_22(__BaseParser):
     #         return u
 
     def _next(self):
+        """Iterate lines and assemble a closure with all PSM related data.
+
+        Returns:
+            function: Closure yielding PSM level data.
+
+        Raises:
+            StopIteration: Stops iteration if EOF is reached.
+        """
         data = []
         while True:
             event, ele = next(self.reader, ("STOP", "STOP"))

@@ -16,26 +16,22 @@ PROTON = 1.00727646677
 # inherit from pd.DataFrame
 class UnifiedDataFrame:
 
-    """Data container holding a `pd.DataFrame` with methods to augment with additional data
+    """Data container holding a `pd.DataFrame` with methods to augment with additional data.
+
+    Args:
+        rows (list): list of objects to initialize pd.DataFrame.
+        db_path (str): path to fasta file for mapping peptides.
+        params (dict, optional): UnifiedDataFrame specific parameters.
 
     Attributes:
-        cc (ChemicalComposition): ChemicalCompostion object
-        df (pd.DataFrame): DataFrame holding ident info
-        mapper (UPeptideMapper): PeptideMapper object
-        params (dict): UnifiedDataFrame specific parameters
-            * delimiter (default <|>)
-        rows (list): list of objects to initialize pd.DataFrame
+        cc (ChemicalComposition): ChemicalCompostion object.
+        df (pd.DataFrame): DataFrame holding ident info.
+        mapper (UPeptideMapper): PeptideMapper object.
+        params (dict): UnifiedDataFrame specific parameters.
+        rows (list): list of objects to initialize pd.DataFrame.
     """
 
     def __init__(self, rows, db_path, params=None):
-        """Initialize UnifiedDataFrame
-
-        Args:
-            rows (list): list of objects to initialize pd.DataFrame
-            db_path (str): path to fasta file for mapping peptides
-            params (dict, optional): UnifiedDataFrame specific parameters
-                * delimiter (default <|>)
-        """
         if params is None:
             self.params = {}
         else:
@@ -193,18 +189,19 @@ class UnifiedRow:
 
 
 class Unify:
-    def __init__(self, input_file, params=None):
-        """Interface to unify ident outputs from the following engines:
-            * MSAmanda
-            * MSFragger3
-            * MSGF+ (2021_03_22)
-            * OMSSA (2.1.9)
-            * X!Tandem (alanine)
+    """Interface to unify ident outputs from the following engines.
 
-        Args:
-            input_file (str): path to file to unify
-            params (dict, optional): Description
-        """
+    Args:
+        input_file (str): path to file to unify
+        params (dict, optional): Description
+
+    Attributes:
+        parser (`unify_idents.engine_parsers.base_parser.__BaseParser`): Parser fitting the specified input_file
+
+    """
+
+    def __init__(self, input_file, params=None):
+
         self.input_file = input_file
         self.params = params
         if not isinstance(self.input_file, Path):
