@@ -75,26 +75,31 @@ class __QuantBaseParser(BaseParser):
         self.scan_rt_lookup = self.read_rt_lookup_file(self.scan_rt_path)
         self.required_headers = set(
             [
-                "Spectrum ID",
-                "Linked Spectrum ID",
-                "Raw data location",
-                "Retention Time (s)",
-                "Chemical Composition",
-                "Charge",
-                "Quant Value",
-                "Raw Quant Value",
-                "MZ Delta",
-                "PPM",
-                "FWHM",
-                "Label",
-                "Condition",
-                "Score",
-                "Quant Group",
-                "Processing Level",
-                "Quant Run ID",
-                "Coalescence",
+                "file_name",
+                "spectrum_id",
+                "trivial_name",
+                "chemical_composition",
+                "precursor_spectrum_id",
+                "retention_time",
+                "charge",
+                "quant_run_id",
+                "quant_value",
+                "quant_score",
+                "quant_group",
+                "processing_level",
+                "delta_mz",
+                "label",
+                "condition",
+                "ident_reference",
+                "fwhm",
+                "s2i",
+                "p2t",
+                "coalescence",
             ]
         )
+
+    def check_required_headers(self, row):
+        return self.required_headers.issubeset(row.keys())
 
     def __iter__(self):
         return self

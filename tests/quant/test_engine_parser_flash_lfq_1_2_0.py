@@ -60,51 +60,51 @@ def test_engine_parsers_flashLFQ_iterable():
         print(row)
 
 
-def test_engine_parsers_flashLFQ_unify_row_all_keys_present():
-    input_file = (
-        Path(__file__).parent.parent / "data" / "flash_lfq_1_2_0_quantified_peaks.tsv"
-    )
-    rt_lookup_path = (
-        Path(__file__).parent.parent / "data" / "BSA1_ursgal_lookup.csv.bz2"
-    )
-    db_path = (
-        Path(__file__).parent.parent / "data" / "test_Creinhardtii_target_decoy.fasta"
-    )
+# def test_engine_parsers_flashLFQ_unify_row_all_keys_present():
+#     input_file = (
+#         Path(__file__).parent.parent / "data" / "flash_lfq_1_2_0_quantified_peaks.tsv"
+#     )
+#     rt_lookup_path = (
+#         Path(__file__).parent.parent / "data" / "BSA1_ursgal_lookup.csv.bz2"
+#     )
+#     db_path = (
+#         Path(__file__).parent.parent / "data" / "test_Creinhardtii_target_decoy.fasta"
+#     )
 
-    parser = FlashLFQ(
-        input_file,
-        params={"rt_pickle_name": rt_lookup_path},
-    )
-    for row in parser:
-        # breakpoint()
-        keys = set(
-            [
-                "Raw data location",
-                "Sequence",
-                "Protein IDs",
-                "Mass",
-                "Retention Time (s)",
-                "Charge",
-                "Calc m/z",
-                "Quant Value",
-                "PPM",
-                "Spectrum ID",
-                "Linked Spectrum ID",
-                "Chemical Composition",
-                "Raw Quant Value",
-                "MZ Delta",
-                "FWHM",
-                "Label",
-                "Condition",
-                "Quant Group",
-                "Score",
-                "Processing Level",
-                "Quant Run ID",
-                "Coalescence",
-            ]
-        )
-        assert row.keys() == keys
-        break
+#     parser = FlashLFQ(
+#         input_file,
+#         params={"rt_pickle_name": rt_lookup_path},
+#     )
+#     for row in parser:
+#         # breakpoint()
+#         keys = set(
+#             [
+#                 "Raw data location",
+#                 "Sequence",
+#                 "Protein IDs",
+#                 "Mass",
+#                 "Retention Time (s)",
+#                 "Charge",
+#                 "Calc m/z",
+#                 "Quant Value",
+#                 "PPM",
+#                 "Spectrum ID",
+#                 "Linked Spectrum ID",
+#                 "Chemical Composition",
+#                 "Raw Quant Value",
+#                 "MZ Delta",
+#                 "FWHM",
+#                 "Label",
+#                 "Condition",
+#                 "Quant Group",
+#                 "Score",
+#                 "Processing Level",
+#                 "Quant Run ID",
+#                 "Coalescence",
+#             ]
+#         )
+#         assert row.keys() == keys
+#         break
 
 
 def test_engine_parsers_flashLFQ_unify_row():
