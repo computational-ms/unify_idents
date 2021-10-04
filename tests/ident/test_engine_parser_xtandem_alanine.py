@@ -45,6 +45,15 @@ def test_engine_parsers_xtandem_init():
     )
 
 
+def test_engine_parsers_xtandem_init_no_params():
+    input_file = (
+        Path(__file__).parent.parent
+        / "data"
+        / "test_Creinhardtii_QE_pH11_xtandem_alanine.xml"
+    )
+    parser = XTandemAlanine(input_file, params=None)
+
+
 def test_engine_parsers_xtandem_file_matches_xtandem_parser():
     input_file = (
         Path(__file__).parent.parent

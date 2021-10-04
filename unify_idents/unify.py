@@ -54,7 +54,7 @@ class UnifiedDataFrame:
         return len(self.df)
 
     def __iter__(self):
-        return iter(self.rows)
+        return iter(self.rows)  # pragma: no cover
 
     def update_protein_mapping(self, mapped_peptides):
         """Add protein ids and recalculated masses/mz/offsets for each row
@@ -266,33 +266,6 @@ class Unify:
                 break
         parser = parser_class(input_file, params=self.params)
         return parser
-
-    # def read_rt_lookup_file(self, scan_rt_lookup_path):
-    #     """Read RT lookup file and transform to dict.
-
-    #     Args:
-    #         scan_rt_lookup_path (str): path to bz2 compressed scan rt file
-
-    #     Returns:
-    #         dict: Dict mapping scan2rt, rt2scan and scan2mz grouped by filename
-    #     """
-    #     with bz2.open(scan_rt_lookup_path, "rt") as fin:
-    #         lookup = {}
-    #         reader = csv.DictReader(fin)
-    #         for line in reader:
-    #             lookup.setdefault(
-    #                 line["File"], {"scan2rt": {}, "rt2scan": {}, "scan2mz": {}}
-    #             )
-    #             file, scan, rt, mz = (
-    #                 line["File"],
-    #                 line["Spectrum ID"],
-    #                 line["RT"],
-    #                 line["Precursor mz"],
-    #             )
-    #             lookup[file]["scan2rt"][int(scan)] = float(rt)
-    #             lookup[file]["rt2scan"][float(rt)] = int(scan)
-    #             lookup[file]["scan2mz"][int(scan)] = float(mz)
-    #     return lookup
 
     def get_dataframe(self):
         """Create a UnifiedDataFrame object.

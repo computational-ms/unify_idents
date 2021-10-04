@@ -4,11 +4,27 @@ from pathlib import Path
 import pytest
 import uparma
 from unify_idents.engine_parsers.ident.omssa_parser import OmssaParser
-from unify_idents.unify import UnifiedDataFrame, Unify
+from unify_idents.unify import UnifiedDataFrame, Unify, UnifiedRow
 from unify_idents.engine_parsers.ident.msgfplus_2021_03_22_parser import (
     MSGFPlus_2021_03_22,
 )
 from unify_idents.engine_parsers.ident.msamanda_parser import MSamandaParser
+
+
+def test_unify_row_set_new_value_fails():
+    row = UnifiedRow(**{"sequence": "ELVIS", "charge": 2, "modifications": ""})
+    with pytest.raises(KeyError) as e_info:
+        row["Score"] = 1
+
+
+def test_unify_row_overwrite_value():
+    row = UnifiedRow(**{"sequence": "ELVIS", "charge": 2, "modifications": ""})
+    row["charge"] = 3
+
+
+def test_unify_row_contains():
+    row = UnifiedRow(**{"sequence": "ELVIS", "charge": 2, "modifications": ""})
+    assert ("sequence" in row) is True
 
 
 def test_unify_get_parser_classes():

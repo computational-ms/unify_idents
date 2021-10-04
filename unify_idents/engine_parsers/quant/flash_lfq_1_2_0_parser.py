@@ -8,15 +8,15 @@ from loguru import logger
 from unify_idents.engine_parsers.base_parser import __QuantBaseParser
 
 col_mapping = {
-    "File Name": "Raw data location",
-    "Base Sequence": "Sequence",
-    "Protein Group": "Protein IDs",
-    "Peptide Monoisotopic Mass": "Mass",
-    "Peak RT Apex": "Retention Time (s)",
-    "Precursor Charge": "Charge",
-    "Theoretical MZ": "Calc m/z",
-    "Peak intensity": "Quant Value",
-    "Peak Apex Mass Error (ppm)": "PPM",
+    "File Name": "file_name",
+    "Base Sequence": "trivial_name",
+    # "Protein Group": "Protein IDs",
+    # "Peptide Monoisotopic Mass": "Mass",
+    "Peak RT Apex": "retention_time",
+    "Precursor Charge": "charge",
+    # "Theoretical MZ": "Calc m/z",
+    "Peak intensity": "quant_value",
+    "Peak Apex Mass Error (ppm)": "delta_mz",
 }
 
 
@@ -96,27 +96,49 @@ class FlashLFQ(__QuantBaseParser):
         Returns:
             dict: Transformed row
         """
+        self.cc.use(
+            sequence=row["Base Sequence"],
+            modifications=self.extract_mods(row["Full Sequence"]),
+        )  # currently only works for peptides
         new_row = {}
         for flash_name, unify_name in col_mapping.items():
             new_row[unify_name] = row[flash_name]
-        self.cc.use(
-            sequence=new_row["Sequence"],
-            modifications=self.extract_mods(row["Full Sequence"]),
-        )  # currently only works for peptides
-        calc_mz = self.calc_mz(float(new_row["Mass"]), int(new_row["Charge"]))
-        new_row["Spectrum ID"] = -1
-        new_row["Linked Spectrum ID"] = -1
-        new_row["Chemical Composition"] = self.cc.hill_notation_unimod()
-        new_row["Raw Quant Value"] = -1
-        new_row["MZ Delta"] = float(new_row["PPM"]) * 1e-6 * calc_mz
-        new_row["FWHM"] = ""
-        new_row["Label"] = "LabelFree"
-        new_row["Condition"] = Path(new_row["Raw data location"]).stem
-        new_row["Quant Group"] = ""
-        new_row["Score"] = ""
-        new_row["Processing Level"] = "ChromatographicPeak"
-        new_row["Quant Run ID"] = "XXX+FlashLFQ"
-        new_row["Coalescence"] = ""
+
+        keys = list(row.keys())
+        for old_key in keys:
+            if old_key not in col_mapping.keys() and old_key != "":
+                new_row[f"FlashLFQ:{old_key}"] = row[old_key]
+            del row[old_key]
+        calc_mz = self.calc_mz(self.cc.mass(), int(new_row["charge"]))
+
+        # Identifier
+        new_row["spectrum_id"] = ""
+        new_row["chemical_composition"] = self.cc.hill_notation_unimod()
+
+        # spectrum meta data
+        new_row["precursor_spectrum_id"] = ""
+        new_row["ms_level"] = 1
+
+        # Quant data
+        new_row["quant_engine"] = "FlashLFQ_1_2_0"
+        new_row["quant_score"] = ""
+        new_row["quant_group"] = ""
+        new_row["processing_level"] = "gaussian_apex"
+
+        # Quant meta data
+        new_row["label"] = "LabelFree"
+        new_row["condition"] = ""
+        new_row["ident_reference"] = ""
+
+        # Derived data
+        new_row["fwhm"] = ""
+        new_row["s2i"] = ""
+        new_row["p2t"] = ""
+        new_row["coalescence"] = ""
+
+        if (raw_name := self.params.get("Raw file location", None)) is not None:
+            new_row["file_name"] = raw_name
+
         if self.check_required_headers(new_row) is False:
             logger.error("Not all required headers are present!")
         return new_row
@@ -135,12 +157,6 @@ class FlashLFQ(__QuantBaseParser):
         regex = re.compile("\[(.*?)\]")
         mods = []
         for match in regex.finditer(full_sequence):
-            print(match.group())
             mods.append(f"{match.group(1)}:{match.start() - cumulative_match_length}")
             cumulative_match_length += len(match.group())
-        print()
-
         return ";".join(mods)
-
-    def check_required_headers(self, row):
-        return False
