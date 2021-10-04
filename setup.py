@@ -12,12 +12,14 @@ setup(
     packages=[
         "unify_idents",
         "unify_idents.engine_parsers",
+        "unify_idents.engine_parsers.ident",
+        "unify_idents.engine_parsers.quant",
     ],
     package_dir={"unify_idents": "unify_idents"},
-    package_data={
-        "unify_idents": ["version.txt", "engine_parsers"],
-        "": ["tests", "example_scripts"],
-    },
+#    package_data={
+#        "unify_idents": ["version.txt", "engine_parsers"],
+#        "": ["tests", "example_scripts"],
+#    },
     python_requires=">=3.7.0",
     install_requires=["pytest", "uparma"],
     description="Unify PSM idents",
