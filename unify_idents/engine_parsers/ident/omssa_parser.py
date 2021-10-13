@@ -153,9 +153,9 @@ class OmssaParser(__IdentBaseParser):
         for col in self.cols_to_add:
             new_row[col] = ""
         new_row["Spectrum ID"] = int(new_row["Spectrum Title"].split(".")[1])
-        new_row["Raw data location"] = self.params.get(
+        new_row["Raw data location"] = str(self.params.get(
             "Raw data location", new_row["Spectrum Title"].split(".")[0]
-        )
+        ))
         new_row["Search Engine"] = "omssa_2_1_9"
         new_row["uCalc mass"] = 0
         new_row["uCalc m/z"] = 0
