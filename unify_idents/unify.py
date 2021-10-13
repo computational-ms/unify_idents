@@ -101,10 +101,7 @@ class UnifiedDataFrame:
             if self.df.at[_id, "Calc m/z"] == "":
                 self.df.at[_id, "Calc m/z"] = calc_mz
             acc = (
-                (
-                    float(self.df.at[_id, "Exp m/z"])
-                    - float(self.df.at[_id, "uCalc m/z"])
-                )
+                (float(self.df.at[_id, "Exp m/z"]) - float(self.df.at[_id, "uCalc m/z"]))
                 / self.df.at[_id, "uCalc m/z"]
                 * 1e6
             )
