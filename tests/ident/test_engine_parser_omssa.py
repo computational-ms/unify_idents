@@ -112,9 +112,7 @@ def test_engine_parsers_omssa_is_iterable():
         / "data"
         / "test_Creinhardtii_QE_pH11_omssa_2_1_9.csv"
     )
-    rt_lookup_path = (
-        Path(__file__).parent.parent / "data" / "BSA1_ursgal_lookup.csv.bz2"
-    )
+    rt_lookup_path = Path(__file__).parent.parent / "data" / "BSA1_ursgal_lookup.csv.bz2"
     db_path = (
         Path(__file__).parent.parent / "data" / "test_Creinhardtii_target_decoy.fasta"
     )
