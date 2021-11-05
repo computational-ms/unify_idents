@@ -1,10 +1,9 @@
 #!/usr/bin/env python
 from pathlib import Path
 
+import pandas as pd
 import pytest
-import uparma
 from unify_idents.engine_parsers.ident.omssa_2_1_9_parser import OmssaParser
-#from unify_idents.unify import UnifiedDataFrame, Unify
 from unify_idents.unify import Unify
 from unify_idents.engine_parsers.ident.msgfplus_2021_03_22_parser import (
     MSGFPlus_2021_03_22,
@@ -44,10 +43,8 @@ def test_unify_get_parser_classes():
             "omssa_mod_dir": Path(__file__).parent / "data",
         },
     )
-    parsers = u._get_parser_classes()
-    assert (
-        len(parsers) == 8
-    )  # currently msamanda, msfragger, msgfplus, omssa, xtandem, flash_lfq and 2 dummies
+    # currently msamanda, msfragger, msgfplus, omssa, xtandem, comet, flash_lfq
+    assert len(u._parser_classes) == 7
 
 
 def test_unify_get_omssa_parser():
@@ -116,8 +113,7 @@ def test_unify_get_msgfplus_parser():
             ],
         },
     )
-    parser = u._get_parser(p)
-    assert isinstance(parser, MSGFPlus_2021_03_22)
+    assert isinstance(u.parser, MSGFPlus_2021_03_22)
 
 
 def test_engine_parsers_omssa_unified_frame():
@@ -156,7 +152,7 @@ def test_engine_parsers_omssa_unified_frame():
         },
     )
     df = u.get_dataframe()
-    assert isinstance(df, UnifiedDataFrame)
+    assert isinstance(df, pd.DataFrame)
 
 
 def test_engine_parsers_msfragger_unified_frame():
@@ -198,7 +194,7 @@ def test_engine_parsers_msfragger_unified_frame():
         },
     )
     df = u.get_dataframe()
-    assert isinstance(df, UnifiedDataFrame)
+    assert isinstance(df, pd.DataFrame)
 
 
 def test_engine_parsers_msgf_unified_frame():
@@ -234,14 +230,14 @@ def test_engine_parsers_msgf_unified_frame():
         },
     )
     df = u.get_dataframe()
-    assert isinstance(df, UnifiedDataFrame)
-    assert len(df) == 91
+    assert isinstance(df, pd.DataFrame)
+    assert len(df) == 92
     assert (
-        df.df.iloc[0]["Protein ID"]
+        df.iloc[0]["Protein ID"]
         == "sp|P02769|ALBU_BOVIN Serum albumin OS=Bos taurus GN=ALB PE=1 SV=4"
     )
-    assert df.df.iloc[0]["Sequence Pre AA"] == "K"
-    assert df.df.iloc[0]["Sequence Post AA"] == "L"
+    assert df.iloc[0]["Sequence Pre AA"] == "K"
+    assert df.iloc[0]["Sequence Post AA"] == "L"
 
 
 def test_unify_msfragger_df_masses():
@@ -410,7 +406,9 @@ def test_unify_xtandem_df_masses():
     assert float(row["uCalc m/z"].iloc[0]) == pytest.approx(
         904.0782, abs=5e-6 * 904.0782
     )
-    assert float(row["Calc m/z"].iloc[0]) == pytest.approx(904.0782, abs=5e-6 * 904.0782)
+    assert float(row["Calc m/z"].iloc[0]) == pytest.approx(
+        904.0782, abs=5e-6 * 904.0782
+    )
     assert float(row["uCalc Mass"].iloc[0]) == pytest.approx(
         2709.2129296404, abs=5e-6 * 2710.2202
     )
@@ -455,8 +453,8 @@ def test_unify_msgf_df_masses():
             "15N": False,
         },
     )
-    res = parser.get_dataframe()
-    row = res.df[res.df["Sequence"] == "ASDGKYVDEYFAATYVCTDHGRGK"]
+    df = parser.get_dataframe()
+    row = df[df["Sequence"] == "ASDGKYVDEYFAATYVCTDHGRGK"]
     assert row["Spectrum ID"].iloc[0] == "45703"
     assert row["Sequence"].iloc[0] == "ASDGKYVDEYFAATYVCTDHGRGK"
     assert row["Charge"].iloc[0] == "3"
@@ -464,7 +462,9 @@ def test_unify_msgf_df_masses():
     assert float(row["uCalc m/z"].iloc[0]) == pytest.approx(
         904.0782, abs=5e-6 * 904.0782
     )
-    assert float(row["Calc m/z"].iloc[0]) == pytest.approx(904.0782, abs=5e-6 * 904.0782)
+    assert float(row["Calc m/z"].iloc[0]) == pytest.approx(
+        904.0782, abs=5e-6 * 904.0782
+    )
     assert float(row["uCalc Mass"].iloc[0]) == pytest.approx(
         2709.2129296404, abs=5e-6 * 2710.2202
     )
@@ -573,7 +573,52 @@ def test_unify_msamanda_df_masses():
     assert float(row["uCalc m/z"].iloc[0]) == pytest.approx(
         904.0782, abs=5e-6 * 904.0782
     )
-    assert float(row["Calc m/z"].iloc[0]) == pytest.approx(904.0782, abs=5e-6 * 904.0782)
+    assert float(row["Calc m/z"].iloc[0]) == pytest.approx(
+        904.0782, abs=5e-6 * 904.0782
+    )
     assert float(row["uCalc Mass"].iloc[0]) == pytest.approx(
         2709.2129296404, abs=5e-6 * 2709.2129296404
+    )
+
+
+def test_unify_read_rt_lookup_file():
+    input_file = (
+        Path(__file__).parent / "data" / "test_Creinhardtii_QE_pH11_xtandem_alanine.xml"
+    )
+    rt_lookup_path = Path(__file__).parent / "data" / "_ursgal_lookup.csv.bz2"
+    db_path = Path(__file__).parent / "data" / "test_Creinhardtii_target_decoy.fasta"
+
+    parser = Unify(
+        input_file,
+        params={
+            "rt_pickle_name": rt_lookup_path,
+            "database": db_path,
+            "modifications": [
+                {
+                    "aa": "M",
+                    "type": "opt",
+                    "position": "any",
+                    "name": "Oxidation",
+                },
+                {
+                    "aa": "C",
+                    "type": "fix",
+                    "position": "any",
+                    "name": "Carbamidomethyl",
+                },
+                {
+                    "aa": "*",
+                    "type": "opt",
+                    "position": "Prot-N-term",
+                    "name": "Acetyl",
+                },
+            ],
+        },
+    )
+    df = parser.get_dataframe()
+    assert df[df["Spectrum ID"] == 10381]["Retention Time (s)"][0] == pytest.approx(
+        116583.526800
+    )
+    assert df[df["Spectrum ID"] == 10381]["Exp m/z"][0] == pytest.approx(
+        439.196747, abs=5e-6 * 759.3775089652208
     )

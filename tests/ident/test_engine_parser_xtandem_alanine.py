@@ -1,8 +1,9 @@
 #!/usr/bin/env python
 from pathlib import Path
-from unify_idents.unify import UnifiedDataFrame
+
+import pandas as pd
+
 from unify_idents.engine_parsers.ident.xtandem_alanine import XTandemAlanine
-import uparma
 
 
 def test_engine_parsers_xtandem_init():
@@ -51,12 +52,8 @@ def test_engine_parsers_xtandem_file_matches_xtandem_parser():
         / "data"
         / "test_Creinhardtii_QE_pH11_xtandem_alanine.xml"
     )
-    rt_lookup_path = Path(__file__).parent.parent / "data" / "_ursgal_lookup.csv.bz2"
-    db_path = (
-        Path(__file__).parent.parent / "data" / "test_Creinhardtii_target_decoy.fasta"
-    )
 
-    assert XTandemAlanine.file_matches_parser(input_file) is True
+    assert XTandemAlanine.check_parser_compatibility(input_file) is True
 
 
 def test_engine_parsers_xtandem_file_not_matches_xtandem_parser():
@@ -65,12 +62,8 @@ def test_engine_parsers_xtandem_file_not_matches_xtandem_parser():
         / "data"
         / "test_Creinhardtii_QE_pH11_mzml2mgf_0_0_1_msfragger_3.tsv"
     )
-    rt_lookup_path = Path(__file__).parent.parent / "data" / "_ursgal_lookup.csv.bz2"
-    db_path = (
-        Path(__file__).parent.parent / "data" / "test_Creinhardtii_target_decoy.fasta"
-    )
 
-    assert XTandemAlanine.file_matches_parser(input_file) is False
+    assert XTandemAlanine.check_parser_compatibility(input_file) is False
 
 
 def test_engine_parsers_xtandem_iterable():
@@ -111,12 +104,10 @@ def test_engine_parsers_xtandem_iterable():
             ],
         },
     )
-    for i, row in enumerate(parser):
-        print(row)
-    # assert i == 79
+    assert len(parser.root) == 79
 
 
-def test_engine_parsers_xtandem_unify_row():
+def test_engine_parsers_xtandem_unify():
     input_file = (
         Path(__file__).parent.parent
         / "data"
@@ -156,15 +147,14 @@ def test_engine_parsers_xtandem_unify_row():
             "15N": False,
         },
     )
-    for row in parser:
-        assert (
-            row["Raw data location"]
-            == "/Users/cellzome/Dev/Gits/Ursgal/ursgal2_dev/tests/data/test_Creinhardtii_QE_pH11.mgf"
-        )
-        assert row["Sequence"] == "DDVHNMGADGIR"
-        assert row["Modifications"] == "Oxidation:6"
-        assert row["Search Engine"] == "xtandem_alanine"
-        break
+    first_row = parser.unify().iloc[0, :]
+    assert (
+        first_row["Raw data location"]
+        == "/Users/cellzome/Dev/Gits/Ursgal/ursgal2_dev/tests/data/test_Creinhardtii_QE_pH11.mgf"
+    )
+    assert first_row["Sequence"] == "DDVHNMGADGIR"
+    assert first_row["Modifications"] == "Oxidation:6"
+    assert first_row["Search Engine"] == "xtandem_alanine"
 
 
 def test_engine_parsers_xtandem_nterminal_mod():
@@ -207,10 +197,9 @@ def test_engine_parsers_xtandem_nterminal_mod():
             "15N": False,
         },
     )
-    for row in parser:
-        if row["Sequence"] == "WGLVSSELQTSEAETPGLK":
-            break
-    assert row["Modifications"] == "Acetyl:0"
+    df = parser.unify()
+    relevant_row = df[df["Sequence"] == "WGLVSSELQTSEAETPGLK"]
+    assert relevant_row["Modifications"].tolist() == ["Acetyl:0"]
 
 
 def test_engine_parsers_xtandem_multiple_psms():
@@ -254,21 +243,109 @@ def test_engine_parsers_xtandem_multiple_psms():
     #    - one sequence in first group
     #    - 3 sequences in second group
 
-    rows = []
-    for i, row in enumerate(parser):
-        rows.append(row)
-    assert i == 3
+    df = parser.unify()
+    assert len(df) == 4
 
-    assert sorted([r["Sequence"] for r in rows]) == [
+    assert set(df["Sequence"]) == {
         "ITIPITLRMLIAK",
         "SMMNGGSSPESDVGTDNK",
         "SMMNGGSSPESDVGTDNK",
         "SMMNGGSSPESDVGTDNK",
-    ]
-    assert set([r["Spectrum ID"] for r in rows]) == set(["12833", "14525"])
-    assert [r["Modifications"] for r in rows] == [
+    }
+    assert set(df["Spectrum ID"]) == {"12833", "14525"}
+    assert set(df["Modifications"]) == {
         "Acetyl:0",
         "",
         "Oxidation:2",
         "Oxidation:3",
-    ]
+    }
+
+
+def test_engine_parsers_xtandem_map_mod_names():
+    input_file = (
+        Path(__file__).parent.parent
+        / "data"
+        / "test_Creinhardtii_QE_pH11_xtandem_alanine.xml"
+    )
+    rt_lookup_path = Path(__file__).parent.parent / "data" / "_ursgal_lookup.csv.bz2"
+    db_path = (
+        Path(__file__).parent.parent / "data" / "test_Creinhardtii_target_decoy.fasta"
+    )
+
+    parser = XTandemAlanine(
+        input_file,
+        params={
+            "rt_pickle_name": rt_lookup_path,
+            "database": db_path,
+            "modifications": [
+                {
+                    "aa": "M",
+                    "type": "opt",
+                    "position": "any",
+                    "name": "Oxidation",
+                },
+                {
+                    "aa": "C",
+                    "type": "fix",
+                    "position": "any",
+                    "name": "Carbamidomethyl",
+                },
+                {
+                    "aa": "*",
+                    "type": "opt",
+                    "position": "Prot-N-term",
+                    "name": "Acetyl",
+                },
+            ],
+        },
+    )
+    test_df = pd.DataFrame({"Modifications": [["57.021464:0"]], "Sequence": ["CERK"]})
+    assert parser.map_mod_names(test_df)["Modifications"][0] == "Carbamidomethyl:1"
+
+
+def test_engine_parsers_xtandem_map_mod_names_nterm():
+    input_file = (
+        Path(__file__).parent.parent
+        / "data"
+        / "test_Creinhardtii_QE_pH11_xtandem_alanine.xml"
+    )
+    rt_lookup_path = Path(__file__).parent.parent / "data" / "_ursgal_lookup.csv.bz2"
+    db_path = (
+        Path(__file__).parent.parent / "data" / "test_Creinhardtii_target_decoy.fasta"
+    )
+
+    parser = XTandemAlanine(
+        input_file,
+        params={
+            "rt_pickle_name": rt_lookup_path,
+            "database": db_path,
+            "modifications": [
+                {
+                    "aa": "M",
+                    "type": "opt",
+                    "position": "any",
+                    "name": "Oxidation",
+                },
+                {
+                    "aa": "C",
+                    "type": "fix",
+                    "position": "any",
+                    "name": "Carbamidomethyl",
+                },
+                {
+                    "aa": "*",
+                    "type": "opt",
+                    "position": "Prot-N-term",
+                    "name": "Acetyl",
+                },
+            ],
+        },
+    )
+
+    row = pd.DataFrame(
+        {"Modifications": [["57.021464:0", "42.010565:0"]], "Sequence": ["CERK"]}
+    )
+    assert set(parser.map_mod_names(row)["Modifications"][0].split(";")) == {
+        "Carbamidomethyl:1",
+        "Acetyl:0",
+    }

@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 from pathlib import Path
-from unify_idents.unify import UnifiedDataFrame
 from unify_idents.engine_parsers.quant.flash_lfq_1_2_0_parser import FlashLFQ
 
 
@@ -8,7 +7,9 @@ def test_engine_parsers_flashLFQ_init():
     input_file = (
         Path(__file__).parent.parent / "data" / "flash_lfq_1_2_0_quantified_peaks.tsv"
     )
-    rt_lookup_path = Path(__file__).parent.parent / "data" / "BSA1_ursgal_lookup.csv.bz2"
+    rt_lookup_path = (
+        Path(__file__).parent.parent / "data" / "BSA1_ursgal_lookup.csv.bz2"
+    )
     db_path = Path(__file__).parent / "data" / "BSA.fasta"
     parser = FlashLFQ(input_file, params={"rt_pickle_name": rt_lookup_path})
 
@@ -17,7 +18,9 @@ def test_engine_parsers_flashLFQ_file_matches_parser():
     input_file = (
         Path(__file__).parent.parent / "data" / "flash_lfq_1_2_0_quantified_peaks.tsv"
     )
-    rt_lookup_path = Path(__file__).parent.parent / "data" / "BSA1_ursgal_lookup.csv.bz2"
+    rt_lookup_path = (
+        Path(__file__).parent.parent / "data" / "BSA1_ursgal_lookup.csv.bz2"
+    )
     db_path = Path(__file__).parent.parent / "data" / "BSA.fasta"
 
     assert FlashLFQ.file_matches_parser(input_file) is True
@@ -29,7 +32,9 @@ def test_engine_parsers_flashLFQ_file_not_matches_parser():
         / "data"
         / "test_Creinhardtii_QE_pH11_mzml2mgf_0_0_1_msfragger_3.tsv"
     )
-    rt_lookup_path = Path(__file__).parent.parent / "data" / "BSA1_ursgal_lookup.csv.bz2"
+    rt_lookup_path = (
+        Path(__file__).parent.parent / "data" / "BSA1_ursgal_lookup.csv.bz2"
+    )
     db_path = Path(__file__).parent.parent / "data" / "BSA.fasta"
 
     assert FlashLFQ.file_matches_parser(input_file) is False
@@ -39,7 +44,9 @@ def test_engine_parsers_flashLFQ_iterable():
     input_file = (
         Path(__file__).parent.parent / "data" / "flash_lfq_1_2_0_quantified_peaks.tsv"
     )
-    rt_lookup_path = Path(__file__).parent.parent / "data" / "BSA1_ursgal_lookup.csv.bz2"
+    rt_lookup_path = (
+        Path(__file__).parent.parent / "data" / "BSA1_ursgal_lookup.csv.bz2"
+    )
     db_path = (
         Path(__file__).parent.parent / "data" / "test_Creinhardtii_target_decoy.fasta"
     )

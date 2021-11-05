@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-from unify_idents.engine_parsers.base_parser import __QuantBaseParser
 from pathlib import Path
 
 

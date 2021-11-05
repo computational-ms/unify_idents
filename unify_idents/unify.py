@@ -8,6 +8,13 @@ from peptide_mapper.mapper import UPeptideMapper
 
 from unify_idents.engine_parsers.base_parser import BaseParser
 
+cc = ChemicalComposition()
+
+
+def get_cc(seq, mods):
+    cc.use(sequence=seq, modifications=mods)
+    return cc.mass()
+
 
 def merge_and_join_dicts(dictlist, delim):
     return {
@@ -35,36 +42,36 @@ class Unify:
             self.input_file = input_file
         self.params = params
 
+        self._parser_classes = []
         self.parser = self._get_parser()
         self.df = None
         self.DELIMITER = self.params.get("delimiter", "<|>")
         self.PROTON = 1.00727646677
-        self.col_order = pd.Series(
-            [
-                "Spectrum Title",
-                "Raw data location",
-                "Spectrum ID",
-                "Sequence",
-                "Modifications",
-                "Charge",
-                "Protein ID",
-                "Retention Time (s)",
-                "Exp m/z",
-                "Calc m/z",
-                "uCalc m/z",
-                "uCalc Mass",
-                "Accuracy (ppm)",
-                "Mass Difference",
-                "Sequence Start",
-                "Sequence Stop",
-                "Sequence Pre AA",
-                "Sequence Post AA",
-                "Enzyme Specificity",
-                "Complies search criteria",
-                "Conflicting uparma",
-                "Search Engine",
-            ]
-        )
+        self.dtype_mapping = {
+            "Spectrum Title": "str",
+            "Raw data location": "str",
+            "Spectrum ID": "int32",
+            "Sequence": "str",
+            "Modifications": "str",
+            "Charge": "int32",
+            "Protein ID": "str",
+            "Retention Time (s)": "float32",
+            "Exp m/z": "float32",
+            "Calc m/z": "float32",
+            "uCalc m/z": "float32",
+            "uCalc Mass": "float32",
+            "Accuracy (ppm)": "float32",
+            "Mass Difference": "float32",
+            "Sequence Start": "str",
+            "Sequence Stop": "str",
+            "Sequence Pre AA": "str",
+            "Sequence Post AA": "str",
+            "Enzyme Specificity": "str",
+            "Complies search criteria": "str",
+            "Conflicting uparma": "str",
+            "Search Engine": "str",
+        }
+        self.col_order = pd.Series(self.dtype_mapping.keys())
 
     def _calc_mz(self, mass, charge):
         return (
@@ -87,11 +94,10 @@ class Unify:
         for parser in parser_files:
             import_module(parser)
 
-        parser_classes = []
         for cat in BaseParser.__subclasses__():
-            parser_classes.extend(cat.__subclasses__())
+            self._parser_classes.extend(cat.__subclasses__())
 
-        for parser in parser_classes:
+        for parser in self._parser_classes:
             if parser.check_parser_compatibility(self.input_file) is True:
                 return parser(input_file=self.input_file, params=self.params)
 
@@ -119,21 +125,24 @@ class Unify:
         self.df = pd.concat([self.df, new_columns], axis=1)
 
     def calc_masses_and_offsets(self):
-        cc = ChemicalComposition()
-        cc_masses = []
-        for seq, mods in self.df[["Sequence", "Modifications"]].values:
-            cc.use(sequence=seq, modifications=mods)
-            cc_masses.append(cc.mass())
-        self.df["uCalc Mass"] = cc_masses
-        self.df["uCalc m/z"] = self._calc_mz(
+        with mp.Pool(self.params.get("cpus", mp.cpu_count() - 1)) as pool:
+            cc_masses = pool.starmap(
+                get_cc,
+                zip(self.df["Sequence"].values, self.df["Modifications"].values),
+                chunksize=1,
+            )
+        self.df.loc[:, "uCalc Mass"] = cc_masses
+        self.df.loc[:, "uCalc m/z"] = self._calc_mz(
             mass=self.df["uCalc Mass"], charge=self.df["Charge"]
         )
-        self.df["Accuracy (ppm)"] = (
-            (self.df["Exp m/z"] - self.df["uCalc m/z"]) / self.df["uCalc m/z"] * 1e6
+        self.df.loc[:, "Accuracy (ppm)"] = (
+            (self.df["Exp m/z"].astype(float) - self.df["uCalc m/z"])
+            / self.df["uCalc m/z"]
+            * 1e6
         )
 
-    def get_exp_rt_and_mz(self, ulookup_path):
-        rt_lookup = pd.read_csv(ulookup_path, compression="bz2")
+    def get_exp_rt_and_mz(self):
+        rt_lookup = pd.read_csv(self.params["rt_pickle_name"], compression="bz2")
         rt_lookup.set_index("Spectrum ID", inplace=True)
         rt_lookup["Unit"] = rt_lookup["Unit"].replace({"second": 1, "minute": 60})
         spec_ids = self.df["Spectrum ID"].astype(int)
@@ -160,13 +169,14 @@ class Unify:
             self.col_order.tolist()
             + sorted(self.df.columns[~self.df.columns.isin(self.col_order)].tolist()),
         ]
+        self.df = self.df.astype(self.dtype_mapping)
 
     def get_dataframe(self):
         self.df = self.parser.unify()
         self.df.drop_duplicates(inplace=True, ignore_index=True)
         self.add_protein_ids()
         self.calc_masses_and_offsets()
-        self.get_exp_rt_and_mz(self.params["rt_pickle_name"])
+        self.get_exp_rt_and_mz()
         self.sanitize()
 
         return self.df
