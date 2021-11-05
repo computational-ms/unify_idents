@@ -6,7 +6,6 @@ from pathlib import Path
 
 from loguru import logger
 
-from unify_idents import UnifiedRow
 from unify_idents.engine_parsers.base_parser import __IdentBaseParser
 
 """

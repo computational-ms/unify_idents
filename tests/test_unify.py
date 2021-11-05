@@ -3,8 +3,9 @@ from pathlib import Path
 
 import pytest
 import uparma
-from unify_idents.engine_parsers.ident.omssa_parser import OmssaParser
-from unify_idents.unify import UnifiedDataFrame, Unify
+from unify_idents.engine_parsers.ident.omssa_2_1_9_parser import OmssaParser
+#from unify_idents.unify import UnifiedDataFrame, Unify
+from unify_idents.unify import Unify
 from unify_idents.engine_parsers.ident.msgfplus_2021_03_22_parser import (
     MSGFPlus_2021_03_22,
 )
@@ -81,8 +82,7 @@ def test_unify_get_omssa_parser():
             "omssa_mod_dir": Path(__file__).parent / "data",
         },
     )
-    parser = u._get_parser(p)
-    assert isinstance(parser, OmssaParser)
+    assert isinstance(u.parser, OmssaParser)
 
 
 def test_unify_get_msgfplus_parser():
@@ -403,8 +403,8 @@ def test_unify_xtandem_df_masses():
             "15N": False,
         },
     )
-    res = parser.get_dataframe()
-    row = res.df[res.df["Sequence"] == "ASDGKYVDEYFAATYVCTDHGRGK"]
+    df = parser.get_dataframe()
+    row = df[df["Sequence"] == "ASDGKYVDEYFAATYVCTDHGRGK"]
     assert row["Sequence"].iloc[0] == "ASDGKYVDEYFAATYVCTDHGRGK"
     assert row["Charge"].iloc[0] == "3"
     assert float(row["uCalc m/z"].iloc[0]) == pytest.approx(
@@ -508,10 +508,10 @@ def test_unify_omssa_df_masses():
             "Raw data location": "/Users/cellzome/Dev/Gits/Ursgal/ursgal_master/example_data/test_Creinhardtii_QE_pH11.mzML",
         },
     )
-    res = parser.get_dataframe()
-    row = res.df[res.df["Sequence"] == "ALAMEWGPFPRLMVVACNDAINVCRK"]
+    df = parser.get_dataframe()
+    row = df[df["Sequence"] == "ALAMEWGPFPRLMVVACNDAINVCRK"]
     assert row["Sequence"].iloc[0] == "ALAMEWGPFPRLMVVACNDAINVCRK"
-    assert row["Charge"].iloc[0] == "4"
+    assert row["Charge"].iloc[0] == 4
     assert (
         row["Modifications"].iloc[0]
         == "Oxidation:4;Carbamidomethyl:17;Carbamidomethyl:24"

@@ -5,7 +5,6 @@ from pathlib import Path
 
 from loguru import logger
 
-from unify_idents.engine_parsers.base_parser import __QuantBaseParser
 
 col_mapping = {
     "File Name": "Raw data location",
@@ -20,7 +19,7 @@ col_mapping = {
 }
 
 
-class FlashLFQ(__QuantBaseParser):
+class FlashLFQ:
     def __init__(self, input_file, params=None):
         """Summary
 

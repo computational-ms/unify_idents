@@ -1,240 +1,125 @@
-#!/usr/bin/env python
-import csv
-import xml.etree.ElementTree as ElementTree
+import xml.etree.ElementTree as ETree
 from pathlib import Path
-from xml.etree.ElementTree import ParseError
+import regex as re
+import multiprocessing as mp
+import pandas as pd
+from tqdm import tqdm
+from itertools import repeat
 
-import uparma
-
-from unify_idents import UnifiedRow
 from unify_idents.engine_parsers.base_parser import __IdentBaseParser
 
 
+def _get_single_spec_df(reference_dict, spectrum):
+    spec_records = []
+    spec_level_dict = reference_dict.copy()
+    spec_level_info = {
+        i.attrib["name"]: i.attrib["value"]
+        for i in spectrum.findall(".//{*}cvParam")
+        if i.attrib["name"] in ["scan number(s)", "spectrum title"]
+    }
+    spec_level_dict["Spectrum ID"] = spec_level_info["scan number(s)"]
+    spec_level_dict["Spectrum Title"] = spec_level_info["spectrum title"]
+
+    # Iterate children
+    for psm in spectrum.findall(".//{*}SpectrumIdentificationItem"):
+        psm_level_dict = spec_level_dict.copy()
+
+        # peptide_info = peptide_lookup[psm.attrib["peptide_ref"]]
+
+        psm_level_dict.update(
+            {
+                "Exp m/z": psm.attrib["experimentalMassToCharge"],
+                "Calc m/z": psm.attrib["calculatedMassToCharge"],
+                "Charge": psm.attrib["chargeState"],
+                "Sequence": psm.attrib["peptide_ref"],
+                # "Sequence": peptide_info["Sequence"],
+                # "Modifications": ";".join(peptide_info["Modifications"])
+            }
+        )
+        psm_level_dict.update(
+            {c.attrib["name"]: c.attrib["value"] for c in psm.findall(".//{*}cvParam")}
+        )
+
+        spec_records.append(psm_level_dict)
+    return pd.DataFrame(spec_records)
+
+
 class MSGFPlus_2021_03_22(__IdentBaseParser):
-
-    """Engine parser to unify MSGFPlus_2021_03_22 results."""
-
-    def __init__(self, input_file, params=None):
-        """Initialize MSAmanda parser.
-
-        Args:
-            input_file (str): path to file to unify
-            params (dict, optional): parser specific parameters
-        """
-        super().__init__(input_file, params)
-        if params is None:
-            params = {}
-        self.params = params
-        self.input_file = input_file
-
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         self.style = "msgfplus_style_1"
-        self.column_mapping = self.get_column_names(self.style)
-        self.fh = open(input_file)
-        self.reader = iter(ElementTree.iterparse(self.fh, events=("end", "start")))
-        self.peptide_lookup = self._get_peptide_lookup()
 
-        self.cols_to_add = [
+        tree = ETree.parse(self.input_file)
+        self.root = tree.getroot()
+        self.reference_dict.update(
+            {
+                "Raw data location": self.root.find(".//{*}SpectraData").attrib[
+                    "location"
+                ],
+                "Search Engine": "msgfplus_"
+                + "_".join(
+                    re.findall(
+                        r"([/d]*\d+)",
+                        self.root.find(".//{*}AnalysisSoftware").attrib["version"],
+                    )
+                ),
+            }
+        )
+        cols_to_remove = [
+            # TODO: this shouldnt exist in uparma or is mapping just wrong?
+            "proteinacc_start_stop_pre_post_;",
+            # TODO: should this be in here?
             "Raw data location",
-            "Spectrum Title",
-            "uCalc m/z",
-            "uCalc Mass",
-            "Retention Time (s)",
-            "Accuracy (ppm)",
-            "Mass Difference",
-            "Protein ID",
-            "Sequence Start",
-            "Sequence Stop",
-            "Sequence Pre AA",
-            "Sequence Post AA",
-            "Enzyme Specificity",
-            "Complies search criteria",
-            "Conflicting uparam",
-            "Search Engine",
         ]
-
-    def __del__(self):
-        self.fh.close()
+        self.mapping_dict = {
+            v: k
+            for k, v in self.param_mapper.get_default_params(style=self.style)[
+                "header_translations"
+            ]["translated_value"].items()
+            if k not in cols_to_remove
+        }
+        self.reference_dict.update({k: None for k in self.mapping_dict.values()})
 
     @classmethod
-    def file_matches_parser(cls, file):
-        """Check if file is compatible with parser.
+    def check_parser_compatibility(cls, file):
+        is_mzid = file.as_posix().endswith(".mzid")
 
-        Args:
-            file (str): path to file
-
-        Returns:
-            bool: Wether or not specified file can be converted by this parser.
-        """
-        ret_val = False
-        p = Path(file)
-
-        max_lines = 20
-
-        if file.suffix == ".mzid":
-            with open(file) as fin:
-                mzml_iter = iter(ElementTree.iterparse(fin, events=("end", "start")))
-                for pos, (event, ele) in enumerate(mzml_iter):
-                    if pos > max_lines:
-                        ret_val = False
-                        break
-                    if ele.tag.endswith("AnalysisSoftware"):
-                        name = ele.attrib.get("name", "")
-                        version = ele.attrib.get("version", "")
-                        if name == "MS-GF+" and version in [
-                            "Release (v2021.03.22)",
-                            "Release (v2019.07.03)",
-                        ]:
-                            ret_val = True
-                            break
-        return ret_val
-
-    def get_column_names(self, style):
-        """Get column names from param mapper.
-
-        Returns:
-            dict: dict mapping new to old column names
-        """
-        headers = self.param_mapper.get_default_params(style=style)[
-            "header_translations"
-        ]["translated_value"]
-        return headers
-
-    def __iter__(self):
-        """Yield a unified line from `_next`.
-
-        Yields:
-            UnifiedRow: converted row
-        """
-        while True:
-            try:
-                gen = self._next()
-                for x in gen:
-                    x = self._unify_row(x)
-                    yield x
-            except StopIteration:
-                break
-
-    def __next__(self):
-        return next(self.__iter__())
-
-    # def __iter__(self):
-    #     return self
-
-    # def __next__(self):
-    #     for n in self._next():
-    #         u = self._unify_row(n)
-    #         return u
-
-    def _next(self):
-        """Iterate lines and assemble a closure with all PSM related data.
-
-        Returns:
-            function: Closure yielding PSM level data.
-
-        Raises:
-            StopIteration: Stops iteration if EOF is reached.
-        """
-        data = []
-        while True:
-            event, ele = next(self.reader, ("STOP", "STOP"))
-            # print(ele.tag)
-            if event == "end" and ele.tag.endswith("SpectrumIdentificationResult"):
-                for spec_result in list(
-                    ele[::-1]
-                ):  # iterate the list from end to start, since cvParams are after SpectrumIdentificationItem
-                    if spec_result.tag.endswith("cvParam"):
-                        if spec_result.attrib["name"] == "scan start time":
-                            scan_time = spec_result.attrib["value"]
-                        if spec_result.attrib["name"] == "scan number(s)":
-                            spec_id = spec_result.attrib["value"]
-                        if spec_result.attrib["name"] == "spectrum title":
-                            spec_title = spec_result.attrib["value"]
-                    else:
-                        continue
-
-                def all_items():
-                    # todo use iterparse
-                    for spec_result in ele:
-                        if not spec_result.tag.endswith("SpectrumIdentificationItem"):
-                            continue
-                        pep_data = self.peptide_lookup[spec_result.attrib["peptide_ref"]]
-                        mods = []
-                        for m in pep_data["Modifications"]:
-                            name = m["name"]
-                            pos = m["pos"]
-                            mods.append(f"{name}:{pos}")
-                        data = {
-                            "Spectrum ID": spec_id,
-                            "Retention Time (s)": scan_time,
-                            "Peptide": pep_data["Sequence"],
-                            "Modifications": ";".join(mods),
-                            "Title": spec_title,
-                            "Exp m/z": spec_result.attrib["experimentalMassToCharge"],
-                            "Calc m/z": spec_result.attrib["calculatedMassToCharge"],
-                            "Charge": spec_result.attrib["chargeState"],
-                            "Raw data location": self.raw_data_location,
-                        }
-                        for child in list(spec_result):
-                            if child.tag.endswith("Param"):
-                                n = child.attrib["name"]
-                                if not n.startswith("MS-GF:"):
-                                    n = f"MS-GF:{n}"
-                                data[n] = child.attrib["value"]
-                        yield data
-
-                return all_items()
-            if event == "STOP":
-                raise StopIteration
-
-    def _unify_row(self, row):
-        """Convert row to unified format.
-
-        Args:
-            row (dict): dict containing psm based ident information.
-
-        Returns:
-            UnifiedRow: converted row
-        """
-        for col_to_add in self.cols_to_add:
-            if col_to_add not in row:
-                row[col_to_add] = ""
-
-        col_mapping = self.get_column_names(self.style)
-        for new_key, old_key in col_mapping.items():
-            if old_key in row.keys() and old_key != new_key:
-                row[new_key] = row[old_key]
-                del row[old_key]
-        row["Search Engine"] = "msgfplus_2021_03_22"
-        new_row = self.general_fixes(row)
-        return UnifiedRow(**new_row)
+        with open(file.as_posix()) as f:
+            head = "".join([next(f) for x in range(20)])
+        contains_engine = "MS-GF+" in head
+        contains_correct_version = (
+            "Release (v2021.03.22)" in head or "Release (v2019.07.03)" in head
+        )
+        return is_mzid and contains_engine and contains_correct_version
 
     def _get_peptide_lookup(self):
-        """Create lookup mapping peptide id to sequence, mass and mods.
-
-        Returns:
-            dict
-        """
         lookup = {}
-        while True:
-            event, ele = next(self.reader, ("STOP", "STOP"))
-            if event == "start" and ele.tag.endswith("SpectraData"):
-                self.raw_data_location = ele.attrib["location"]
-            if event == "end" and ele.tag.endswith("Peptide"):
-                _id = ele.attrib.get("id", "")
-                lookup[_id] = {}
-                lookup[_id]["Modifications"] = []
-                for child in ele:
-                    if child.tag.endswith("PeptideSequence"):
-                        seq = child.text
-                        lookup[_id]["Sequence"] = seq
-                    if child.tag.endswith("Modification"):
-                        pos = child.attrib["location"]
-                        mass = child.attrib["monoisotopicMassDelta"]
-                        assert len(list(child)) == 1
-                        name = list(child)[0].attrib["name"]
-                        lookup[_id]["Modifications"].append(
-                            {"pos": pos, "mass": mass, "name": name}
-                        )
-            if event == "start" and ele.tag.endswith("SpectrumIdentificationList"):
-                break
+        for pep in self.root.findall(".//{*}Peptide"):
+            id = pep.attrib.get("id", "")
+            lookup[id] = {"Modifications": []}
+            for child in pep.findall(".//{*}PeptideSequence"):
+                lookup[id]["Sequence"] = child.text
+            for child in pep.findall(".//{*}Modification"):
+                lookup[id]["Modifications"].append(
+                    f"{child.find('.//{*}cvParam').attrib['name']}:{child.attrib['location']}"
+                )
+            lookup[id]["Modifications"] = ";".join(lookup[id]["Modifications"])
         return lookup
+
+    def unify(self):
+        peptide_lookup = self._get_peptide_lookup()
+        spec_idents = self.root.findall(".//{*}SpectrumIdentificationResult")
+        with mp.Pool(self.params.get("cpus", mp.cpu_count() - 1)) as pool:
+            chunk_dfs = pool.starmap(
+                _get_single_spec_df,
+                tqdm(
+                    zip(repeat(self.reference_dict), spec_idents),
+                    total=len(spec_idents),
+                ),
+                chunksize=1,
+            )
+        unified_df = pd.concat(chunk_dfs, axis=0, ignore_index=True)
+        seq_mods = pd.DataFrame(unified_df["Sequence"].map(peptide_lookup).to_list())
+        unified_df.loc[:, seq_mods.columns] = seq_mods
+
+        return unified_df

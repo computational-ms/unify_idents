@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 import csv
 
-from unify_idents import UnifiedRow
 from unify_idents.engine_parsers.base_parser import __IdentBaseParser
 
 

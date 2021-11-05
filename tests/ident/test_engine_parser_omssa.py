@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 from pathlib import Path
 from unify_idents.unify import UnifiedDataFrame, UnifiedRow
-from unify_idents.engine_parsers.ident.omssa_parser import OmssaParser
+from unify_idents.engine_parsers.ident.omssa_2_1_9_parser import OmssaParser
 import uparma
 
 from collections.abc import Iterable
