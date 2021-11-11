@@ -1,8 +1,10 @@
 #!/usr/bin/env python
 from pathlib import Path
-from unify_idents.unify import Unify
-from unify_idents.engine_parsers.ident.omssa_2_1_9_parser import OmssaParser
+
 import pytest
+
+from unify_idents.engine_parsers.ident.omssa_2_1_9_parser import OmssaParser
+from unify_idents.unify import Unify
 
 
 def test_engine_parsers_omssa_init():
@@ -201,5 +203,5 @@ def test_engine_parsers_omssa_next():
     )
     assert row["Charge"] == 4
     assert float(row["OMSSA:pvalue"]) == pytest.approx(0.000166970504409832)
-    assert float(row["Calc mass"]) == pytest.approx(3033.491)
-    assert float(row["Calc m/z"]) == pytest.approx(759.38002646677)
+    assert float(row["Exp m/z"]) == pytest.approx(759.3765258789, abs=5e-6 * 904.0782)
+    assert float(row["Calc m/z"]) == pytest.approx(759.38002646677, abs=5e-6 * 904.0782)

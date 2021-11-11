@@ -1,10 +1,9 @@
 #!/usr/bin/env python
 from pathlib import Path
-from unify_idents.unify import Unify
+
 from unify_idents.engine_parsers.ident.msgfplus_2021_03_22_parser import (
     MSGFPlus_2021_03_22,
 )
-from collections.abc import Iterable
 
 
 def test_engine_parsers_msgfplus_init():
@@ -189,7 +188,7 @@ def test_engine_parsers_msgfplus_internal_next():
     row = df.iloc[0, :]
     assert (
         row["Raw data location"]
-        == "/Users/cellzome/Dev/Gits/Ursgal/ursgal_master/example_data/BSA1.mgf"
+        == "/Users/cellzome/Dev/Gits/Ursgal/ursgal_master/example_data/BSA1.mzML"
     )
     assert row["Sequence"] == "YICDNQDTISSK"
     assert row["Modifications"] == "Carbamidomethyl:3"

@@ -150,7 +150,7 @@ def test_engine_parsers_xtandem_unify():
     first_row = parser.unify().iloc[0, :]
     assert (
         first_row["Raw data location"]
-        == "/Users/cellzome/Dev/Gits/Ursgal/ursgal2_dev/tests/data/test_Creinhardtii_QE_pH11.mgf"
+        == "/Users/cellzome/Dev/Gits/Ursgal/ursgal2_dev/tests/data/test_Creinhardtii_QE_pH11.mzML"
     )
     assert first_row["Sequence"] == "DDVHNMGADGIR"
     assert first_row["Modifications"] == "Oxidation:6"
@@ -252,7 +252,7 @@ def test_engine_parsers_xtandem_multiple_psms():
         "SMMNGGSSPESDVGTDNK",
         "SMMNGGSSPESDVGTDNK",
     }
-    assert set(df["Spectrum ID"]) == {"12833", "14525"}
+    assert set(df["Spectrum ID"]) == {12833, 14525}
     assert set(df["Modifications"]) == {
         "Acetyl:0",
         "",

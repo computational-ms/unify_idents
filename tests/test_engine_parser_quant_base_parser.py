@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 from pathlib import Path
 
+from unify_idents.engine_parsers.base_parser import __QuantBaseParser
+
 
 def test_engine_parsers_QuantBaseParser_init():
     input_file = (
@@ -25,11 +27,16 @@ def test_engine_parsers_QuantBaseParser_init():
 
 def test_engine_parsers_QuantBaseParser_file_matches_parser_non_existing():
     # should always return False
-    __QuantBaseParser.file_matches_parser("whatever") is False
+    assert __QuantBaseParser.check_parser_compatibility("whatever") is False
 
 
 def test_engine_parsers_QuantBaseParser_file_matches_parser_existing():
     # should always return False
-    __QuantBaseParser.file_matches_parser(
-        Path(__file__).parent / "data" / "test_Creinhardtii_QE_pH11_xtandem_alanine.xml"
-    ) is False
+    assert (
+        __QuantBaseParser.check_parser_compatibility(
+            Path(__file__).parent
+            / "data"
+            / "test_Creinhardtii_QE_pH11_xtandem_alanine.xml"
+        )
+        is False
+    )

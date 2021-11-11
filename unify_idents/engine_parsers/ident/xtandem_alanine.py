@@ -1,8 +1,8 @@
+import multiprocessing as mp
+import xml.etree.ElementTree as ETree
 from itertools import repeat
 
 import pandas as pd
-import xml.etree.ElementTree as ETree
-import multiprocessing as mp
 from tqdm import tqdm
 
 from unify_idents.engine_parsers.base_parser import __IdentBaseParser
@@ -146,11 +146,12 @@ class XTandemAlanine(__IdentBaseParser):
                 ),
             )
         chunk_dfs = [df for df in chunk_dfs if not df is None]
-        unified_df = pd.concat(chunk_dfs, axis=0, ignore_index=True)
-        unified_df["Calc m/z"] = (
-            (unified_df["Calc m/z"].astype(float) - self.PROTON)
-            / unified_df["Charge"].astype(int)
+        self.df = pd.concat(chunk_dfs, axis=0, ignore_index=True)
+        self.df["Calc m/z"] = (
+            (self.df["Calc m/z"].astype(float) - self.PROTON)
+            / self.df["Charge"].astype(int)
         ) + self.PROTON
-        unified_df = self.map_mod_names(unified_df)
+        self.df = self.map_mod_names(self.df)
+        self.process_unify_style()
 
-        return unified_df
+        return self.df

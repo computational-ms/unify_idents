@@ -3,12 +3,13 @@ from pathlib import Path
 
 import pandas as pd
 import pytest
-from unify_idents.engine_parsers.ident.omssa_2_1_9_parser import OmssaParser
-from unify_idents.unify import Unify
+
+from unify_idents.engine_parsers.ident.msamanda_2_parser import MSAmanda_2_Parser
 from unify_idents.engine_parsers.ident.msgfplus_2021_03_22_parser import (
     MSGFPlus_2021_03_22,
 )
-from unify_idents.engine_parsers.ident.msamanda_parser import MSamandaParser
+from unify_idents.engine_parsers.ident.omssa_2_1_9_parser import OmssaParser
+from unify_idents.unify import Unify
 
 
 def test_unify_get_parser_classes():
@@ -43,8 +44,8 @@ def test_unify_get_parser_classes():
             "omssa_mod_dir": Path(__file__).parent / "data",
         },
     )
-    # currently msamanda, msfragger, msgfplus, omssa, xtandem, comet, flash_lfq
-    assert len(u._parser_classes) == 7
+    # currently msamanda, msfragger, msgfplus, omssa, xtandem, comet, flash_lfq, and dummy
+    assert len(u._parser_classes) == 8
 
 
 def test_unify_get_omssa_parser():
@@ -274,11 +275,11 @@ def test_unify_msfragger_df_masses():
             "15N": False,
         },
     )
-    res = parser.get_dataframe()
-    row = res.df.iloc[0]
+    df = parser.get_dataframe()
+    row = df.iloc[0]
     assert row["Sequence"] == "ATTALTDDTLDGAGR"
     # assert row["Modifications"] == "Carbamidomethyl:17"
-    assert row["Charge"] == "2"
+    assert row["Charge"] == 2
     assert float(row["uCalc m/z"]) == pytest.approx(739.3601)
     assert float(row["uCalc m/z"]) == pytest.approx(739.3601)
     assert float(row["uCalc Mass"]) == pytest.approx(1476.7056154119998)
@@ -316,8 +317,7 @@ def test_unify_get_msamanda_parser():
             ],
         },
     )
-    parser = u._get_parser(p)
-    assert isinstance(parser, MSamandaParser)
+    assert isinstance(u.parser, MSAmanda_2_Parser)
 
 
 def test_engine_parsers_msamanda_unified_frame():
@@ -350,17 +350,17 @@ def test_engine_parsers_msamanda_unified_frame():
                     "name": "Acetyl",
                 },
             ],
+            "Raw data location": "/Users/cellzome/Dev/Gits/Ursgal/ursgal_master/example_data/test_Creinhardtii_QE_pH11.mzML",
         },
     )
     df = u.get_dataframe()
-    assert isinstance(df, UnifiedDataFrame)
     assert len(df) == 87
     assert (
-        df.df.iloc[0]["Protein ID"]
+        df.iloc[0]["Protein ID"]
         == "sp|P02769|ALBU_BOVIN Serum albumin OS=Bos taurus GN=ALB PE=1 SV=4"
     )
-    assert df.df.iloc[0]["Sequence Pre AA"] == "K"
-    assert df.df.iloc[0]["Sequence Post AA"] == "D"
+    assert df.iloc[0]["Sequence Pre AA"] == "K"
+    assert df.iloc[0]["Sequence Post AA"] == "D"
 
 
 def test_unify_xtandem_df_masses():
@@ -402,7 +402,7 @@ def test_unify_xtandem_df_masses():
     df = parser.get_dataframe()
     row = df[df["Sequence"] == "ASDGKYVDEYFAATYVCTDHGRGK"]
     assert row["Sequence"].iloc[0] == "ASDGKYVDEYFAATYVCTDHGRGK"
-    assert row["Charge"].iloc[0] == "3"
+    assert row["Charge"].iloc[0] == 3
     assert float(row["uCalc m/z"].iloc[0]) == pytest.approx(
         904.0782, abs=5e-6 * 904.0782
     )
@@ -455,9 +455,9 @@ def test_unify_msgf_df_masses():
     )
     df = parser.get_dataframe()
     row = df[df["Sequence"] == "ASDGKYVDEYFAATYVCTDHGRGK"]
-    assert row["Spectrum ID"].iloc[0] == "45703"
+    assert row["Spectrum ID"].iloc[0] == 45703
     assert row["Sequence"].iloc[0] == "ASDGKYVDEYFAATYVCTDHGRGK"
-    assert row["Charge"].iloc[0] == "3"
+    assert row["Charge"].iloc[0] == 3
     assert row["Modifications"].iloc[0] == "Carbamidomethyl:17"
     assert float(row["uCalc m/z"].iloc[0]) == pytest.approx(
         904.0782, abs=5e-6 * 904.0782
@@ -502,7 +502,6 @@ def test_unify_omssa_df_masses():
                     "name": "Acetyl",
                 },
             ],
-            "Raw data location": "test_Creinhardtii_QE_pH11.mzML",
             "15N": False,
             "omssa_mod_dir": Path(__file__).parent / "data",
             "Raw data location": "/Users/cellzome/Dev/Gits/Ursgal/ursgal_master/example_data/test_Creinhardtii_QE_pH11.mzML",
@@ -563,17 +562,15 @@ def test_unify_msamanda_df_masses():
             ],
             "Raw file location": "test_Creinhardtii_QE_pH11.mzML",
             "15N": False,
+            "Raw data location": "/Users/cellzome/Dev/Gits/Ursgal/ursgal_master/example_data/test_Creinhardtii_QE_pH11.mzML",
         },
     )
-    res = parser.get_dataframe()
-    row = res.df[res.df["Sequence"] == "ASDGKYVDEYFAATYVCTDHGRGK"]
+    df = parser.get_dataframe()
+    row = df[df["Sequence"] == "ASDGKYVDEYFAATYVCTDHGRGK"]
     assert row["Sequence"].iloc[0] == "ASDGKYVDEYFAATYVCTDHGRGK"
-    assert row["Charge"].iloc[0] == "3"
+    assert row["Charge"].iloc[0] == 3
     assert row["Modifications"].iloc[0] == "Carbamidomethyl:17"
     assert float(row["uCalc m/z"].iloc[0]) == pytest.approx(
-        904.0782, abs=5e-6 * 904.0782
-    )
-    assert float(row["Calc m/z"].iloc[0]) == pytest.approx(
         904.0782, abs=5e-6 * 904.0782
     )
     assert float(row["uCalc Mass"].iloc[0]) == pytest.approx(

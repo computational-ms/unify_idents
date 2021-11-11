@@ -1,5 +1,6 @@
-from unify_idents.engine_parsers.base_parser import __IdentBaseParser
 from pathlib import Path
+
+from unify_idents.engine_parsers.base_parser import __IdentBaseParser
 
 
 def test_engine_parsers_IdentBaseParser_init():
