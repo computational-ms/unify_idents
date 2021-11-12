@@ -7,11 +7,13 @@ from loguru import logger
 from unify_idents.engine_parsers.base_parser import __IdentBaseParser
 
 
-# TODO: 15N handling missing
 class MSFragger3Parser(__IdentBaseParser):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.style = "msfragger_style_3"
+        # 15N handling missing for now
+        if self.params.get("label", "") == "15N":
+            raise NotImplementedError
 
         self.df = pd.read_csv(self.input_file, delimiter="\t")
         self.df.dropna(axis=1, how="all", inplace=True)
@@ -71,11 +73,12 @@ class MSFragger3Parser(__IdentBaseParser):
             mass = re.search("\(([^)]+)", mod).group(1)
             name = map_dict[mass]
             if len(name) > 0:
-                if "N-term" in self.mod_dict[name[0]]["position"]:
-                    pos = 0
-                else:
-                    pos = int(re.search(r"^\d+", mod).group(0))
-                mod_str += f"{name[0]}:{pos};"
+                for m in name:
+                    if any(["N-term" in p for p in self.mod_dict[m]["position"]]):
+                        pos = 0
+                    else:
+                        pos = int(re.search(r"^\d+", mod).group(0))
+                    mod_str += f"{m}:{pos};"
             else:
                 return "NON_MAPPABLE"
         return mod_str
@@ -84,6 +87,7 @@ class MSFragger3Parser(__IdentBaseParser):
         mod_split_col = self.df["Modifications"].fillna("").str.split(", ")
         unique_mods = set().union(*mod_split_col.apply(set)).difference({""})
         unique_mod_masses = {re.search("\(([^)]+)", m).group(1) for m in unique_mods}
+        # Map single mods
         potential_names = {
             m: [
                 name
@@ -94,6 +98,18 @@ class MSFragger3Parser(__IdentBaseParser):
             ]
             for m in unique_mod_masses
         }
+        # Map multiple mods
+        for n in [2, 3]:
+            for unmapped_mass in {k: v for k, v in potential_names.items() if v == []}:
+                potential_mods = [
+                    name[1]
+                    for name in self.mod_mapper.mass_to_combos(
+                        round(float(unmapped_mass), 4), n=n, decimals=4
+                    )
+                    if all(m in self.mod_dict for m in name[1])
+                ]
+                if len(potential_mods) == 1:
+                    potential_names[unmapped_mass] = potential_mods[0]
         non_mappable_mods = {
             k: len(
                 [
@@ -113,8 +129,9 @@ class MSFragger3Parser(__IdentBaseParser):
             [v / len(self.df) for v in non_mappable_mods.values()]
         )
         if any(non_mappable_percent > 0.001):
-            pass
-            # raise ValueError("Some modifications found in more than 0.1% of PSMs cannot be mapped.")
+            raise ValueError(
+                "Some modifications found in more than 0.1% of PSMs cannot be mapped."
+            )
         if len(non_mappable_percent) > 0:
             logger.warning(
                 "Some modifications found in less than 0.1% of PSMs cannot be mapped and were removed."

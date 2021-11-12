@@ -513,7 +513,7 @@ def test_unify_omssa_df_masses():
     assert row["Charge"].iloc[0] == 4
     assert (
         row["Modifications"].iloc[0]
-        == "Oxidation:4;Carbamidomethyl:17;Carbamidomethyl:24"
+        == "Carbamidomethyl:17;Carbamidomethyl:24;Oxidation:4"
     )
     assert float(row["uCalc m/z"].iloc[0]) == pytest.approx(
         759.3775089652208, abs=5e-6 * 759.3775089652208

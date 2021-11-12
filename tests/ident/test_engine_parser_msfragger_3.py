@@ -180,10 +180,11 @@ def test_engine_parsers_msfragger_merge_mods():
         },
     )
     df = parser.unify()
-    assert df["Modifications"] == "Acetyl:0;Carbamidomethyl:1"
-    assert df["Sequence"] == "CGFSTVGSGFGSR"
+    row = df.iloc[0]
+    assert row["Modifications"] == "Acetyl:0;Carbamidomethyl:1"
+    assert row["Sequence"] == "CGFSTVGSGFGSR"
     assert (
-        df["Raw data location"]
+        row["Raw data location"]
         == "/Users/cellzome/Dev/Gits/Ursgal/ursgal_master/example_data/test_Creinhardtii_QE_pH11.mzML"
     )
 

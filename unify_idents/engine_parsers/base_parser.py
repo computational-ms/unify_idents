@@ -179,6 +179,11 @@ class __IdentBaseParser(BaseParser):
         ]
         self.df = self.df.astype(self.dtype_mapping)
 
+        # Ensure same order of modifications
+        self.df.loc[:, "Modifications"] = (
+            self.df["Modifications"].str.split(";").apply(sorted).str.join(";")
+        )
+
     def process_unify_style(self):
         self.df.drop_duplicates(inplace=True, ignore_index=True)
         self.add_protein_ids()

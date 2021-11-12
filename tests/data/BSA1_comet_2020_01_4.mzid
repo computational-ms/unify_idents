@@ -1,0 +1,1001 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<MzIdentML id="Comet 2021-11-12T11:27:43" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://psidev.info/psi/pi/mzIdentML/1.2 http://www.psidev.info/files/mzIdentML1.2.0.xsd" xmlns="http://psidev.info/psi/pi/mzIdentML/1.2" version="1.2.0" creationDate="2020.01 rev. 4">
+ <cvList>
+  <cv id="PSI-MS" uri="https://raw.githubusercontent.com/HUPO-PSI/psi-ms-CV/master/psi-ms.obo" fullName="PSI-MS" />
+  <cv id="UNIMOD" uri="http://www.unimod.org/obo/unimod.obo" fullName="UNIMOD" />
+  <cv id="UO" uri="https://raw.githubusercontent.com/bio-ontology-research-group/unit-ontology/master/unit.obo" fullName="UNIT-ONTOLOGY" />
+  <cv id="PRIDE" uri="https://github.com/PRIDE-Utilities/pride-ontology/blob/master/pride_cv.obo" fullName="PRIDE" />
+ </cvList>
+ <AnalysisSoftwareList>
+  <AnalysisSoftware id="Comet" name="Comet" version="2020.01 rev. 4">
+   <SoftwareName><cvParam cvRef="MS" accession="MS:1002251" name="Comet" value="" /></SoftwareName>
+  </AnalysisSoftware>
+ </AnalysisSoftwareList>
+ <SequenceCollection xmlns="http://psidev.info/psi/pi/mzIdentML/1.2">
+ <DBSequence id="sp|P02769|ALBU_BOVIN" accession="sp|P02769|ALBU_BOVIN" searchDatabase_ref="DB0" />
+ <Peptide id="AEFVEVTK;">
+  <PeptideSequence>AEFVEVTK</PeptideSequence>
+ </Peptide>
+ <Peptide id="AWSVAR;">
+  <PeptideSequence>AWSVAR</PeptideSequence>
+ </Peptide>
+ <Peptide id="CCTESLVNR;">
+  <PeptideSequence>CCTESLVNR</PeptideSequence>
+ </Peptide>
+ <Peptide id="DDSPDLPK;">
+  <PeptideSequence>DDSPDLPK</PeptideSequence>
+ </Peptide>
+ <Peptide id="DLGEEHFK;">
+  <PeptideSequence>DLGEEHFK</PeptideSequence>
+ </Peptide>
+ <Peptide id="DLGEEHFK;8:42.010565;">
+  <PeptideSequence>DLGEEHFK</PeptideSequence>
+  <Modification location="0" monoisotopicMassDelta="42.010565"></Modification>
+ </Peptide>
+ <Peptide id="EACFAVEGPK;">
+  <PeptideSequence>EACFAVEGPK</PeptideSequence>
+ </Peptide>
+ <Peptide id="EACFAVEGPK;10:42.010565;">
+  <PeptideSequence>EACFAVEGPK</PeptideSequence>
+  <Modification location="0" monoisotopicMassDelta="42.010565"></Modification>
+ </Peptide>
+ <Peptide id="ECCDKPLLEK;">
+  <PeptideSequence>ECCDKPLLEK</PeptideSequence>
+ </Peptide>
+ <Peptide id="GACLLPK;">
+  <PeptideSequence>GACLLPK</PeptideSequence>
+ </Peptide>
+ <Peptide id="HLVDEPQNLIK;">
+  <PeptideSequence>HLVDEPQNLIK</PeptideSequence>
+ </Peptide>
+ <Peptide id="LCVLHEK;">
+  <PeptideSequence>LCVLHEK</PeptideSequence>
+ </Peptide>
+ <Peptide id="LGEYGFQNALIVR;">
+  <PeptideSequence>LGEYGFQNALIVR</PeptideSequence>
+ </Peptide>
+ <Peptide id="LKPDPNTLCDEFK;">
+  <PeptideSequence>LKPDPNTLCDEFK</PeptideSequence>
+ </Peptide>
+ <Peptide id="LRCASIQK;8:42.010565;">
+  <PeptideSequence>LRCASIQK</PeptideSequence>
+  <Modification location="0" monoisotopicMassDelta="42.010565"></Modification>
+ </Peptide>
+ <Peptide id="LVTDLTK;">
+  <PeptideSequence>LVTDLTK</PeptideSequence>
+ </Peptide>
+ <Peptide id="LVTDLTK;7:42.010565;">
+  <PeptideSequence>LVTDLTK</PeptideSequence>
+  <Modification location="0" monoisotopicMassDelta="42.010565"></Modification>
+ </Peptide>
+ <Peptide id="LVVSTQTALA;">
+  <PeptideSequence>LVVSTQTALA</PeptideSequence>
+ </Peptide>
+ <Peptide id="QEPERNECFLSHK;">
+  <PeptideSequence>QEPERNECFLSHK</PeptideSequence>
+ </Peptide>
+ <Peptide id="SHCIAEVEK;">
+  <PeptideSequence>SHCIAEVEK</PeptideSequence>
+ </Peptide>
+ <Peptide id="VPQVSTPTLVEVSR;">
+  <PeptideSequence>VPQVSTPTLVEVSR</PeptideSequence>
+ </Peptide>
+ <Peptide id="YICDNQDTISSK;">
+  <PeptideSequence>YICDNQDTISSK</PeptideSequence>
+ </Peptide>
+ <Peptide id="YLYEIAR;">
+  <PeptideSequence>YLYEIAR</PeptideSequence>
+ </Peptide>
+ <Peptide id="YLYEIARR;">
+  <PeptideSequence>YLYEIARR</PeptideSequence>
+ </Peptide>
+ <PeptideEvidence id="AEFVEVTK;sp|P02769|ALBU_BOVIN" isDecoy="false" DBSequence_Ref="sp|P02769|ALBU_BOVIN" />
+ <PeptideEvidence id="AWSVAR;sp|P02769|ALBU_BOVIN" isDecoy="false" DBSequence_Ref="sp|P02769|ALBU_BOVIN" />
+ <PeptideEvidence id="CCTESLVNR;sp|P02769|ALBU_BOVIN" isDecoy="false" DBSequence_Ref="sp|P02769|ALBU_BOVIN" />
+ <PeptideEvidence id="DDSPDLPK;sp|P02769|ALBU_BOVIN" isDecoy="false" DBSequence_Ref="sp|P02769|ALBU_BOVIN" />
+ <PeptideEvidence id="DLGEEHFK;sp|P02769|ALBU_BOVIN" isDecoy="false" DBSequence_Ref="sp|P02769|ALBU_BOVIN" />
+ <PeptideEvidence id="EACFAVEGPK;sp|P02769|ALBU_BOVIN" isDecoy="false" DBSequence_Ref="sp|P02769|ALBU_BOVIN" />
+ <PeptideEvidence id="ECCDKPLLEK;sp|P02769|ALBU_BOVIN" isDecoy="false" DBSequence_Ref="sp|P02769|ALBU_BOVIN" />
+ <PeptideEvidence id="GACLLPK;sp|P02769|ALBU_BOVIN" isDecoy="false" DBSequence_Ref="sp|P02769|ALBU_BOVIN" />
+ <PeptideEvidence id="HLVDEPQNLIK;sp|P02769|ALBU_BOVIN" isDecoy="false" DBSequence_Ref="sp|P02769|ALBU_BOVIN" />
+ <PeptideEvidence id="LCVLHEK;sp|P02769|ALBU_BOVIN" isDecoy="false" DBSequence_Ref="sp|P02769|ALBU_BOVIN" />
+ <PeptideEvidence id="LGEYGFQNALIVR;sp|P02769|ALBU_BOVIN" isDecoy="false" DBSequence_Ref="sp|P02769|ALBU_BOVIN" />
+ <PeptideEvidence id="LKPDPNTLCDEFK;sp|P02769|ALBU_BOVIN" isDecoy="false" DBSequence_Ref="sp|P02769|ALBU_BOVIN" />
+ <PeptideEvidence id="LRCASIQK;sp|P02769|ALBU_BOVIN" isDecoy="false" DBSequence_Ref="sp|P02769|ALBU_BOVIN" />
+ <PeptideEvidence id="LVTDLTK;sp|P02769|ALBU_BOVIN" isDecoy="false" DBSequence_Ref="sp|P02769|ALBU_BOVIN" />
+ <PeptideEvidence id="LVVSTQTALA;sp|P02769|ALBU_BOVIN" isDecoy="false" DBSequence_Ref="sp|P02769|ALBU_BOVIN" />
+ <PeptideEvidence id="QEPERNECFLSHK;sp|P02769|ALBU_BOVIN" isDecoy="false" DBSequence_Ref="sp|P02769|ALBU_BOVIN" />
+ <PeptideEvidence id="SHCIAEVEK;sp|P02769|ALBU_BOVIN" isDecoy="false" DBSequence_Ref="sp|P02769|ALBU_BOVIN" />
+ <PeptideEvidence id="VPQVSTPTLVEVSR;sp|P02769|ALBU_BOVIN" isDecoy="false" DBSequence_Ref="sp|P02769|ALBU_BOVIN" />
+ <PeptideEvidence id="YICDNQDTISSK;sp|P02769|ALBU_BOVIN" isDecoy="false" DBSequence_Ref="sp|P02769|ALBU_BOVIN" />
+ <PeptideEvidence id="YLYEIAR;sp|P02769|ALBU_BOVIN" isDecoy="false" DBSequence_Ref="sp|P02769|ALBU_BOVIN" />
+ <PeptideEvidence id="YLYEIARR;sp|P02769|ALBU_BOVIN" isDecoy="false" DBSequence_Ref="sp|P02769|ALBU_BOVIN" />
+ </SequenceCollection>
+ <AnalysisCollection>
+  <SpectrumIdentification spectrumIdentificationList_ref="SIL" spectrumIdentificationProtocol_ref="SIP" id="SI">
+   <InputSpectra spectraData_ref="SD1" />
+   <SearchDatabaseRef searchDatabase_ref="DB0" />
+  </SpectrumIdentification>
+  <ProteinDetection proteinDetectionProtocol_ref="Comet" proteinDetectionList_ref="PDL" id="PD">
+   <InputSpectrumIdentifications spectrumIdentificationList_ref="SIL" />
+  </ProteinDetection>
+ </AnalysisCollection>
+ <AnalysisProtocolCollection>
+  <SpectrumIdentificationProtocol analysisSoftware_ref="Comet" id="SIP">
+   <SearchType>
+    <cvParam cvRef="PSI-MS" accession="MS:1001083" name="ms-ms search" />
+   </SearchType>
+   <AdditionalSearchParams>
+    <cvParam cvRef="PSI-MS" accession="MS:1001211" name="parent mass type mono" />
+    <cvParam cvRef="PSI-MS" accession="MS:1001256" name="fragment mass type mono" />
+    <userParam name="# comet_version" value="2020.01 rev. 4" />
+    <userParam name="activation_method" value="HCD" />
+    <userParam name="add_C_cysteine" value="57.021464" />
+    <userParam name="allowed_missed_cleavage" value="2" />
+    <userParam name="clear_mz_range" value="0.000000 0.000000" />
+    <userParam name="clip_nterm_methionine" value="0" />
+    <userParam name="database_name" value="/Users/tr341516/PycharmProjects/ursgal2/example_data/BSA1.fasta" />
+    <userParam name="decoy_prefix" value="decoy_" />
+    <userParam name="decoy_search" value="0" />
+    <userParam name="digest_mass_range" value="400.000000 7000.000000" />
+    <userParam name="equal_I_and_L" value="1" />
+    <userParam name="explicit_deltacn" value="0" />
+    <userParam name="fragment_bin_offset" value="0.000000" />
+    <userParam name="fragment_bin_tol" value="0.030000" />
+    <userParam name="isotope_error" value="1" />
+    <userParam name="mass_offsets" value="" />
+    <userParam name="mass_type_fragment" value="1" />
+    <userParam name="mass_type_parent" value="1" />
+    <userParam name="max_duplicate_proteins" value="20" />
+    <userParam name="max_fragment_charge" value="4" />
+    <userParam name="max_precursor_charge" value="5" />
+    <userParam name="max_variable_mods_in_peptide" value="3" />
+    <userParam name="minimum_intensity" value="0.000000" />
+    <userParam name="minimum_peaks" value="5" />
+    <userParam name="ms_level" value="2" />
+    <userParam name="nucleotide_reading_frame" value="0" />
+    <userParam name="num_enzyme_termini" value="2" />
+    <userParam name="num_output_lines" value="10" />
+    <userParam name="num_results" value="100" />
+    <userParam name="num_threads" value="-1" />
+    <userParam name="output_mzidentmlfile" value="1" />
+    <userParam name="output_pepxmlfile" value="0" />
+    <userParam name="output_percolatorfile" value="1" />
+    <userParam name="output_sqtfile" value="0" />
+    <userParam name="output_suffix" value="" />
+    <userParam name="output_txtfile" value="0" />
+    <userParam name="override_charge" value="0" />
+    <userParam name="peff_format" value="0" />
+    <userParam name="peff_obo" value="0" />
+    <userParam name="peff_verbose_output" value="0" />
+    <userParam name="peptide_length_range" value="6 40" />
+    <userParam name="peptide_mass_tolerance" value="5.000000" />
+    <userParam name="peptide_mass_units" value="2" />
+    <userParam name="precursor_NL_ions" value="" />
+    <userParam name="precursor_charge" value="1 5" />
+    <userParam name="precursor_tolerance_type" value="0" />
+    <userParam name="print_expect_score" value="1" />
+    <userParam name="remove_precursor_peak" value="0" />
+    <userParam name="remove_precursor_tolerance" value="1.500000" />
+    <userParam name="require_variable_mod" value="0" />
+    <userParam name="sample_enzyme_number" value="0" />
+    <userParam name="scan_range" value="0 0" />
+    <userParam name="search_enzyme2_number" value="0" />
+    <userParam name="search_enzyme_number" value="1" />
+    <userParam name="skip_researching" value="1" />
+    <userParam name="spectrum_batch_size" value="2000" />
+    <userParam name="text_file_extension" value="" />
+    <userParam name="theoretical_fragment_ions" value="1" />
+    <userParam name="use_A_ions" value="0" />
+    <userParam name="use_B_ions" value="1" />
+    <userParam name="use_C_ions" value="0" />
+    <userParam name="use_NL_ions" value="0" />
+    <userParam name="use_X_ions" value="0" />
+    <userParam name="use_Y_ions" value="1" />
+    <userParam name="use_Z1_ions" value="0" />
+    <userParam name="use_Z_ions" value="0" />
+    <userParam name="variable_mod01" value=" 15.994915 M 0 3 -1 0 0 0.0" />
+    <userParam name="variable_mod02" value=" 42.010565 n 0 3 -1 0 0 0.0" />
+   </AdditionalSearchParams>
+   <ModificationParams>
+    <SearchModification residues="C" massDelta="57.021464" fixedMod= "true" >
+     <cvParam cvRef="UNIMOD" accession="UNIMOD:UNIMOD:4" name="Carbamidomethyl" />
+    </SearchModification>
+    <SearchModification residues="M" massDelta="15.994915" fixedMod= "false" >
+     <cvParam cvRef="UNIMOD" accession="UNIMOD:UNIMOD:35" name="Oxidation" />
+    </SearchModification>
+    <SearchModification residues="." massDelta="42.010565" fixedMod= "false" >
+     <SpecificityRules>
+       <cvParam accession="MS:1001189" cvRef="PSI-MS" name="modification specificity peptide N-term" />
+     </SpecificityRules>
+     <cvParam cvRef="UNIMOD" accession="UNIMOD:UNIMOD:1" name="Acetyl" />
+    </SearchModification>
+   </ModificationParams>
+   <Enzymes>
+     <Enzyme id="ENZ"  missedCleavages="2" semiSpecific="false">
+      <SiteRegexp>((?&lt;=[KR]) (?!P))</SiteRegexp>
+     </Enzyme>
+   </Enzymes>
+   <MassTable id="MT" msLevel="1 2">
+    <Residue code="A" mass="71.037114" />
+    <Residue code="C" mass="103.009185" />
+    <Residue code="D" mass="115.026943" />
+    <Residue code="E" mass="129.042593" />
+    <Residue code="F" mass="147.068414" />
+    <Residue code="G" mass="57.021464" />
+    <Residue code="H" mass="137.058912" />
+    <Residue code="I" mass="113.084064" />
+    <Residue code="K" mass="128.094963" />
+    <Residue code="L" mass="113.084064" />
+    <Residue code="M" mass="131.040485" />
+    <Residue code="N" mass="114.042927" />
+    <Residue code="O" mass="237.147727" />
+    <Residue code="P" mass="97.052764" />
+    <Residue code="Q" mass="128.058578" />
+    <Residue code="R" mass="156.101111" />
+    <Residue code="S" mass="87.032028" />
+    <Residue code="T" mass="101.047679" />
+    <Residue code="U" mass="150.953633" />
+    <Residue code="V" mass="99.068414" />
+    <Residue code="W" mass="186.079313" />
+    <Residue code="Y" mass="163.063329" />
+   </MassTable>
+   <FragmentTolerance>
+    <cvParam accession="MS:1001412" name="search tolerance plus value" value="0.015000" cvRef="PSI-MS" unitAccession="UO:0000221" unitName="dalton" unitCvRef="UO" />
+    <cvParam accession="MS:1001413" name="search tolerance minus value" value="0.015000" cvRef="PSI-MS" unitAccession="UO:0000221" unitName="dalton" unitCvRef="UO" />
+   </FragmentTolerance>
+   <ParentTolerance>
+   <cvParam cvRef="PSI-MS" accession="MS:1001412" name="search tolerance plus value" value="5.000000" unitAccession="UO:0000169" unitName="parts per million" unitCvRef="UO"></cvParam>
+   <cvParam cvRef="PSI-MS" accession="MS:1001413" name="search tolerance minus value" value="5.000000" unitAccession="UO:0000169" unitName="parts per million" unitCvRef="UO"></cvParam>
+   </ParentTolerance>
+   <Threshold>
+    <cvParam cvRef="MS" accession="MS:1001494" name="no threshold" value=""/>
+   </Threshold>
+  </SpectrumIdentificationProtocol>
+ </AnalysisProtocolCollection>
+ <DataCollection>"
+  <Inputs>
+   <SearchDatabase id="DB0" location="/Users/tr341516/PycharmProjects/ursgal2/example_data/BSA1.fasta">
+    <FileFormat>
+     <cvParam cvRef="PSI-MS" accession="MS:1001348" name="FASTA format" />
+    </FileFormat>
+    <DatabaseName>
+     <userParam name="/BSA1.fasta" />
+    </DatabaseName>
+    <cvParam cvRef="MS" accession="MS:1001073" name="database type amino acid" value="" />
+   </SearchDatabase>
+   <SpectraData location="/Users/cellzome/Dev/Gits/Ursgal/ursgal_master/example_data/BSA1.mgf" id="SD_1" >
+    <FileFormat>
+     <cvParam cvRef="PSI-MS" accession="MS:1001062" name="Mascot MGF file" />
+    </FileFormat>
+    <SpectrumIDFormat>
+     <cvParam cvRef="PSI-MS" accession="MS:1000776" name="scan number only nativeID format" />
+    </SpectrumIDFormat>
+   </SpectraData>
+  </Inputs>
+  <AnalysisData>
+   <SpectrumIdentificationList id="SIL_1">
+    <SpectrumIdentificationResult id="SIR_16" spectrumID="scan=2458" spectraData_ref="SD0">
+     <SpectrumIdentificationItem id="SII_0" rank="0" chargeState="3" peptide_ref="SHCIAEVEK;" experimentalMassToCharge="358.174682" calculatedMassToCharge="358.174575" passThreshold="true">
+      <PeptideEvidenceRef peptideEvidence_ref="SHCIAEVEK;sp|P02769|ALBU_BOVIN" />
+      <cvParam cvRef="MS" accession="MS:1001121" name="number of matched peaks" value="3" />
+      <cvParam cvRef="MS" accession="MS:1001362" name="number of unmatched peaks" value="29" />
+      <cvParam cvRef="MS" accession="MS:1002252" name="Comet:xcorr" value="0.2825" />
+      <cvParam cvRef="MS" accession="MS:1002253" name="Comet:deltacn" value="1.0000" />
+      <cvParam cvRef="MS" accession="MS:1002255" name="Comet:spscore" value="5.9000" />
+      <cvParam cvRef="MS" accession="MS:1002256" name="Comet:sprank" value="1" />
+      <cvParam cvRef="MS" accession="MS:1002257" name="Comet:expectation value" value="3.76E+01" />
+     </SpectrumIdentificationItem>
+    </SpectrumIdentificationResult>
+    <SpectrumIdentificationResult id="SIR_55" spectrumID="scan=2497" spectraData_ref="SD0">
+     <SpectrumIdentificationItem id="SII_0" rank="0" chargeState="2" peptide_ref="LRCASIQK;8:42.010565;" experimentalMassToCharge="509.780029" calculatedMassToCharge="509.279126" passThreshold="true">
+      <PeptideEvidenceRef peptideEvidence_ref="LRCASIQK;sp|P02769|ALBU_BOVIN" />
+      <cvParam cvRef="MS" accession="MS:1001121" name="number of matched peaks" value="1" />
+      <cvParam cvRef="MS" accession="MS:1001362" name="number of unmatched peaks" value="13" />
+      <cvParam cvRef="MS" accession="MS:1002252" name="Comet:xcorr" value="0.0879" />
+      <cvParam cvRef="MS" accession="MS:1002253" name="Comet:deltacn" value="1.0000" />
+      <cvParam cvRef="MS" accession="MS:1002255" name="Comet:spscore" value="2.3000" />
+      <cvParam cvRef="MS" accession="MS:1002256" name="Comet:sprank" value="1" />
+      <cvParam cvRef="MS" accession="MS:1002257" name="Comet:expectation value" value="5.75E+02" />
+     </SpectrumIdentificationItem>
+    </SpectrumIdentificationResult>
+    <SpectrumIdentificationResult id="SIR_106" spectrumID="scan=2548" spectraData_ref="SD0">
+     <SpectrumIdentificationItem id="SII_0" rank="0" chargeState="2" peptide_ref="DDSPDLPK;" experimentalMassToCharge="443.711242" calculatedMassToCharge="443.711265" passThreshold="true">
+      <PeptideEvidenceRef peptideEvidence_ref="DDSPDLPK;sp|P02769|ALBU_BOVIN" />
+      <cvParam cvRef="MS" accession="MS:1001121" name="number of matched peaks" value="3" />
+      <cvParam cvRef="MS" accession="MS:1001362" name="number of unmatched peaks" value="11" />
+      <cvParam cvRef="MS" accession="MS:1002252" name="Comet:xcorr" value="0.5747" />
+      <cvParam cvRef="MS" accession="MS:1002253" name="Comet:deltacn" value="1.0000" />
+      <cvParam cvRef="MS" accession="MS:1002255" name="Comet:spscore" value="29.2000" />
+      <cvParam cvRef="MS" accession="MS:1002256" name="Comet:sprank" value="1" />
+      <cvParam cvRef="MS" accession="MS:1002257" name="Comet:expectation value" value="8.78E+00" />
+     </SpectrumIdentificationItem>
+    </SpectrumIdentificationResult>
+    <SpectrumIdentificationResult id="SIR_124" spectrumID="scan=2566" spectraData_ref="SD0">
+     <SpectrumIdentificationItem id="SII_0" rank="0" chargeState="2" peptide_ref="CCTESLVNR;" experimentalMassToCharge="569.752807" calculatedMassToCharge="569.752615" passThreshold="true">
+      <PeptideEvidenceRef peptideEvidence_ref="CCTESLVNR;sp|P02769|ALBU_BOVIN" />
+      <cvParam cvRef="MS" accession="MS:1001121" name="number of matched peaks" value="1" />
+      <cvParam cvRef="MS" accession="MS:1001362" name="number of unmatched peaks" value="15" />
+      <cvParam cvRef="MS" accession="MS:1002252" name="Comet:xcorr" value="0.2316" />
+      <cvParam cvRef="MS" accession="MS:1002253" name="Comet:deltacn" value="1.0000" />
+      <cvParam cvRef="MS" accession="MS:1002255" name="Comet:spscore" value="3.2000" />
+      <cvParam cvRef="MS" accession="MS:1002256" name="Comet:sprank" value="1" />
+      <cvParam cvRef="MS" accession="MS:1002257" name="Comet:expectation value" value="5.04E+01" />
+     </SpectrumIdentificationItem>
+    </SpectrumIdentificationResult>
+    <SpectrumIdentificationResult id="SIR_127" spectrumID="scan=2569" spectraData_ref="SD0">
+     <SpectrumIdentificationItem id="SII_0" rank="0" chargeState="3" peptide_ref="ECCDKPLLEK;" experimentalMassToCharge="431.205597" calculatedMassToCharge="431.205546" passThreshold="true">
+      <PeptideEvidenceRef peptideEvidence_ref="ECCDKPLLEK;sp|P02769|ALBU_BOVIN" />
+      <cvParam cvRef="MS" accession="MS:1001121" name="number of matched peaks" value="3" />
+      <cvParam cvRef="MS" accession="MS:1001362" name="number of unmatched peaks" value="33" />
+      <cvParam cvRef="MS" accession="MS:1002252" name="Comet:xcorr" value="0.3634" />
+      <cvParam cvRef="MS" accession="MS:1002253" name="Comet:deltacn" value="1.0000" />
+      <cvParam cvRef="MS" accession="MS:1002255" name="Comet:spscore" value="6.4000" />
+      <cvParam cvRef="MS" accession="MS:1002256" name="Comet:sprank" value="1" />
+      <cvParam cvRef="MS" accession="MS:1002257" name="Comet:expectation value" value="3.35E+01" />
+     </SpectrumIdentificationItem>
+    </SpectrumIdentificationResult>
+    <SpectrumIdentificationResult id="SIR_131" spectrumID="scan=2573" spectraData_ref="SD0">
+     <SpectrumIdentificationItem id="SII_0" rank="0" chargeState="2" peptide_ref="ECCDKPLLEK;" experimentalMassToCharge="646.304504" calculatedMassToCharge="646.304681" passThreshold="true">
+      <PeptideEvidenceRef peptideEvidence_ref="ECCDKPLLEK;sp|P02769|ALBU_BOVIN" />
+      <cvParam cvRef="MS" accession="MS:1001121" name="number of matched peaks" value="1" />
+      <cvParam cvRef="MS" accession="MS:1001362" name="number of unmatched peaks" value="17" />
+      <cvParam cvRef="MS" accession="MS:1002252" name="Comet:xcorr" value="0.2363" />
+      <cvParam cvRef="MS" accession="MS:1002253" name="Comet:deltacn" value="1.0000" />
+      <cvParam cvRef="MS" accession="MS:1002255" name="Comet:spscore" value="5.5000" />
+      <cvParam cvRef="MS" accession="MS:1002256" name="Comet:sprank" value="1" />
+      <cvParam cvRef="MS" accession="MS:1002257" name="Comet:expectation value" value="9.60E+00" />
+     </SpectrumIdentificationItem>
+    </SpectrumIdentificationResult>
+    <SpectrumIdentificationResult id="SIR_146" spectrumID="scan=2588" spectraData_ref="SD0">
+     <SpectrumIdentificationItem id="SII_0" rank="0" chargeState="2" peptide_ref="LCVLHEK;" experimentalMassToCharge="449.744232" calculatedMassToCharge="449.744388" passThreshold="true">
+      <PeptideEvidenceRef peptideEvidence_ref="LCVLHEK;sp|P02769|ALBU_BOVIN" />
+      <cvParam cvRef="MS" accession="MS:1001121" name="number of matched peaks" value="1" />
+      <cvParam cvRef="MS" accession="MS:1001362" name="number of unmatched peaks" value="11" />
+      <cvParam cvRef="MS" accession="MS:1002252" name="Comet:xcorr" value="0.0507" />
+      <cvParam cvRef="MS" accession="MS:1002253" name="Comet:deltacn" value="1.0000" />
+      <cvParam cvRef="MS" accession="MS:1002255" name="Comet:spscore" value="1.8000" />
+      <cvParam cvRef="MS" accession="MS:1002256" name="Comet:sprank" value="1" />
+      <cvParam cvRef="MS" accession="MS:1002257" name="Comet:expectation value" value="9.99E+02" />
+     </SpectrumIdentificationItem>
+    </SpectrumIdentificationResult>
+    <SpectrumIdentificationResult id="SIR_173" spectrumID="scan=2615" spectraData_ref="SD0">
+     <SpectrumIdentificationItem id="SII_0" rank="0" chargeState="3" peptide_ref="ECCDKPLLEK;" experimentalMassToCharge="431.205261" calculatedMassToCharge="431.205546" passThreshold="true">
+      <PeptideEvidenceRef peptideEvidence_ref="ECCDKPLLEK;sp|P02769|ALBU_BOVIN" />
+      <cvParam cvRef="MS" accession="MS:1001121" name="number of matched peaks" value="1" />
+      <cvParam cvRef="MS" accession="MS:1001362" name="number of unmatched peaks" value="35" />
+      <cvParam cvRef="MS" accession="MS:1002252" name="Comet:xcorr" value="0.2159" />
+      <cvParam cvRef="MS" accession="MS:1002253" name="Comet:deltacn" value="1.0000" />
+      <cvParam cvRef="MS" accession="MS:1002255" name="Comet:spscore" value="2.8000" />
+      <cvParam cvRef="MS" accession="MS:1002256" name="Comet:sprank" value="1" />
+      <cvParam cvRef="MS" accession="MS:1002257" name="Comet:expectation value" value="2.42E+02" />
+     </SpectrumIdentificationItem>
+    </SpectrumIdentificationResult>
+    <SpectrumIdentificationResult id="SIR_177" spectrumID="scan=2619" spectraData_ref="SD0">
+     <SpectrumIdentificationItem id="SII_0" rank="0" chargeState="3" peptide_ref="LCVLHEK;" experimentalMassToCharge="300.165954" calculatedMassToCharge="300.165351" passThreshold="true">
+      <PeptideEvidenceRef peptideEvidence_ref="LCVLHEK;sp|P02769|ALBU_BOVIN" />
+      <cvParam cvRef="MS" accession="MS:1001121" name="number of matched peaks" value="3" />
+      <cvParam cvRef="MS" accession="MS:1001362" name="number of unmatched peaks" value="21" />
+      <cvParam cvRef="MS" accession="MS:1002252" name="Comet:xcorr" value="0.5419" />
+      <cvParam cvRef="MS" accession="MS:1002253" name="Comet:deltacn" value="1.0000" />
+      <cvParam cvRef="MS" accession="MS:1002255" name="Comet:spscore" value="9.8000" />
+      <cvParam cvRef="MS" accession="MS:1002256" name="Comet:sprank" value="1" />
+      <cvParam cvRef="MS" accession="MS:1002257" name="Comet:expectation value" value="2.55E+00" />
+     </SpectrumIdentificationItem>
+    </SpectrumIdentificationResult>
+    <SpectrumIdentificationResult id="SIR_182" spectrumID="scan=2624" spectraData_ref="SD0">
+     <SpectrumIdentificationItem id="SII_0" rank="0" chargeState="2" peptide_ref="YICDNQDTISSK;" experimentalMassToCharge="722.324707" calculatedMassToCharge="722.324656" passThreshold="true">
+      <PeptideEvidenceRef peptideEvidence_ref="YICDNQDTISSK;sp|P02769|ALBU_BOVIN" />
+      <cvParam cvRef="MS" accession="MS:1001121" name="number of matched peaks" value="1" />
+      <cvParam cvRef="MS" accession="MS:1001362" name="number of unmatched peaks" value="21" />
+      <cvParam cvRef="MS" accession="MS:1002252" name="Comet:xcorr" value="0.2261" />
+      <cvParam cvRef="MS" accession="MS:1002253" name="Comet:deltacn" value="1.0000" />
+      <cvParam cvRef="MS" accession="MS:1002255" name="Comet:spscore" value="0.6000" />
+      <cvParam cvRef="MS" accession="MS:1002256" name="Comet:sprank" value="1" />
+      <cvParam cvRef="MS" accession="MS:1002257" name="Comet:expectation value" value="7.00E+01" />
+     </SpectrumIdentificationItem>
+    </SpectrumIdentificationResult>
+    <SpectrumIdentificationResult id="SIR_191" spectrumID="scan=2633" spectraData_ref="SD0">
+     <SpectrumIdentificationItem id="SII_0" rank="0" chargeState="2" peptide_ref="CCTESLVNR;" experimentalMassToCharge="569.750732" calculatedMassToCharge="569.752615" passThreshold="true">
+      <PeptideEvidenceRef peptideEvidence_ref="CCTESLVNR;sp|P02769|ALBU_BOVIN" />
+      <cvParam cvRef="MS" accession="MS:1001121" name="number of matched peaks" value="1" />
+      <cvParam cvRef="MS" accession="MS:1001362" name="number of unmatched peaks" value="15" />
+      <cvParam cvRef="MS" accession="MS:1002252" name="Comet:xcorr" value="0.1428" />
+      <cvParam cvRef="MS" accession="MS:1002253" name="Comet:deltacn" value="1.0000" />
+      <cvParam cvRef="MS" accession="MS:1002255" name="Comet:spscore" value="2.6000" />
+      <cvParam cvRef="MS" accession="MS:1002256" name="Comet:sprank" value="1" />
+      <cvParam cvRef="MS" accession="MS:1002257" name="Comet:expectation value" value="1.03E+02" />
+     </SpectrumIdentificationItem>
+    </SpectrumIdentificationResult>
+    <SpectrumIdentificationResult id="SIR_217" spectrumID="scan=2659" spectraData_ref="SD0">
+     <SpectrumIdentificationItem id="SII_0" rank="0" chargeState="2" peptide_ref="DLGEEHFK;" experimentalMassToCharge="487.732330" calculatedMassToCharge="487.732532" passThreshold="true">
+      <PeptideEvidenceRef peptideEvidence_ref="DLGEEHFK;sp|P02769|ALBU_BOVIN" />
+      <cvParam cvRef="MS" accession="MS:1001121" name="number of matched peaks" value="1" />
+      <cvParam cvRef="MS" accession="MS:1001362" name="number of unmatched peaks" value="13" />
+      <cvParam cvRef="MS" accession="MS:1002252" name="Comet:xcorr" value="0.1285" />
+      <cvParam cvRef="MS" accession="MS:1002253" name="Comet:deltacn" value="1.0000" />
+      <cvParam cvRef="MS" accession="MS:1002255" name="Comet:spscore" value="1.3000" />
+      <cvParam cvRef="MS" accession="MS:1002256" name="Comet:sprank" value="1" />
+      <cvParam cvRef="MS" accession="MS:1002257" name="Comet:expectation value" value="3.13E+02" />
+     </SpectrumIdentificationItem>
+    </SpectrumIdentificationResult>
+    <SpectrumIdentificationResult id="SIR_231" spectrumID="scan=2673" spectraData_ref="SD0">
+     <SpectrumIdentificationItem id="SII_0" rank="0" chargeState="3" peptide_ref="ECCDKPLLEK;" experimentalMassToCharge="431.205566" calculatedMassToCharge="431.205546" passThreshold="true">
+      <PeptideEvidenceRef peptideEvidence_ref="ECCDKPLLEK;sp|P02769|ALBU_BOVIN" />
+      <cvParam cvRef="MS" accession="MS:1001121" name="number of matched peaks" value="1" />
+      <cvParam cvRef="MS" accession="MS:1001362" name="number of unmatched peaks" value="35" />
+      <cvParam cvRef="MS" accession="MS:1002252" name="Comet:xcorr" value="0.2258" />
+      <cvParam cvRef="MS" accession="MS:1002253" name="Comet:deltacn" value="1.0000" />
+      <cvParam cvRef="MS" accession="MS:1002255" name="Comet:spscore" value="1.2000" />
+      <cvParam cvRef="MS" accession="MS:1002256" name="Comet:sprank" value="1" />
+      <cvParam cvRef="MS" accession="MS:1002257" name="Comet:expectation value" value="7.28E+01" />
+     </SpectrumIdentificationItem>
+    </SpectrumIdentificationResult>
+    <SpectrumIdentificationResult id="SIR_274" spectrumID="scan=2716" spectraData_ref="SD0">
+     <SpectrumIdentificationItem id="SII_0" rank="0" chargeState="2" peptide_ref="DLGEEHFK;" experimentalMassToCharge="487.732300" calculatedMassToCharge="487.732532" passThreshold="true">
+      <PeptideEvidenceRef peptideEvidence_ref="DLGEEHFK;sp|P02769|ALBU_BOVIN" />
+      <cvParam cvRef="MS" accession="MS:1001121" name="number of matched peaks" value="2" />
+      <cvParam cvRef="MS" accession="MS:1001362" name="number of unmatched peaks" value="12" />
+      <cvParam cvRef="MS" accession="MS:1002252" name="Comet:xcorr" value="0.3431" />
+      <cvParam cvRef="MS" accession="MS:1002253" name="Comet:deltacn" value="1.0000" />
+      <cvParam cvRef="MS" accession="MS:1002255" name="Comet:spscore" value="9.6000" />
+      <cvParam cvRef="MS" accession="MS:1002256" name="Comet:sprank" value="1" />
+      <cvParam cvRef="MS" accession="MS:1002257" name="Comet:expectation value" value="6.83E+00" />
+     </SpectrumIdentificationItem>
+    </SpectrumIdentificationResult>
+    <SpectrumIdentificationResult id="SIR_277" spectrumID="scan=2719" spectraData_ref="SD0">
+     <SpectrumIdentificationItem id="SII_0" rank="0" chargeState="3" peptide_ref="DLGEEHFK;" experimentalMassToCharge="325.491241" calculatedMassToCharge="325.490780" passThreshold="true">
+      <PeptideEvidenceRef peptideEvidence_ref="DLGEEHFK;sp|P02769|ALBU_BOVIN" />
+      <cvParam cvRef="MS" accession="MS:1001121" name="number of matched peaks" value="1" />
+      <cvParam cvRef="MS" accession="MS:1001362" name="number of unmatched peaks" value="27" />
+      <cvParam cvRef="MS" accession="MS:1002252" name="Comet:xcorr" value="0.1875" />
+      <cvParam cvRef="MS" accession="MS:1002253" name="Comet:deltacn" value="1.0000" />
+      <cvParam cvRef="MS" accession="MS:1002255" name="Comet:spscore" value="0.4000" />
+      <cvParam cvRef="MS" accession="MS:1002256" name="Comet:sprank" value="1" />
+      <cvParam cvRef="MS" accession="MS:1002257" name="Comet:expectation value" value="2.39E+02" />
+     </SpectrumIdentificationItem>
+    </SpectrumIdentificationResult>
+    <SpectrumIdentificationResult id="SIR_288" spectrumID="scan=2730" spectraData_ref="SD0">
+     <SpectrumIdentificationItem id="SII_0" rank="0" chargeState="2" peptide_ref="AWSVAR;" experimentalMassToCharge="345.190399" calculatedMassToCharge="345.190106" passThreshold="true">
+      <PeptideEvidenceRef peptideEvidence_ref="AWSVAR;sp|P02769|ALBU_BOVIN" />
+      <cvParam cvRef="MS" accession="MS:1001121" name="number of matched peaks" value="1" />
+      <cvParam cvRef="MS" accession="MS:1001362" name="number of unmatched peaks" value="9" />
+      <cvParam cvRef="MS" accession="MS:1002252" name="Comet:xcorr" value="0.2415" />
+      <cvParam cvRef="MS" accession="MS:1002253" name="Comet:deltacn" value="1.0000" />
+      <cvParam cvRef="MS" accession="MS:1002255" name="Comet:spscore" value="10.0000" />
+      <cvParam cvRef="MS" accession="MS:1002256" name="Comet:sprank" value="1" />
+      <cvParam cvRef="MS" accession="MS:1002257" name="Comet:expectation value" value="4.31E+01" />
+     </SpectrumIdentificationItem>
+    </SpectrumIdentificationResult>
+    <SpectrumIdentificationResult id="SIR_323" spectrumID="scan=2765" spectraData_ref="SD0">
+     <SpectrumIdentificationItem id="SII_0" rank="0" chargeState="3" peptide_ref="LCVLHEK;" experimentalMassToCharge="300.165924" calculatedMassToCharge="300.165351" passThreshold="true">
+      <PeptideEvidenceRef peptideEvidence_ref="LCVLHEK;sp|P02769|ALBU_BOVIN" />
+      <cvParam cvRef="MS" accession="MS:1001121" name="number of matched peaks" value="1" />
+      <cvParam cvRef="MS" accession="MS:1001362" name="number of unmatched peaks" value="23" />
+      <cvParam cvRef="MS" accession="MS:1002252" name="Comet:xcorr" value="0.2163" />
+      <cvParam cvRef="MS" accession="MS:1002253" name="Comet:deltacn" value="1.0000" />
+      <cvParam cvRef="MS" accession="MS:1002255" name="Comet:spscore" value="1.5000" />
+      <cvParam cvRef="MS" accession="MS:1002256" name="Comet:sprank" value="1" />
+      <cvParam cvRef="MS" accession="MS:1002257" name="Comet:expectation value" value="1.19E+02" />
+     </SpectrumIdentificationItem>
+    </SpectrumIdentificationResult>
+    <SpectrumIdentificationResult id="SIR_327" spectrumID="scan=2769" spectraData_ref="SD0">
+     <SpectrumIdentificationItem id="SII_0" rank="0" chargeState="2" peptide_ref="DLGEEHFK;" experimentalMassToCharge="487.732391" calculatedMassToCharge="487.732532" passThreshold="true">
+      <PeptideEvidenceRef peptideEvidence_ref="DLGEEHFK;sp|P02769|ALBU_BOVIN" />
+      <cvParam cvRef="MS" accession="MS:1001121" name="number of matched peaks" value="1" />
+      <cvParam cvRef="MS" accession="MS:1001362" name="number of unmatched peaks" value="13" />
+      <cvParam cvRef="MS" accession="MS:1002252" name="Comet:xcorr" value="0.0383" />
+      <cvParam cvRef="MS" accession="MS:1002253" name="Comet:deltacn" value="1.0000" />
+      <cvParam cvRef="MS" accession="MS:1002255" name="Comet:spscore" value="1.1000" />
+      <cvParam cvRef="MS" accession="MS:1002256" name="Comet:sprank" value="1" />
+      <cvParam cvRef="MS" accession="MS:1002257" name="Comet:expectation value" value="9.99E+02" />
+     </SpectrumIdentificationItem>
+    </SpectrumIdentificationResult>
+    <SpectrumIdentificationResult id="SIR_337" spectrumID="scan=2779" spectraData_ref="SD0">
+     <SpectrumIdentificationItem id="SII_0" rank="0" chargeState="3" peptide_ref="DLGEEHFK;" experimentalMassToCharge="325.491302" calculatedMassToCharge="325.490780" passThreshold="true">
+      <PeptideEvidenceRef peptideEvidence_ref="DLGEEHFK;sp|P02769|ALBU_BOVIN" />
+      <cvParam cvRef="MS" accession="MS:1001121" name="number of matched peaks" value="2" />
+      <cvParam cvRef="MS" accession="MS:1001362" name="number of unmatched peaks" value="26" />
+      <cvParam cvRef="MS" accession="MS:1002252" name="Comet:xcorr" value="0.2308" />
+      <cvParam cvRef="MS" accession="MS:1002253" name="Comet:deltacn" value="1.0000" />
+      <cvParam cvRef="MS" accession="MS:1002255" name="Comet:spscore" value="1.9000" />
+      <cvParam cvRef="MS" accession="MS:1002256" name="Comet:sprank" value="1" />
+      <cvParam cvRef="MS" accession="MS:1002257" name="Comet:expectation value" value="1.39E+02" />
+     </SpectrumIdentificationItem>
+    </SpectrumIdentificationResult>
+    <SpectrumIdentificationResult id="SIR_349" spectrumID="scan=2791" spectraData_ref="SD0">
+     <SpectrumIdentificationItem id="SII_0" rank="0" chargeState="2" peptide_ref="YICDNQDTISSK;" experimentalMassToCharge="722.327209" calculatedMassToCharge="722.324656" passThreshold="true">
+      <PeptideEvidenceRef peptideEvidence_ref="YICDNQDTISSK;sp|P02769|ALBU_BOVIN" />
+      <cvParam cvRef="MS" accession="MS:1001121" name="number of matched peaks" value="2" />
+      <cvParam cvRef="MS" accession="MS:1001362" name="number of unmatched peaks" value="20" />
+      <cvParam cvRef="MS" accession="MS:1002252" name="Comet:xcorr" value="0.4789" />
+      <cvParam cvRef="MS" accession="MS:1002253" name="Comet:deltacn" value="1.0000" />
+      <cvParam cvRef="MS" accession="MS:1002255" name="Comet:spscore" value="5.7000" />
+      <cvParam cvRef="MS" accession="MS:1002256" name="Comet:sprank" value="1" />
+      <cvParam cvRef="MS" accession="MS:1002257" name="Comet:expectation value" value="9.03E-02" />
+     </SpectrumIdentificationItem>
+    </SpectrumIdentificationResult>
+    <SpectrumIdentificationResult id="SIR_351" spectrumID="scan=2793" spectraData_ref="SD0">
+     <SpectrumIdentificationItem id="SII_0" rank="0" chargeState="3" peptide_ref="LCVLHEK;" experimentalMassToCharge="300.165954" calculatedMassToCharge="300.165351" passThreshold="true">
+      <PeptideEvidenceRef peptideEvidence_ref="LCVLHEK;sp|P02769|ALBU_BOVIN" />
+      <cvParam cvRef="MS" accession="MS:1001121" name="number of matched peaks" value="2" />
+      <cvParam cvRef="MS" accession="MS:1001362" name="number of unmatched peaks" value="22" />
+      <cvParam cvRef="MS" accession="MS:1002252" name="Comet:xcorr" value="0.1053" />
+      <cvParam cvRef="MS" accession="MS:1002253" name="Comet:deltacn" value="1.0000" />
+      <cvParam cvRef="MS" accession="MS:1002255" name="Comet:spscore" value="2.0000" />
+      <cvParam cvRef="MS" accession="MS:1002256" name="Comet:sprank" value="1" />
+      <cvParam cvRef="MS" accession="MS:1002257" name="Comet:expectation value" value="4.07E+02" />
+     </SpectrumIdentificationItem>
+    </SpectrumIdentificationResult>
+    <SpectrumIdentificationResult id="SIR_369" spectrumID="scan=2811" spectraData_ref="SD0">
+     <SpectrumIdentificationItem id="SII_0" rank="0" chargeState="2" peptide_ref="LVTDLTK;" experimentalMassToCharge="395.239349" calculatedMassToCharge="395.239461" passThreshold="true">
+      <PeptideEvidenceRef peptideEvidence_ref="LVTDLTK;sp|P02769|ALBU_BOVIN" />
+      <cvParam cvRef="MS" accession="MS:1001121" name="number of matched peaks" value="2" />
+      <cvParam cvRef="MS" accession="MS:1001362" name="number of unmatched peaks" value="10" />
+      <cvParam cvRef="MS" accession="MS:1002252" name="Comet:xcorr" value="0.2400" />
+      <cvParam cvRef="MS" accession="MS:1002253" name="Comet:deltacn" value="1.0000" />
+      <cvParam cvRef="MS" accession="MS:1002255" name="Comet:spscore" value="2.8000" />
+      <cvParam cvRef="MS" accession="MS:1002256" name="Comet:sprank" value="1" />
+      <cvParam cvRef="MS" accession="MS:1002257" name="Comet:expectation value" value="1.85E+01" />
+     </SpectrumIdentificationItem>
+    </SpectrumIdentificationResult>
+    <SpectrumIdentificationResult id="SIR_386" spectrumID="scan=2828" spectraData_ref="SD0">
+     <SpectrumIdentificationItem id="SII_0" rank="0" chargeState="2" peptide_ref="DLGEEHFK;" experimentalMassToCharge="487.732178" calculatedMassToCharge="487.732532" passThreshold="true">
+      <PeptideEvidenceRef peptideEvidence_ref="DLGEEHFK;sp|P02769|ALBU_BOVIN" />
+      <cvParam cvRef="MS" accession="MS:1001121" name="number of matched peaks" value="1" />
+      <cvParam cvRef="MS" accession="MS:1001362" name="number of unmatched peaks" value="13" />
+      <cvParam cvRef="MS" accession="MS:1002252" name="Comet:xcorr" value="0.0839" />
+      <cvParam cvRef="MS" accession="MS:1002253" name="Comet:deltacn" value="1.0000" />
+      <cvParam cvRef="MS" accession="MS:1002255" name="Comet:spscore" value="1.0000" />
+      <cvParam cvRef="MS" accession="MS:1002256" name="Comet:sprank" value="1" />
+      <cvParam cvRef="MS" accession="MS:1002257" name="Comet:expectation value" value="7.92E+02" />
+     </SpectrumIdentificationItem>
+    </SpectrumIdentificationResult>
+    <SpectrumIdentificationResult id="SIR_395" spectrumID="scan=2837" spectraData_ref="SD0">
+     <SpectrumIdentificationItem id="SII_0" rank="0" chargeState="3" peptide_ref="DLGEEHFK;" experimentalMassToCharge="325.491119" calculatedMassToCharge="325.490780" passThreshold="true">
+      <PeptideEvidenceRef peptideEvidence_ref="DLGEEHFK;sp|P02769|ALBU_BOVIN" />
+      <cvParam cvRef="MS" accession="MS:1001121" name="number of matched peaks" value="1" />
+      <cvParam cvRef="MS" accession="MS:1001362" name="number of unmatched peaks" value="27" />
+      <cvParam cvRef="MS" accession="MS:1002252" name="Comet:xcorr" value="0.2299" />
+      <cvParam cvRef="MS" accession="MS:1002253" name="Comet:deltacn" value="1.0000" />
+      <cvParam cvRef="MS" accession="MS:1002255" name="Comet:spscore" value="0.5000" />
+      <cvParam cvRef="MS" accession="MS:1002256" name="Comet:sprank" value="1" />
+      <cvParam cvRef="MS" accession="MS:1002257" name="Comet:expectation value" value="8.27E+01" />
+     </SpectrumIdentificationItem>
+    </SpectrumIdentificationResult>
+    <SpectrumIdentificationResult id="SIR_399" spectrumID="scan=2841" spectraData_ref="SD0">
+     <SpectrumIdentificationItem id="SII_0" rank="0" chargeState="3" peptide_ref="LCVLHEK;" experimentalMassToCharge="300.165802" calculatedMassToCharge="300.165351" passThreshold="true">
+      <PeptideEvidenceRef peptideEvidence_ref="LCVLHEK;sp|P02769|ALBU_BOVIN" />
+      <cvParam cvRef="MS" accession="MS:1001121" name="number of matched peaks" value="2" />
+      <cvParam cvRef="MS" accession="MS:1001362" name="number of unmatched peaks" value="22" />
+      <cvParam cvRef="MS" accession="MS:1002252" name="Comet:xcorr" value="0.2554" />
+      <cvParam cvRef="MS" accession="MS:1002253" name="Comet:deltacn" value="1.0000" />
+      <cvParam cvRef="MS" accession="MS:1002255" name="Comet:spscore" value="5.4000" />
+      <cvParam cvRef="MS" accession="MS:1002256" name="Comet:sprank" value="1" />
+      <cvParam cvRef="MS" accession="MS:1002257" name="Comet:expectation value" value="3.84E+01" />
+     </SpectrumIdentificationItem>
+    </SpectrumIdentificationResult>
+    <SpectrumIdentificationResult id="SIR_401" spectrumID="scan=2843" spectraData_ref="SD0">
+     <SpectrumIdentificationItem id="SII_0" rank="0" chargeState="3" peptide_ref="ECCDKPLLEK;" experimentalMassToCharge="431.205047" calculatedMassToCharge="431.205546" passThreshold="true">
+      <PeptideEvidenceRef peptideEvidence_ref="ECCDKPLLEK;sp|P02769|ALBU_BOVIN" />
+      <cvParam cvRef="MS" accession="MS:1001121" name="number of matched peaks" value="2" />
+      <cvParam cvRef="MS" accession="MS:1001362" name="number of unmatched peaks" value="34" />
+      <cvParam cvRef="MS" accession="MS:1002252" name="Comet:xcorr" value="0.2898" />
+      <cvParam cvRef="MS" accession="MS:1002253" name="Comet:deltacn" value="1.0000" />
+      <cvParam cvRef="MS" accession="MS:1002255" name="Comet:spscore" value="3.5000" />
+      <cvParam cvRef="MS" accession="MS:1002256" name="Comet:sprank" value="1" />
+      <cvParam cvRef="MS" accession="MS:1002257" name="Comet:expectation value" value="5.99E+01" />
+     </SpectrumIdentificationItem>
+    </SpectrumIdentificationResult>
+    <SpectrumIdentificationResult id="SIR_438" spectrumID="scan=2880" spectraData_ref="SD0">
+     <SpectrumIdentificationItem id="SII_0" rank="0" chargeState="3" peptide_ref="LCVLHEK;" experimentalMassToCharge="300.166046" calculatedMassToCharge="300.165351" passThreshold="true">
+      <PeptideEvidenceRef peptideEvidence_ref="LCVLHEK;sp|P02769|ALBU_BOVIN" />
+      <cvParam cvRef="MS" accession="MS:1001121" name="number of matched peaks" value="2" />
+      <cvParam cvRef="MS" accession="MS:1001362" name="number of unmatched peaks" value="22" />
+      <cvParam cvRef="MS" accession="MS:1002252" name="Comet:xcorr" value="0.2501" />
+      <cvParam cvRef="MS" accession="MS:1002253" name="Comet:deltacn" value="1.0000" />
+      <cvParam cvRef="MS" accession="MS:1002255" name="Comet:spscore" value="9.2000" />
+      <cvParam cvRef="MS" accession="MS:1002256" name="Comet:sprank" value="1" />
+      <cvParam cvRef="MS" accession="MS:1002257" name="Comet:expectation value" value="4.19E+01" />
+     </SpectrumIdentificationItem>
+    </SpectrumIdentificationResult>
+    <SpectrumIdentificationResult id="SIR_458" spectrumID="scan=2900" spectraData_ref="SD0">
+     <SpectrumIdentificationItem id="SII_0" rank="0" chargeState="2" peptide_ref="DLGEEHFK;" experimentalMassToCharge="487.732239" calculatedMassToCharge="487.732532" passThreshold="true">
+      <PeptideEvidenceRef peptideEvidence_ref="DLGEEHFK;sp|P02769|ALBU_BOVIN" />
+      <cvParam cvRef="MS" accession="MS:1001121" name="number of matched peaks" value="3" />
+      <cvParam cvRef="MS" accession="MS:1001362" name="number of unmatched peaks" value="11" />
+      <cvParam cvRef="MS" accession="MS:1002252" name="Comet:xcorr" value="0.5543" />
+      <cvParam cvRef="MS" accession="MS:1002253" name="Comet:deltacn" value="1.0000" />
+      <cvParam cvRef="MS" accession="MS:1002255" name="Comet:spscore" value="32.0000" />
+      <cvParam cvRef="MS" accession="MS:1002256" name="Comet:sprank" value="1" />
+      <cvParam cvRef="MS" accession="MS:1002257" name="Comet:expectation value" value="1.83E+00" />
+     </SpectrumIdentificationItem>
+    </SpectrumIdentificationResult>
+    <SpectrumIdentificationResult id="SIR_461" spectrumID="scan=2903" spectraData_ref="SD0">
+     <SpectrumIdentificationItem id="SII_0" rank="0" chargeState="3" peptide_ref="DLGEEHFK;" experimentalMassToCharge="325.491241" calculatedMassToCharge="325.490780" passThreshold="true">
+      <PeptideEvidenceRef peptideEvidence_ref="DLGEEHFK;sp|P02769|ALBU_BOVIN" />
+      <cvParam cvRef="MS" accession="MS:1001121" name="number of matched peaks" value="1" />
+      <cvParam cvRef="MS" accession="MS:1001362" name="number of unmatched peaks" value="27" />
+      <cvParam cvRef="MS" accession="MS:1002252" name="Comet:xcorr" value="0.2020" />
+      <cvParam cvRef="MS" accession="MS:1002253" name="Comet:deltacn" value="1.0000" />
+      <cvParam cvRef="MS" accession="MS:1002255" name="Comet:spscore" value="0.4000" />
+      <cvParam cvRef="MS" accession="MS:1002256" name="Comet:sprank" value="1" />
+      <cvParam cvRef="MS" accession="MS:1002257" name="Comet:expectation value" value="1.69E+02" />
+     </SpectrumIdentificationItem>
+    </SpectrumIdentificationResult>
+    <SpectrumIdentificationResult id="SIR_471" spectrumID="scan=2913" spectraData_ref="SD0">
+     <SpectrumIdentificationItem id="SII_0" rank="0" chargeState="3" peptide_ref="LCVLHEK;" experimentalMassToCharge="300.165863" calculatedMassToCharge="300.165351" passThreshold="true">
+      <PeptideEvidenceRef peptideEvidence_ref="LCVLHEK;sp|P02769|ALBU_BOVIN" />
+      <cvParam cvRef="MS" accession="MS:1001121" name="number of matched peaks" value="1" />
+      <cvParam cvRef="MS" accession="MS:1001362" name="number of unmatched peaks" value="23" />
+      <cvParam cvRef="MS" accession="MS:1002252" name="Comet:xcorr" value="0.2184" />
+      <cvParam cvRef="MS" accession="MS:1002253" name="Comet:deltacn" value="1.0000" />
+      <cvParam cvRef="MS" accession="MS:1002255" name="Comet:spscore" value="1.1000" />
+      <cvParam cvRef="MS" accession="MS:1002256" name="Comet:sprank" value="1" />
+      <cvParam cvRef="MS" accession="MS:1002257" name="Comet:expectation value" value="7.52E+01" />
+     </SpectrumIdentificationItem>
+    </SpectrumIdentificationResult>
+    <SpectrumIdentificationResult id="SIR_499" spectrumID="scan=2941" spectraData_ref="SD0">
+     <SpectrumIdentificationItem id="SII_0" rank="0" chargeState="2" peptide_ref="GACLLPK;" experimentalMassToCharge="379.714844" calculatedMassToCharge="379.715099" passThreshold="true">
+      <PeptideEvidenceRef peptideEvidence_ref="GACLLPK;sp|P02769|ALBU_BOVIN" />
+      <cvParam cvRef="MS" accession="MS:1001121" name="number of matched peaks" value="3" />
+      <cvParam cvRef="MS" accession="MS:1001362" name="number of unmatched peaks" value="9" />
+      <cvParam cvRef="MS" accession="MS:1002252" name="Comet:xcorr" value="0.4736" />
+      <cvParam cvRef="MS" accession="MS:1002253" name="Comet:deltacn" value="1.0000" />
+      <cvParam cvRef="MS" accession="MS:1002255" name="Comet:spscore" value="41.7000" />
+      <cvParam cvRef="MS" accession="MS:1002256" name="Comet:sprank" value="1" />
+      <cvParam cvRef="MS" accession="MS:1002257" name="Comet:expectation value" value="4.20E+00" />
+     </SpectrumIdentificationItem>
+    </SpectrumIdentificationResult>
+    <SpectrumIdentificationResult id="SIR_504" spectrumID="scan=2946" spectraData_ref="SD0">
+     <SpectrumIdentificationItem id="SII_0" rank="0" chargeState="2" peptide_ref="DLGEEHFK;" experimentalMassToCharge="487.732208" calculatedMassToCharge="487.732532" passThreshold="true">
+      <PeptideEvidenceRef peptideEvidence_ref="DLGEEHFK;sp|P02769|ALBU_BOVIN" />
+      <cvParam cvRef="MS" accession="MS:1001121" name="number of matched peaks" value="2" />
+      <cvParam cvRef="MS" accession="MS:1001362" name="number of unmatched peaks" value="12" />
+      <cvParam cvRef="MS" accession="MS:1002252" name="Comet:xcorr" value="0.3642" />
+      <cvParam cvRef="MS" accession="MS:1002253" name="Comet:deltacn" value="1.0000" />
+      <cvParam cvRef="MS" accession="MS:1002255" name="Comet:spscore" value="8.6000" />
+      <cvParam cvRef="MS" accession="MS:1002256" name="Comet:sprank" value="1" />
+      <cvParam cvRef="MS" accession="MS:1002257" name="Comet:expectation value" value="7.12E+00" />
+     </SpectrumIdentificationItem>
+    </SpectrumIdentificationResult>
+    <SpectrumIdentificationResult id="SIR_508" spectrumID="scan=2950" spectraData_ref="SD0">
+     <SpectrumIdentificationItem id="SII_0" rank="0" chargeState="2" peptide_ref="AEFVEVTK;" experimentalMassToCharge="461.747497" calculatedMassToCharge="461.747650" passThreshold="true">
+      <PeptideEvidenceRef peptideEvidence_ref="AEFVEVTK;sp|P02769|ALBU_BOVIN" />
+      <cvParam cvRef="MS" accession="MS:1001121" name="number of matched peaks" value="1" />
+      <cvParam cvRef="MS" accession="MS:1001362" name="number of unmatched peaks" value="13" />
+      <cvParam cvRef="MS" accession="MS:1002252" name="Comet:xcorr" value="0.2311" />
+      <cvParam cvRef="MS" accession="MS:1002253" name="Comet:deltacn" value="1.0000" />
+      <cvParam cvRef="MS" accession="MS:1002255" name="Comet:spscore" value="0.7000" />
+      <cvParam cvRef="MS" accession="MS:1002256" name="Comet:sprank" value="1" />
+      <cvParam cvRef="MS" accession="MS:1002257" name="Comet:expectation value" value="1.64E+01" />
+     </SpectrumIdentificationItem>
+    </SpectrumIdentificationResult>
+    <SpectrumIdentificationResult id="SIR_534" spectrumID="scan=2976" spectraData_ref="SD0">
+     <SpectrumIdentificationItem id="SII_0" rank="0" chargeState="2" peptide_ref="DLGEEHFK;" experimentalMassToCharge="487.731933" calculatedMassToCharge="487.732532" passThreshold="true">
+      <PeptideEvidenceRef peptideEvidence_ref="DLGEEHFK;sp|P02769|ALBU_BOVIN" />
+      <cvParam cvRef="MS" accession="MS:1001121" name="number of matched peaks" value="1" />
+      <cvParam cvRef="MS" accession="MS:1001362" name="number of unmatched peaks" value="13" />
+      <cvParam cvRef="MS" accession="MS:1002252" name="Comet:xcorr" value="0.1589" />
+      <cvParam cvRef="MS" accession="MS:1002253" name="Comet:deltacn" value="1.0000" />
+      <cvParam cvRef="MS" accession="MS:1002255" name="Comet:spscore" value="1.1000" />
+      <cvParam cvRef="MS" accession="MS:1002256" name="Comet:sprank" value="1" />
+      <cvParam cvRef="MS" accession="MS:1002257" name="Comet:expectation value" value="7.88E+02" />
+     </SpectrumIdentificationItem>
+    </SpectrumIdentificationResult>
+    <SpectrumIdentificationResult id="SIR_551" spectrumID="scan=2993" spectraData_ref="SD0">
+     <SpectrumIdentificationItem id="SII_0" rank="0" chargeState="2" peptide_ref="AEFVEVTK;" experimentalMassToCharge="461.747558" calculatedMassToCharge="461.747650" passThreshold="true">
+      <PeptideEvidenceRef peptideEvidence_ref="AEFVEVTK;sp|P02769|ALBU_BOVIN" />
+      <cvParam cvRef="MS" accession="MS:1001121" name="number of matched peaks" value="2" />
+      <cvParam cvRef="MS" accession="MS:1001362" name="number of unmatched peaks" value="12" />
+      <cvParam cvRef="MS" accession="MS:1002252" name="Comet:xcorr" value="0.4658" />
+      <cvParam cvRef="MS" accession="MS:1002253" name="Comet:deltacn" value="1.0000" />
+      <cvParam cvRef="MS" accession="MS:1002255" name="Comet:spscore" value="3.8000" />
+      <cvParam cvRef="MS" accession="MS:1002256" name="Comet:sprank" value="1" />
+      <cvParam cvRef="MS" accession="MS:1002257" name="Comet:expectation value" value="5.93E+00" />
+     </SpectrumIdentificationItem>
+    </SpectrumIdentificationResult>
+    <SpectrumIdentificationResult id="SIR_586" spectrumID="scan=3028" spectraData_ref="SD0">
+     <SpectrumIdentificationItem id="SII_0" rank="0" chargeState="3" peptide_ref="LCVLHEK;" experimentalMassToCharge="300.165924" calculatedMassToCharge="300.165351" passThreshold="true">
+      <PeptideEvidenceRef peptideEvidence_ref="LCVLHEK;sp|P02769|ALBU_BOVIN" />
+      <cvParam cvRef="MS" accession="MS:1001121" name="number of matched peaks" value="1" />
+      <cvParam cvRef="MS" accession="MS:1001362" name="number of unmatched peaks" value="23" />
+      <cvParam cvRef="MS" accession="MS:1002252" name="Comet:xcorr" value="0.1506" />
+      <cvParam cvRef="MS" accession="MS:1002253" name="Comet:deltacn" value="1.0000" />
+      <cvParam cvRef="MS" accession="MS:1002255" name="Comet:spscore" value="1.2000" />
+      <cvParam cvRef="MS" accession="MS:1002256" name="Comet:sprank" value="1" />
+      <cvParam cvRef="MS" accession="MS:1002257" name="Comet:expectation value" value="3.07E+02" />
+     </SpectrumIdentificationItem>
+    </SpectrumIdentificationResult>
+    <SpectrumIdentificationResult id="SIR_587" spectrumID="scan=3029" spectraData_ref="SD0">
+     <SpectrumIdentificationItem id="SII_0" rank="0" chargeState="2" peptide_ref="EACFAVEGPK;" experimentalMassToCharge="554.260376" calculatedMassToCharge="554.260599" passThreshold="true">
+      <PeptideEvidenceRef peptideEvidence_ref="EACFAVEGPK;sp|P02769|ALBU_BOVIN" />
+      <cvParam cvRef="MS" accession="MS:1001121" name="number of matched peaks" value="4" />
+      <cvParam cvRef="MS" accession="MS:1001362" name="number of unmatched peaks" value="14" />
+      <cvParam cvRef="MS" accession="MS:1002252" name="Comet:xcorr" value="0.9921" />
+      <cvParam cvRef="MS" accession="MS:1002253" name="Comet:deltacn" value="1.0000" />
+      <cvParam cvRef="MS" accession="MS:1002255" name="Comet:spscore" value="81.5000" />
+      <cvParam cvRef="MS" accession="MS:1002256" name="Comet:sprank" value="1" />
+      <cvParam cvRef="MS" accession="MS:1002257" name="Comet:expectation value" value="2.42E-03" />
+     </SpectrumIdentificationItem>
+    </SpectrumIdentificationResult>
+    <SpectrumIdentificationResult id="SIR_605" spectrumID="scan=3047" spectraData_ref="SD0">
+     <SpectrumIdentificationItem id="SII_0" rank="0" chargeState="2" peptide_ref="GACLLPK;" experimentalMassToCharge="379.715393" calculatedMassToCharge="379.715099" passThreshold="true">
+      <PeptideEvidenceRef peptideEvidence_ref="GACLLPK;sp|P02769|ALBU_BOVIN" />
+      <cvParam cvRef="MS" accession="MS:1001121" name="number of matched peaks" value="2" />
+      <cvParam cvRef="MS" accession="MS:1001362" name="number of unmatched peaks" value="10" />
+      <cvParam cvRef="MS" accession="MS:1002252" name="Comet:xcorr" value="0.3773" />
+      <cvParam cvRef="MS" accession="MS:1002253" name="Comet:deltacn" value="1.0000" />
+      <cvParam cvRef="MS" accession="MS:1002255" name="Comet:spscore" value="22.8000" />
+      <cvParam cvRef="MS" accession="MS:1002256" name="Comet:sprank" value="1" />
+      <cvParam cvRef="MS" accession="MS:1002257" name="Comet:expectation value" value="2.95E+00" />
+     </SpectrumIdentificationItem>
+    </SpectrumIdentificationResult>
+    <SpectrumIdentificationResult id="SIR_655" spectrumID="scan=3097" spectraData_ref="SD0">
+     <SpectrumIdentificationItem id="SII_0" rank="0" chargeState="2" peptide_ref="EACFAVEGPK;" experimentalMassToCharge="554.260559" calculatedMassToCharge="554.260599" passThreshold="true">
+      <PeptideEvidenceRef peptideEvidence_ref="EACFAVEGPK;sp|P02769|ALBU_BOVIN" />
+      <cvParam cvRef="MS" accession="MS:1001121" name="number of matched peaks" value="4" />
+      <cvParam cvRef="MS" accession="MS:1001362" name="number of unmatched peaks" value="14" />
+      <cvParam cvRef="MS" accession="MS:1002252" name="Comet:xcorr" value="0.6007" />
+      <cvParam cvRef="MS" accession="MS:1002253" name="Comet:deltacn" value="1.0000" />
+      <cvParam cvRef="MS" accession="MS:1002255" name="Comet:spscore" value="54.3000" />
+      <cvParam cvRef="MS" accession="MS:1002256" name="Comet:sprank" value="1" />
+      <cvParam cvRef="MS" accession="MS:1002257" name="Comet:expectation value" value="2.80E-01" />
+     </SpectrumIdentificationItem>
+    </SpectrumIdentificationResult>
+    <SpectrumIdentificationResult id="SIR_692" spectrumID="scan=3134" spectraData_ref="SD0">
+     <SpectrumIdentificationItem id="SII_0" rank="0" chargeState="2" peptide_ref="DLGEEHFK;8:42.010565;" experimentalMassToCharge="508.737762" calculatedMassToCharge="508.737814" passThreshold="true">
+      <PeptideEvidenceRef peptideEvidence_ref="DLGEEHFK;sp|P02769|ALBU_BOVIN" />
+      <cvParam cvRef="MS" accession="MS:1001121" name="number of matched peaks" value="1" />
+      <cvParam cvRef="MS" accession="MS:1001362" name="number of unmatched peaks" value="13" />
+      <cvParam cvRef="MS" accession="MS:1002252" name="Comet:xcorr" value="0.2251" />
+      <cvParam cvRef="MS" accession="MS:1002253" name="Comet:deltacn" value="1.0000" />
+      <cvParam cvRef="MS" accession="MS:1002255" name="Comet:spscore" value="2.3000" />
+      <cvParam cvRef="MS" accession="MS:1002256" name="Comet:sprank" value="1" />
+      <cvParam cvRef="MS" accession="MS:1002257" name="Comet:expectation value" value="6.73E+01" />
+     </SpectrumIdentificationItem>
+    </SpectrumIdentificationResult>
+    <SpectrumIdentificationResult id="SIR_706" spectrumID="scan=3148" spectraData_ref="SD0">
+     <SpectrumIdentificationItem id="SII_0" rank="0" chargeState="2" peptide_ref="LVTDLTK;7:42.010565;" experimentalMassToCharge="416.747711" calculatedMassToCharge="416.244744" passThreshold="true">
+      <PeptideEvidenceRef peptideEvidence_ref="LVTDLTK;sp|P02769|ALBU_BOVIN" />
+      <cvParam cvRef="MS" accession="MS:1001121" name="number of matched peaks" value="1" />
+      <cvParam cvRef="MS" accession="MS:1001362" name="number of unmatched peaks" value="11" />
+      <cvParam cvRef="MS" accession="MS:1002252" name="Comet:xcorr" value="0.2422" />
+      <cvParam cvRef="MS" accession="MS:1002253" name="Comet:deltacn" value="1.0000" />
+      <cvParam cvRef="MS" accession="MS:1002255" name="Comet:spscore" value="4.0000" />
+      <cvParam cvRef="MS" accession="MS:1002256" name="Comet:sprank" value="1" />
+      <cvParam cvRef="MS" accession="MS:1002257" name="Comet:expectation value" value="6.54E+01" />
+     </SpectrumIdentificationItem>
+    </SpectrumIdentificationResult>
+    <SpectrumIdentificationResult id="SIR_728" spectrumID="scan=3170" spectraData_ref="SD0">
+     <SpectrumIdentificationItem id="SII_0" rank="0" chargeState="2" peptide_ref="DLGEEHFK;8:42.010565;" experimentalMassToCharge="508.736480" calculatedMassToCharge="508.737814" passThreshold="true">
+      <PeptideEvidenceRef peptideEvidence_ref="DLGEEHFK;sp|P02769|ALBU_BOVIN" />
+      <cvParam cvRef="MS" accession="MS:1001121" name="number of matched peaks" value="1" />
+      <cvParam cvRef="MS" accession="MS:1001362" name="number of unmatched peaks" value="13" />
+      <cvParam cvRef="MS" accession="MS:1002252" name="Comet:xcorr" value="0.1007" />
+      <cvParam cvRef="MS" accession="MS:1002253" name="Comet:deltacn" value="1.0000" />
+      <cvParam cvRef="MS" accession="MS:1002255" name="Comet:spscore" value="2.7000" />
+      <cvParam cvRef="MS" accession="MS:1002256" name="Comet:sprank" value="1" />
+      <cvParam cvRef="MS" accession="MS:1002257" name="Comet:expectation value" value="6.22E+02" />
+     </SpectrumIdentificationItem>
+    </SpectrumIdentificationResult>
+    <SpectrumIdentificationResult id="SIR_822" spectrumID="scan=3264" spectraData_ref="SD0">
+     <SpectrumIdentificationItem id="SII_0" rank="0" chargeState="3" peptide_ref="QEPERNECFLSHK;" experimentalMassToCharge="558.594726" calculatedMassToCharge="558.594861" passThreshold="true">
+      <PeptideEvidenceRef peptideEvidence_ref="QEPERNECFLSHK;sp|P02769|ALBU_BOVIN" />
+      <cvParam cvRef="MS" accession="MS:1001121" name="number of matched peaks" value="1" />
+      <cvParam cvRef="MS" accession="MS:1001362" name="number of unmatched peaks" value="47" />
+      <cvParam cvRef="MS" accession="MS:1002252" name="Comet:xcorr" value="0.1637" />
+      <cvParam cvRef="MS" accession="MS:1002253" name="Comet:deltacn" value="1.0000" />
+      <cvParam cvRef="MS" accession="MS:1002255" name="Comet:spscore" value="0.5000" />
+      <cvParam cvRef="MS" accession="MS:1002256" name="Comet:sprank" value="1" />
+      <cvParam cvRef="MS" accession="MS:1002257" name="Comet:expectation value" value="2.53E+02" />
+     </SpectrumIdentificationItem>
+    </SpectrumIdentificationResult>
+    <SpectrumIdentificationResult id="SIR_864" spectrumID="scan=3307" spectraData_ref="SD0">
+     <SpectrumIdentificationItem id="SII_0" rank="0" chargeState="3" peptide_ref="HLVDEPQNLIK;" experimentalMassToCharge="435.909851" calculatedMassToCharge="435.910227" passThreshold="true">
+      <PeptideEvidenceRef peptideEvidence_ref="HLVDEPQNLIK;sp|P02769|ALBU_BOVIN" />
+      <cvParam cvRef="MS" accession="MS:1001121" name="number of matched peaks" value="1" />
+      <cvParam cvRef="MS" accession="MS:1001362" name="number of unmatched peaks" value="39" />
+      <cvParam cvRef="MS" accession="MS:1002252" name="Comet:xcorr" value="0.0323" />
+      <cvParam cvRef="MS" accession="MS:1002253" name="Comet:deltacn" value="1.0000" />
+      <cvParam cvRef="MS" accession="MS:1002255" name="Comet:spscore" value="0.3000" />
+      <cvParam cvRef="MS" accession="MS:1002256" name="Comet:sprank" value="1" />
+      <cvParam cvRef="MS" accession="MS:1002257" name="Comet:expectation value" value="9.99E+02" />
+     </SpectrumIdentificationItem>
+    </SpectrumIdentificationResult>
+    <SpectrumIdentificationResult id="SIR_868" spectrumID="scan=3311" spectraData_ref="SD0">
+     <SpectrumIdentificationItem id="SII_0" rank="0" chargeState="2" peptide_ref="HLVDEPQNLIK;" experimentalMassToCharge="653.361938" calculatedMassToCharge="653.361702" passThreshold="true">
+      <PeptideEvidenceRef peptideEvidence_ref="HLVDEPQNLIK;sp|P02769|ALBU_BOVIN" />
+      <cvParam cvRef="MS" accession="MS:1001121" name="number of matched peaks" value="1" />
+      <cvParam cvRef="MS" accession="MS:1001362" name="number of unmatched peaks" value="19" />
+      <cvParam cvRef="MS" accession="MS:1002252" name="Comet:xcorr" value="0.0341" />
+      <cvParam cvRef="MS" accession="MS:1002253" name="Comet:deltacn" value="1.0000" />
+      <cvParam cvRef="MS" accession="MS:1002255" name="Comet:spscore" value="1.0000" />
+      <cvParam cvRef="MS" accession="MS:1002256" name="Comet:sprank" value="1" />
+      <cvParam cvRef="MS" accession="MS:1002257" name="Comet:expectation value" value="9.99E+02" />
+     </SpectrumIdentificationItem>
+    </SpectrumIdentificationResult>
+    <SpectrumIdentificationResult id="SIR_885" spectrumID="scan=3328" spectraData_ref="SD0">
+     <SpectrumIdentificationItem id="SII_0" rank="0" chargeState="2" peptide_ref="YLYEIAR;" experimentalMassToCharge="464.250213" calculatedMassToCharge="464.250360" passThreshold="true">
+      <PeptideEvidenceRef peptideEvidence_ref="YLYEIAR;sp|P02769|ALBU_BOVIN" />
+      <cvParam cvRef="MS" accession="MS:1001121" name="number of matched peaks" value="2" />
+      <cvParam cvRef="MS" accession="MS:1001362" name="number of unmatched peaks" value="10" />
+      <cvParam cvRef="MS" accession="MS:1002252" name="Comet:xcorr" value="0.1509" />
+      <cvParam cvRef="MS" accession="MS:1002253" name="Comet:deltacn" value="1.0000" />
+      <cvParam cvRef="MS" accession="MS:1002255" name="Comet:spscore" value="7.9000" />
+      <cvParam cvRef="MS" accession="MS:1002256" name="Comet:sprank" value="1" />
+      <cvParam cvRef="MS" accession="MS:1002257" name="Comet:expectation value" value="1.23E+02" />
+     </SpectrumIdentificationItem>
+    </SpectrumIdentificationResult>
+    <SpectrumIdentificationResult id="SIR_904" spectrumID="scan=3347" spectraData_ref="SD0">
+     <SpectrumIdentificationItem id="SII_0" rank="0" chargeState="3" peptide_ref="YLYEIARR;" experimentalMassToCharge="361.870178" calculatedMassToCharge="361.869703" passThreshold="true">
+      <PeptideEvidenceRef peptideEvidence_ref="YLYEIARR;sp|P02769|ALBU_BOVIN" />
+      <cvParam cvRef="MS" accession="MS:1001121" name="number of matched peaks" value="1" />
+      <cvParam cvRef="MS" accession="MS:1001362" name="number of unmatched peaks" value="27" />
+      <cvParam cvRef="MS" accession="MS:1002252" name="Comet:xcorr" value="0.0849" />
+      <cvParam cvRef="MS" accession="MS:1002253" name="Comet:deltacn" value="1.0000" />
+      <cvParam cvRef="MS" accession="MS:1002255" name="Comet:spscore" value="0.8000" />
+      <cvParam cvRef="MS" accession="MS:1002256" name="Comet:sprank" value="1" />
+      <cvParam cvRef="MS" accession="MS:1002257" name="Comet:expectation value" value="6.03E+02" />
+     </SpectrumIdentificationItem>
+    </SpectrumIdentificationResult>
+    <SpectrumIdentificationResult id="SIR_915" spectrumID="scan=3358" spectraData_ref="SD0">
+     <SpectrumIdentificationItem id="SII_0" rank="0" chargeState="3" peptide_ref="YLYEIARR;" experimentalMassToCharge="361.869903" calculatedMassToCharge="361.869703" passThreshold="true">
+      <PeptideEvidenceRef peptideEvidence_ref="YLYEIARR;sp|P02769|ALBU_BOVIN" />
+      <cvParam cvRef="MS" accession="MS:1001121" name="number of matched peaks" value="1" />
+      <cvParam cvRef="MS" accession="MS:1001362" name="number of unmatched peaks" value="27" />
+      <cvParam cvRef="MS" accession="MS:1002252" name="Comet:xcorr" value="0.0600" />
+      <cvParam cvRef="MS" accession="MS:1002253" name="Comet:deltacn" value="1.0000" />
+      <cvParam cvRef="MS" accession="MS:1002255" name="Comet:spscore" value="0.5000" />
+      <cvParam cvRef="MS" accession="MS:1002256" name="Comet:sprank" value="1" />
+      <cvParam cvRef="MS" accession="MS:1002257" name="Comet:expectation value" value="9.99E+02" />
+     </SpectrumIdentificationItem>
+    </SpectrumIdentificationResult>
+    <SpectrumIdentificationResult id="SIR_932" spectrumID="scan=3375" spectraData_ref="SD0">
+     <SpectrumIdentificationItem id="SII_0" rank="0" chargeState="2" peptide_ref="YLYEIAR;" experimentalMassToCharge="464.250030" calculatedMassToCharge="464.250360" passThreshold="true">
+      <PeptideEvidenceRef peptideEvidence_ref="YLYEIAR;sp|P02769|ALBU_BOVIN" />
+      <cvParam cvRef="MS" accession="MS:1001121" name="number of matched peaks" value="2" />
+      <cvParam cvRef="MS" accession="MS:1001362" name="number of unmatched peaks" value="10" />
+      <cvParam cvRef="MS" accession="MS:1002252" name="Comet:xcorr" value="0.4105" />
+      <cvParam cvRef="MS" accession="MS:1002253" name="Comet:deltacn" value="1.0000" />
+      <cvParam cvRef="MS" accession="MS:1002255" name="Comet:spscore" value="3.7000" />
+      <cvParam cvRef="MS" accession="MS:1002256" name="Comet:sprank" value="1" />
+      <cvParam cvRef="MS" accession="MS:1002257" name="Comet:expectation value" value="2.50E+01" />
+     </SpectrumIdentificationItem>
+    </SpectrumIdentificationResult>
+    <SpectrumIdentificationResult id="SIR_938" spectrumID="scan=3381" spectraData_ref="SD0">
+     <SpectrumIdentificationItem id="SII_0" rank="0" chargeState="3" peptide_ref="LGEYGFQNALIVR;" experimentalMassToCharge="493.935577" calculatedMassToCharge="493.936664" passThreshold="true">
+      <PeptideEvidenceRef peptideEvidence_ref="LGEYGFQNALIVR;sp|P02769|ALBU_BOVIN" />
+      <cvParam cvRef="MS" accession="MS:1001121" name="number of matched peaks" value="2" />
+      <cvParam cvRef="MS" accession="MS:1001362" name="number of unmatched peaks" value="46" />
+      <cvParam cvRef="MS" accession="MS:1002252" name="Comet:xcorr" value="0.2186" />
+      <cvParam cvRef="MS" accession="MS:1002253" name="Comet:deltacn" value="1.0000" />
+      <cvParam cvRef="MS" accession="MS:1002255" name="Comet:spscore" value="2.4000" />
+      <cvParam cvRef="MS" accession="MS:1002256" name="Comet:sprank" value="1" />
+      <cvParam cvRef="MS" accession="MS:1002257" name="Comet:expectation value" value="1.40E+02" />
+     </SpectrumIdentificationItem>
+    </SpectrumIdentificationResult>
+    <SpectrumIdentificationResult id="SIR_970" spectrumID="scan=3413" spectraData_ref="SD0">
+     <SpectrumIdentificationItem id="SII_0" rank="0" chargeState="2" peptide_ref="LVVSTQTALA;" experimentalMassToCharge="501.795013" calculatedMassToCharge="501.795132" passThreshold="true">
+      <PeptideEvidenceRef peptideEvidence_ref="LVVSTQTALA;sp|P02769|ALBU_BOVIN" />
+      <cvParam cvRef="MS" accession="MS:1001121" name="number of matched peaks" value="1" />
+      <cvParam cvRef="MS" accession="MS:1001362" name="number of unmatched peaks" value="17" />
+      <cvParam cvRef="MS" accession="MS:1002252" name="Comet:xcorr" value="0.0746" />
+      <cvParam cvRef="MS" accession="MS:1002253" name="Comet:deltacn" value="1.0000" />
+      <cvParam cvRef="MS" accession="MS:1002255" name="Comet:spscore" value="0.9000" />
+      <cvParam cvRef="MS" accession="MS:1002256" name="Comet:sprank" value="1" />
+      <cvParam cvRef="MS" accession="MS:1002257" name="Comet:expectation value" value="8.85E+02" />
+     </SpectrumIdentificationItem>
+    </SpectrumIdentificationResult>
+    <SpectrumIdentificationResult id="SIR_1002" spectrumID="scan=3445" spectraData_ref="SD0">
+     <SpectrumIdentificationItem id="SII_0" rank="0" chargeState="2" peptide_ref="YLYEIAR;" experimentalMassToCharge="464.250335" calculatedMassToCharge="464.250360" passThreshold="true">
+      <PeptideEvidenceRef peptideEvidence_ref="YLYEIAR;sp|P02769|ALBU_BOVIN" />
+      <cvParam cvRef="MS" accession="MS:1001121" name="number of matched peaks" value="4" />
+      <cvParam cvRef="MS" accession="MS:1001362" name="number of unmatched peaks" value="8" />
+      <cvParam cvRef="MS" accession="MS:1002252" name="Comet:xcorr" value="0.9120" />
+      <cvParam cvRef="MS" accession="MS:1002253" name="Comet:deltacn" value="1.0000" />
+      <cvParam cvRef="MS" accession="MS:1002255" name="Comet:spscore" value="52.3000" />
+      <cvParam cvRef="MS" accession="MS:1002256" name="Comet:sprank" value="1" />
+      <cvParam cvRef="MS" accession="MS:1002257" name="Comet:expectation value" value="8.20E-02" />
+     </SpectrumIdentificationItem>
+    </SpectrumIdentificationResult>
+    <SpectrumIdentificationResult id="SIR_1027" spectrumID="scan=3470" spectraData_ref="SD0">
+     <SpectrumIdentificationItem id="SII_0" rank="0" chargeState="3" peptide_ref="HLVDEPQNLIK;" experimentalMassToCharge="435.910004" calculatedMassToCharge="435.910227" passThreshold="true">
+      <PeptideEvidenceRef peptideEvidence_ref="HLVDEPQNLIK;sp|P02769|ALBU_BOVIN" />
+      <cvParam cvRef="MS" accession="MS:1001121" name="number of matched peaks" value="1" />
+      <cvParam cvRef="MS" accession="MS:1001362" name="number of unmatched peaks" value="39" />
+      <cvParam cvRef="MS" accession="MS:1002252" name="Comet:xcorr" value="0.1153" />
+      <cvParam cvRef="MS" accession="MS:1002253" name="Comet:deltacn" value="1.0000" />
+      <cvParam cvRef="MS" accession="MS:1002255" name="Comet:spscore" value="0.8000" />
+      <cvParam cvRef="MS" accession="MS:1002256" name="Comet:sprank" value="1" />
+      <cvParam cvRef="MS" accession="MS:1002257" name="Comet:expectation value" value="5.26E+02" />
+     </SpectrumIdentificationItem>
+    </SpectrumIdentificationResult>
+    <SpectrumIdentificationResult id="SIR_1028" spectrumID="scan=3471" spectraData_ref="SD0">
+     <SpectrumIdentificationItem id="SII_0" rank="0" chargeState="2" peptide_ref="EACFAVEGPK;10:42.010565;" experimentalMassToCharge="575.267090" calculatedMassToCharge="575.265882" passThreshold="true">
+      <PeptideEvidenceRef peptideEvidence_ref="EACFAVEGPK;sp|P02769|ALBU_BOVIN" />
+      <cvParam cvRef="MS" accession="MS:1001121" name="number of matched peaks" value="1" />
+      <cvParam cvRef="MS" accession="MS:1001362" name="number of unmatched peaks" value="17" />
+      <cvParam cvRef="MS" accession="MS:1002252" name="Comet:xcorr" value="0.1469" />
+      <cvParam cvRef="MS" accession="MS:1002253" name="Comet:deltacn" value="1.0000" />
+      <cvParam cvRef="MS" accession="MS:1002255" name="Comet:spscore" value="2.8000" />
+      <cvParam cvRef="MS" accession="MS:1002256" name="Comet:sprank" value="1" />
+      <cvParam cvRef="MS" accession="MS:1002257" name="Comet:expectation value" value="1.57E+02" />
+     </SpectrumIdentificationItem>
+    </SpectrumIdentificationResult>
+    <SpectrumIdentificationResult id="SIR_1031" spectrumID="scan=3474" spectraData_ref="SD0">
+     <SpectrumIdentificationItem id="SII_0" rank="0" chargeState="2" peptide_ref="HLVDEPQNLIK;" experimentalMassToCharge="653.361633" calculatedMassToCharge="653.361702" passThreshold="true">
+      <PeptideEvidenceRef peptideEvidence_ref="HLVDEPQNLIK;sp|P02769|ALBU_BOVIN" />
+      <cvParam cvRef="MS" accession="MS:1001121" name="number of matched peaks" value="1" />
+      <cvParam cvRef="MS" accession="MS:1001362" name="number of unmatched peaks" value="19" />
+      <cvParam cvRef="MS" accession="MS:1002252" name="Comet:xcorr" value="0.1165" />
+      <cvParam cvRef="MS" accession="MS:1002253" name="Comet:deltacn" value="1.0000" />
+      <cvParam cvRef="MS" accession="MS:1002255" name="Comet:spscore" value="2.6000" />
+      <cvParam cvRef="MS" accession="MS:1002256" name="Comet:sprank" value="1" />
+      <cvParam cvRef="MS" accession="MS:1002257" name="Comet:expectation value" value="2.26E+02" />
+     </SpectrumIdentificationItem>
+    </SpectrumIdentificationResult>
+    <SpectrumIdentificationResult id="SIR_1039" spectrumID="scan=3482" spectraData_ref="SD0">
+     <SpectrumIdentificationItem id="SII_0" rank="0" chargeState="2" peptide_ref="LVVSTQTALA;" experimentalMassToCharge="501.794891" calculatedMassToCharge="501.795132" passThreshold="true">
+      <PeptideEvidenceRef peptideEvidence_ref="LVVSTQTALA;sp|P02769|ALBU_BOVIN" />
+      <cvParam cvRef="MS" accession="MS:1001121" name="number of matched peaks" value="3" />
+      <cvParam cvRef="MS" accession="MS:1001362" name="number of unmatched peaks" value="15" />
+      <cvParam cvRef="MS" accession="MS:1002252" name="Comet:xcorr" value="0.5052" />
+      <cvParam cvRef="MS" accession="MS:1002253" name="Comet:deltacn" value="1.0000" />
+      <cvParam cvRef="MS" accession="MS:1002255" name="Comet:spscore" value="13.0000" />
+      <cvParam cvRef="MS" accession="MS:1002256" name="Comet:sprank" value="1" />
+      <cvParam cvRef="MS" accession="MS:1002257" name="Comet:expectation value" value="1.85E-01" />
+     </SpectrumIdentificationItem>
+    </SpectrumIdentificationResult>
+    <SpectrumIdentificationResult id="SIR_1042" spectrumID="scan=3485" spectraData_ref="SD0">
+     <SpectrumIdentificationItem id="SII_0" rank="0" chargeState="3" peptide_ref="YLYEIARR;" experimentalMassToCharge="361.869751" calculatedMassToCharge="361.869703" passThreshold="true">
+      <PeptideEvidenceRef peptideEvidence_ref="YLYEIARR;sp|P02769|ALBU_BOVIN" />
+      <cvParam cvRef="MS" accession="MS:1001121" name="number of matched peaks" value="1" />
+      <cvParam cvRef="MS" accession="MS:1001362" name="number of unmatched peaks" value="27" />
+      <cvParam cvRef="MS" accession="MS:1002252" name="Comet:xcorr" value="0.0749" />
+      <cvParam cvRef="MS" accession="MS:1002253" name="Comet:deltacn" value="1.0000" />
+      <cvParam cvRef="MS" accession="MS:1002255" name="Comet:spscore" value="0.7000" />
+      <cvParam cvRef="MS" accession="MS:1002256" name="Comet:sprank" value="1" />
+      <cvParam cvRef="MS" accession="MS:1002257" name="Comet:expectation value" value="7.31E+02" />
+     </SpectrumIdentificationItem>
+    </SpectrumIdentificationResult>
+    <SpectrumIdentificationResult id="SIR_1103" spectrumID="scan=3546" spectraData_ref="SD0">
+     <SpectrumIdentificationItem id="SII_0" rank="0" chargeState="2" peptide_ref="HLVDEPQNLIK;" experimentalMassToCharge="653.361755" calculatedMassToCharge="653.361702" passThreshold="true">
+      <PeptideEvidenceRef peptideEvidence_ref="HLVDEPQNLIK;sp|P02769|ALBU_BOVIN" />
+      <cvParam cvRef="MS" accession="MS:1001121" name="number of matched peaks" value="1" />
+      <cvParam cvRef="MS" accession="MS:1001362" name="number of unmatched peaks" value="19" />
+      <cvParam cvRef="MS" accession="MS:1002252" name="Comet:xcorr" value="0.0050" />
+      <cvParam cvRef="MS" accession="MS:1002253" name="Comet:deltacn" value="1.0000" />
+      <cvParam cvRef="MS" accession="MS:1002255" name="Comet:spscore" value="0.4000" />
+      <cvParam cvRef="MS" accession="MS:1002256" name="Comet:sprank" value="1" />
+      <cvParam cvRef="MS" accession="MS:1002257" name="Comet:expectation value" value="9.99E+02" />
+     </SpectrumIdentificationItem>
+    </SpectrumIdentificationResult>
+    <SpectrumIdentificationResult id="SIR_1104" spectrumID="scan=3547" spectraData_ref="SD0">
+     <SpectrumIdentificationItem id="SII_0" rank="0" chargeState="3" peptide_ref="VPQVSTPTLVEVSR;" experimentalMassToCharge="504.618805" calculatedMassToCharge="504.619112" passThreshold="true">
+      <PeptideEvidenceRef peptideEvidence_ref="VPQVSTPTLVEVSR;sp|P02769|ALBU_BOVIN" />
+      <cvParam cvRef="MS" accession="MS:1001121" name="number of matched peaks" value="2" />
+      <cvParam cvRef="MS" accession="MS:1001362" name="number of unmatched peaks" value="50" />
+      <cvParam cvRef="MS" accession="MS:1002252" name="Comet:xcorr" value="0.4654" />
+      <cvParam cvRef="MS" accession="MS:1002253" name="Comet:deltacn" value="1.0000" />
+      <cvParam cvRef="MS" accession="MS:1002255" name="Comet:spscore" value="5.7000" />
+      <cvParam cvRef="MS" accession="MS:1002256" name="Comet:sprank" value="1" />
+      <cvParam cvRef="MS" accession="MS:1002257" name="Comet:expectation value" value="2.96E+01" />
+     </SpectrumIdentificationItem>
+    </SpectrumIdentificationResult>
+    <SpectrumIdentificationResult id="SIR_1111" spectrumID="scan=3554" spectraData_ref="SD0">
+     <SpectrumIdentificationItem id="SII_0" rank="0" chargeState="3" peptide_ref="LKPDPNTLCDEFK;" experimentalMassToCharge="526.261108" calculatedMassToCharge="526.260708" passThreshold="true">
+      <PeptideEvidenceRef peptideEvidence_ref="LKPDPNTLCDEFK;sp|P02769|ALBU_BOVIN" />
+      <cvParam cvRef="MS" accession="MS:1001121" name="number of matched peaks" value="1" />
+      <cvParam cvRef="MS" accession="MS:1001362" name="number of unmatched peaks" value="47" />
+      <cvParam cvRef="MS" accession="MS:1002252" name="Comet:xcorr" value="0.1543" />
+      <cvParam cvRef="MS" accession="MS:1002253" name="Comet:deltacn" value="1.0000" />
+      <cvParam cvRef="MS" accession="MS:1002255" name="Comet:spscore" value="0.7000" />
+      <cvParam cvRef="MS" accession="MS:1002256" name="Comet:sprank" value="1" />
+      <cvParam cvRef="MS" accession="MS:1002257" name="Comet:expectation value" value="2.77E+02" />
+     </SpectrumIdentificationItem>
+    </SpectrumIdentificationResult>
+   </SpectrumIdentificationList>
+  </AnalysisData>
+ </DataCollection>
+</MzIdentML>
