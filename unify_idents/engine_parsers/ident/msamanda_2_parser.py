@@ -12,22 +12,27 @@ class MSAmanda_2_Parser(__IdentBaseParser):
         self.df = pd.read_csv(self.input_file, delimiter="\t", skiprows=1)
         self.df.dropna(axis=1, how="all", inplace=True)
 
-        cols_to_remove = [
-            "proteinacc_start_stop_pre_post_;",
-            "Filename",
-            # "Rank",
-        ]
         self.mapping_dict = {
             v: k
             for k, v in self.param_mapper.get_default_params(style=self.style)[
                 "header_translations"
             ]["translated_value"].items()
-            if k not in cols_to_remove
         }
         self.df.rename(columns=self.mapping_dict, inplace=True)
         self.df.columns = self.df.columns.str.lstrip(" ")
         if not "Modifications" in self.df.columns:
             self.df["Modifications"] = ""
+
+        self.df.drop(
+            columns=[
+                c
+                for c in self.df.columns
+                if c
+                not in set(self.mapping_dict.values()) | set(self.reference_dict.keys())
+            ],
+            inplace=True,
+            errors="ignore",
+        )
         self.reference_dict.update({k: None for k in self.mapping_dict.values()})
 
     @classmethod

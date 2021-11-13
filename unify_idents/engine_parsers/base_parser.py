@@ -5,6 +5,7 @@ import uparma
 from chemical_composition import ChemicalComposition
 from peptide_mapper.mapper import UPeptideMapper
 from unimod_mapper.unimod_mapper import UnimodMapper
+from loguru import logger
 
 cc = ChemicalComposition()
 
@@ -160,6 +161,9 @@ class __IdentBaseParser(BaseParser):
         )
         self.df["Exp m/z"] = rt_lookup.loc[spec_ids, "Precursor mz"].to_list()
 
+    def add_rank_column(self):
+        pass
+
     def sanitize(self):
         missing_data_locs = ~(self.df["Raw data location"].str.len() > 0)
         self.df.loc[missing_data_locs, "Raw data location"] = (
@@ -183,6 +187,17 @@ class __IdentBaseParser(BaseParser):
         self.df.loc[:, "Modifications"] = (
             self.df["Modifications"].str.split(";").apply(sorted).str.join(";")
         )
+
+        # Ensure there arent any column that should not be
+        additional_cols = set(self.df.columns).difference(
+            set(self.dtype_mapping.keys()) | set(self.mapping_dict.keys())
+        )
+        unmapped_add_cols = [c for c in additional_cols if ":" not in c]
+        if len(unmapped_add_cols) > 0:
+            logger.warning(
+                f"Some engine level columns ({unmapped_add_cols}) were not properly mapped and removed."
+            )
+            self.df.drop(columns=unmapped_add_cols, inplace=True, errors="ignore")
 
     def process_unify_style(self):
         self.df.drop_duplicates(inplace=True, ignore_index=True)

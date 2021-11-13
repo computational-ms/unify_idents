@@ -9,7 +9,7 @@ from tqdm import tqdm
 from unify_idents.engine_parsers.base_parser import __IdentBaseParser
 
 
-def _get_single_spec_df(reference_dict, spectrum):
+def _get_single_spec_df(reference_dict, mapping_dict, spectrum):
     spec_records = []
     spec_level_dict = reference_dict.copy()
     spec_level_dict["Spectrum ID"] = spectrum.attrib["spectrumID"].split("scan=")[-1]
@@ -18,15 +18,17 @@ def _get_single_spec_df(reference_dict, spectrum):
     for psm in spectrum.findall(".//{*}SpectrumIdentificationItem"):
         psm_level_dict = spec_level_dict.copy()
         psm_level_dict.update(
-            {
-                "Exp m/z": psm.attrib["experimentalMassToCharge"],
-                "Calc m/z": psm.attrib["calculatedMassToCharge"],
-                "Charge": psm.attrib["chargeState"],
-                "Sequence": psm.attrib["peptide_ref"],
-            }
+            {mapping_dict[k]: psm.attrib[k] for k in mapping_dict if k in psm.attrib}
         )
+        cv_param_info = {
+            c.attrib["name"]: c.attrib["value"] for c in psm.findall(".//{*}cvParam")
+        }
         psm_level_dict.update(
-            {c.attrib["name"]: c.attrib["value"] for c in psm.findall(".//{*}cvParam")}
+            {
+                mapping_dict[k]: cv_param_info[k]
+                for k in mapping_dict
+                if k in cv_param_info
+            }
         )
 
         spec_records.append(psm_level_dict)
@@ -54,20 +56,13 @@ class Comet_2020_01_4_Parser(__IdentBaseParser):
                 ),
             }
         )
-        # cols_to_remove = [
-        #     # TODO: this shouldnt exist in uparma or is mapping just wrong?
-        #     "proteinacc_start_stop_pre_post_;",
-        #     # TODO: should this be in here?
-        #     "Raw data location",
-        # ]
-        # self.mapping_dict = {
-        #     v: k
-        #     for k, v in self.param_mapper.get_default_params(style=self.style)[
-        #         "header_translations"
-        #     ]["translated_value"].items()
-        #     if k not in cols_to_remove
-        # }
-        # self.reference_dict.update({k: None for k in self.mapping_dict.values()})
+        self.mapping_dict = {
+            v: k
+            for k, v in self.param_mapper.get_default_params(style=self.style)[
+                "header_translations"
+            ]["translated_value"].items()
+        }
+        self.reference_dict.update({k: None for k in self.mapping_dict.values()})
 
     @classmethod
     def check_parser_compatibility(cls, file):
@@ -109,11 +104,16 @@ class Comet_2020_01_4_Parser(__IdentBaseParser):
         spec_idents = self.root.findall(
             ".//{*}SpectrumIdentificationList/{*}SpectrumIdentificationResult"
         )
-        with mp.Pool(self.params.get("cpus", mp.cpu_count() - 1)) as pool:
+        with mp.Pool(1) as pool:
+            # with mp.Pool(self.params.get("cpus", mp.cpu_count() - 1)) as pool:
             chunk_dfs = pool.starmap(
                 _get_single_spec_df,
                 tqdm(
-                    zip(repeat(self.reference_dict), spec_idents),
+                    zip(
+                        repeat(self.reference_dict),
+                        repeat(self.mapping_dict),
+                        spec_idents,
+                    ),
                     total=len(spec_idents),
                 ),
             )
