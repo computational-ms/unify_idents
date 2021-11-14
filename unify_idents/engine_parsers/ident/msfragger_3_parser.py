@@ -66,6 +66,15 @@ class MSFragger3Parser(__IdentBaseParser):
         return is_tsv and columns_match
 
     def _map_mod_translation(self, row, map_dict):
+        """
+        Replaces single mod string
+        Args:
+            row (str): unprocessed modification string
+            map_dict (dict): mod mapping dict
+
+        Returns:
+            mod_str (str): formatted modification string
+        """
         mod_str = ""
         if row == "" or row == [""]:
             return mod_str
@@ -84,6 +93,12 @@ class MSFragger3Parser(__IdentBaseParser):
         return mod_str
 
     def translate_mods(self):
+        """
+        Replace internal modification nomenclature with formatted modification strings.
+
+        Returns:
+            (pd.Series): column with formatted mod strings
+        """
         mod_split_col = self.df["Modifications"].fillna("").str.split(", ")
         unique_mods = set().union(*mod_split_col.apply(set)).difference({""})
         unique_mod_masses = {re.search("\(([^)]+)", m).group(1) for m in unique_mods}
@@ -143,6 +158,12 @@ class MSFragger3Parser(__IdentBaseParser):
         return mods_translated.str.rstrip(";")
 
     def unify(self):
+        """
+        Main method to read and unify engine output
+
+        Returns:
+            self.df (pd.DataFrame): unified dataframe
+        """
         self.df["Search Engine"] = "msfragger_3_0"
         self.df["Raw data location"] = self.params["Raw data location"]
         spec_title = (

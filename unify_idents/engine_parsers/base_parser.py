@@ -3,19 +3,39 @@ import multiprocessing as mp
 import pandas as pd
 import uparma
 from chemical_composition import ChemicalComposition
+from loguru import logger
 from peptide_mapper.mapper import UPeptideMapper
 from unimod_mapper.unimod_mapper import UnimodMapper
-from loguru import logger
 
 cc = ChemicalComposition()
 
 
 def get_cc(seq, mods):
+    """
+    Computes theoretical mass and hill_notation of any single peptidoform.
+    Args:
+        seq (str): peptide sequence
+        mods (str): modifications of the peptide sequence, given as "UnimodName:Position"
+
+    Returns:
+        tuple: (computed mass, hill_notation_unimod string)
+
+    """
     cc.use(sequence=seq, modifications=mods)
-    return cc.mass()
+    return cc.mass(), cc.hill_notation_unimod()
 
 
 def merge_and_join_dicts(dictlist, delim):
+    """
+    Merges list of dicts with identical keys as strings into single merged dict.
+    Args:
+        dictlist (list): list of dicts which are to be merged
+        delim (str): delimiter
+
+    Returns:
+        dict: preserved original keys with all values merged as strings with delimiter
+
+    """
     return {
         key: delim.join([str(d.get(key)) for d in dictlist])
         for key in set().union(*dictlist)
@@ -23,6 +43,10 @@ def merge_and_join_dicts(dictlist, delim):
 
 
 class BaseParser:
+    """
+    Base class of all parser types.
+    """
+
     def __init__(self, input_file, params):
         self.input_file = input_file
         if params is None:
@@ -32,9 +56,24 @@ class BaseParser:
 
     @classmethod
     def check_parser_compatibility(cls, file):
+        """
+        Asserts compatibility between file and parser.
+        Args:
+            file (str): path to input file
+
+        Returns:
+            bool: True if parser and file are compatible
+
+        """
         return False
 
     def _read_rt_lookup_file(self):
+        """
+        Reads retention time lookup file.
+
+        Returns:
+            rt_lookup (pd.DataFrame): loaded rt_pickle_file indexable by Spectrum ID
+        """
         rt_lookup = pd.read_csv(self.params["rt_pickle_name"], compression="bz2")
         rt_lookup.set_index("Spectrum ID", inplace=True)
         rt_lookup["Unit"] = rt_lookup["Unit"].replace({"second": 1, "minute": 60})
@@ -42,6 +81,10 @@ class BaseParser:
 
 
 class __IdentBaseParser(BaseParser):
+    """
+    Base class of all ident parsers.
+    """
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.DELIMITER = self.params.get("delimiter", "<|>")
@@ -69,6 +112,7 @@ class __IdentBaseParser(BaseParser):
             "Sequence": "str",
             "Modifications": "str",
             "Charge": "int32",
+            "Rank": "int32",
             "Protein ID": "str",
             "Retention Time (s)": "float32",
             "Exp m/z": "float32",
@@ -77,6 +121,7 @@ class __IdentBaseParser(BaseParser):
             "uCalc Mass": "float32",
             "Accuracy (ppm)": "float32",
             "Mass Difference": "float32",
+            "Chemical composition": "str",
             "Sequence Start": "str",
             "Sequence Stop": "str",
             "Sequence Pre AA": "str",
@@ -89,12 +134,26 @@ class __IdentBaseParser(BaseParser):
         self.col_order = pd.Series(self.dtype_mapping.keys())
 
     def _calc_mz(self, mass, charge):
+        """
+        Calulates mass-to-charge ratio.
+        Args:
+            mass (pd.Series): masses
+            charge (pd.Series): charges
+
+        Returns:
+            (pd.Series): m/z
+        """
         return (
             mass.astype(float) + (charge.astype(int) * self.PROTON)
         ) / charge.astype(int)
 
     def _create_mod_dicts(self):
-        """Create dict containing meta information about static and variable mods."""
+        """
+        Create dict containing meta information about static and variable mods
+
+        Returns:
+            mod_dict (dict): mapped modifications and information
+        """
         mod_dict = {}
         for mod_type in ["fix", "opt"]:
             for modification in self.params["mapped_mods"][mod_type]:
@@ -115,6 +174,10 @@ class __IdentBaseParser(BaseParser):
         return mod_dict
 
     def add_protein_ids(self):
+        """
+        Add all Protein IDs that matching the sequence.
+        Operations are performed inplace on self.df
+        """
         self.df["Sequence"] = self.df["Sequence"].str.upper()
         peptide_mapper = UPeptideMapper(self.params["database"])
         mapped_peptides = peptide_mapper.map_peptides(self.df["Sequence"].tolist())
@@ -136,14 +199,19 @@ class __IdentBaseParser(BaseParser):
 
         self.df.loc[:, new_columns.columns] = new_columns.values
 
-    def calc_masses_and_offsets(self):
+    def calc_masses_offsets_and_composition(self):
+        """
+        Theoretical masses and mass-to-charge ratios are computed and added.
+        Offsets are calculated between theoretical and experimental mass-to-charge ratio.
+        Operations are performed inplace on self.df
+        """
         with mp.Pool(self.params.get("cpus", mp.cpu_count() - 1)) as pool:
-            cc_masses = pool.starmap(
+            cc_masses_and_comp = pool.starmap(
                 get_cc,
                 zip(self.df["Sequence"].values, self.df["Modifications"].values),
                 chunksize=1,
             )
-        self.df.loc[:, "uCalc Mass"] = cc_masses
+        self.df.loc[:, ["uCalc Mass", "Chemical composition"]] = cc_masses_and_comp
         self.df.loc[:, "uCalc m/z"] = self._calc_mz(
             mass=self.df["uCalc Mass"], charge=self.df["Charge"]
         )
@@ -154,6 +222,10 @@ class __IdentBaseParser(BaseParser):
         )
 
     def get_exp_rt_and_mz(self):
+        """
+        Experimental mass-to-charge ratios and retention times are added.
+        Operations are performed inplace on self.df
+        """
         rt_lookup = self._read_rt_lookup_file()
         spec_ids = self.df["Spectrum ID"].astype(int)
         self.df["Retention Time (s)"] = (
@@ -161,10 +233,35 @@ class __IdentBaseParser(BaseParser):
         )
         self.df["Exp m/z"] = rt_lookup.loc[spec_ids, "Precursor mz"].to_list()
 
-    def add_rank_column(self):
-        pass
+    def add_ranks(self):
+        """
+        Ranks are calculated based on the engine scoring column at Spectrum ID level.
+        Operations are performed inplace on self.df
+        """
+        eng_name = self.df["Search Engine"].unique()[0]
+        score_col = self.param_mapper.get_default_params(style="unify_csv_style_1")[
+            "validation_score_field"
+        ]["translated_value"][eng_name]
+        top_is_highest = self.param_mapper.get_default_params(
+            style="unify_csv_style_1"
+        )["bigger_scores_better"]["translated_value"][eng_name]
+        ranking_needs_to_be_ascending = False if top_is_highest is True else True
+
+        # TODO: Min or dense?
+        self.df.loc[:, "Rank"] = self.df.groupby("Spectrum ID")[score_col].rank(
+            ascending=ranking_needs_to_be_ascending, method="min"
+        )
 
     def sanitize(self):
+        """
+        Series of dataframe sanitation steps:
+            - Missing raw data locations are replaced by their respective spectrum title identifiers
+            - .mgf file extensions are renamed to point to the .mzML files
+            - Columns that were not filled in but should exist in the unified format are added and set to None
+            - Modifications are sorted alphabetically
+            - Columns in the dataframe which could not be properly mapped are removed (warning is raised)
+        Operations are performed inplace on self.df
+        """
         missing_data_locs = ~(self.df["Raw data location"].str.len() > 0)
         self.df.loc[missing_data_locs, "Raw data location"] = (
             self.df.loc[missing_data_locs, "Spectrum Title"].str.split(".").str[0]
@@ -200,14 +297,23 @@ class __IdentBaseParser(BaseParser):
             self.df.drop(columns=unmapped_add_cols, inplace=True, errors="ignore")
 
     def process_unify_style(self):
+        """
+        Combines all additional operations that are needed to calculate new columns and sanitize the dataframe.
+        Operations are performed inplace on self.df
+        """
         self.df.drop_duplicates(inplace=True, ignore_index=True)
         self.add_protein_ids()
-        self.calc_masses_and_offsets()
+        self.calc_masses_offsets_and_composition()
         self.get_exp_rt_and_mz()
+        self.add_ranks()
         self.sanitize()
 
 
 class __QuantBaseParser(BaseParser):
+    """
+    Base class of all quant parsers.
+    """
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.cc = ChemicalComposition()

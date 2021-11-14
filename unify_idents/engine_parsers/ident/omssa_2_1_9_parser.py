@@ -35,6 +35,15 @@ class OmssaParser(__IdentBaseParser):
 
     @classmethod
     def check_parser_compatibility(cls, file):
+        """
+        Asserts compatibility between file and parser.
+        Args:
+            file (str): path to input file
+
+        Returns:
+            bool: True if parser and file are compatible
+
+        """
         is_csv = file.as_posix().endswith(".csv")
         with open(file.as_posix()) as f:
             head = "".join([next(f) for x in range(1)])
@@ -59,8 +68,40 @@ class OmssaParser(__IdentBaseParser):
         columns_match = len(ref_columns.difference(head)) == 0
         return is_csv and columns_match
 
+    def _replace_mod_strings(self, row, mod_translations):
+        """
+        Replaces single mod string
+        Args:
+            row (str): unprocessed modification string
+            mod_translations (dict): mod translation dict
+
+        Returns:
+            mod_str (str): formatted modification string
+        """
+        if row == "":
+            return ""
+        mods = row.split(" ,")
+        new_modstring = ""
+        for m in mods:
+            omssa_name, pos = m.split(":")
+            unimod_name = mod_translations[omssa_name]["unimod_name"]
+            if pos == "1" and any(
+                [
+                    ("N-term" in target)
+                    for target in mod_translations[omssa_name]["aa_targets"]
+                ]
+            ):
+                pos = "0"
+            new_modstring += f"{unimod_name}:{pos};"
+        return new_modstring.rstrip(";")
+
     def translate_mods(self):
-        # TODO: Need sanitation already???
+        """
+        Replace internal modification nomenclature with formatted modification strings.
+
+        Returns:
+            (pd.Series): column with formatted mod strings
+        """
         self.df["Sequence"] = self.df["Sequence"].str.upper()
         fix_mods = []
         # Map fixed mods
@@ -172,26 +213,10 @@ class OmssaParser(__IdentBaseParser):
                     mod_translations[k]["unimod_id"]
                 )[0]
 
-        def _replace_mod_strings(row):
-            if row == "":
-                return ""
-            mods = row.split(" ,")
-            new_modstring = ""
-            for m in mods:
-                omssa_name, pos = m.split(":")
-                unimod_name = mod_translations[omssa_name]["unimod_name"]
-                if pos == "1" and any(
-                    [
-                        ("N-term" in target)
-                        for target in mod_translations[omssa_name]["aa_targets"]
-                    ]
-                ):
-                    pos = "0"
-                new_modstring += f"{unimod_name}:{pos};"
-            return new_modstring.rstrip(";")
-
         opt_mods = (
-            self.df["Modifications"].fillna("").apply(lambda r: _replace_mod_strings(r))
+            self.df["Modifications"]
+            .fillna("")
+            .apply(lambda r: self._replace_mod_strings(r, mod_translations))
         )
         if len(fix_mods) > 0:
             fix_mods = pd.concat(fix_mods, axis=1)
@@ -207,6 +232,12 @@ class OmssaParser(__IdentBaseParser):
         return comb
 
     def unify(self):
+        """
+        Main method to read and unify engine output
+
+        Returns:
+            self.df (pd.DataFrame): unified dataframe
+        """
         self.df["Calc m/z"] = self._calc_mz(
             mass=self.df["Calc m/z"], charge=self.df["Charge"]
         )

@@ -96,29 +96,29 @@ def test_engine_parsers_flashLFQ_unify_row():
     len(parser.df) == 10
 
 
-def test_engine_parser_flashLFQ_extract_mods():
-    input_file = (
-        Path(__file__).parent.parent / "data" / "flash_lfq_1_2_0_quantified_peaks.tsv"
-    )
-    rt_lookup_path = Path(__file__).parent.parent / "data" / "_ursgal_lookup.csv.bz2"
-
-    parser = FlashLFQ_1_2_0_Parser(
-        input_file,
-        params={"rt_pickle_name": rt_lookup_path},
-    )
-    test_sequence = "ELC[Carbamidomethyl]"
-    mods = parser.extract_mods(test_sequence)
-    assert mods == "Carbamidomethyl:3"
-
-    test_sequence2 = "ELC[Carbamidomethyl]MMMM[Oxidation]"
-    mods = parser.extract_mods(test_sequence2)
-    assert mods == "Carbamidomethyl:3;Oxidation:7"
-
-    test_sequence3 = "[Acetyl]ELC[Carbamidomethyl]MMMM[Oxidation]"
-    mods = parser.extract_mods(test_sequence3)
-    assert mods == "Acetyl:0;Carbamidomethyl:3;Oxidation:7"
-
-    # TODO encode C-terminal mods
-    # test_sequence4 = "[Acetyl]ELC[Carbamidomethyl]MMMM[Oxidation][TERMINALMOD]"
-    # mods = parser.extract_mods(test_sequence4)
-    # assert mods == "Acetyl:0;Carbamidomethyl:3;Oxidation:7;TERMINALMOD:8"
+# def test_engine_parser_flashLFQ_extract_mods():
+#     input_file = (
+#         Path(__file__).parent.parent / "data" / "flash_lfq_1_2_0_quantified_peaks.tsv"
+#     )
+#     rt_lookup_path = Path(__file__).parent.parent / "data" / "_ursgal_lookup.csv.bz2"
+#
+#     parser = FlashLFQ_1_2_0_Parser(
+#         input_file,
+#         params={"rt_pickle_name": rt_lookup_path},
+#     )
+#     test_sequence = "ELC[Carbamidomethyl]"
+#     mods = parser.extract_mods(test_sequence)
+#     assert mods == "Carbamidomethyl:3"
+#
+#     test_sequence2 = "ELC[Carbamidomethyl]MMMM[Oxidation]"
+#     mods = parser.extract_mods(test_sequence2)
+#     assert mods == "Carbamidomethyl:3;Oxidation:7"
+#
+#     test_sequence3 = "[Acetyl]ELC[Carbamidomethyl]MMMM[Oxidation]"
+#     mods = parser.extract_mods(test_sequence3)
+#     assert mods == "Acetyl:0;Carbamidomethyl:3;Oxidation:7"
+#
+#     # TODO encode C-terminal mods
+#     # test_sequence4 = "[Acetyl]ELC[Carbamidomethyl]MMMM[Oxidation][TERMINALMOD]"
+#     # mods = parser.extract_mods(test_sequence4)
+#     # assert mods == "Acetyl:0;Carbamidomethyl:3;Oxidation:7;TERMINALMOD:8"

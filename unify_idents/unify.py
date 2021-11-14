@@ -1,4 +1,3 @@
-import multiprocessing as mp
 from importlib import import_module
 from pathlib import Path
 
@@ -6,7 +5,7 @@ from unify_idents.engine_parsers.base_parser import BaseParser
 
 
 class Unify:
-    """Interface to unify ident outputs from the following engines.
+    """Interface to unify ident outputs from different engines.
 
     Args:
         input_file (str): path to file to unify
@@ -18,6 +17,11 @@ class Unify:
     """
 
     def __init__(self, input_file, params={}):
+        """
+        Args:
+            input_file (str): path to input file
+            params (dict): ursgal param dict
+        """
         if not isinstance(input_file, Path):
             self.input_file = Path(input_file)
         else:
@@ -30,6 +34,10 @@ class Unify:
         self.PROTON = 1.00727646677
 
     def _get_parser(self):
+        """
+        Checks input file / parser compatibility and init matching parser in self.parser.
+        Raises error if no matching parser can be found.
+        """
         # Get all files except __init__.pys
         parser_files = (Path(__file__).parent / "engine_parsers").rglob("[!_]*.py")
         # Make paths relative to package
@@ -55,6 +63,12 @@ class Unify:
         raise IOError(f"No suitable parser found for {self.input_file}.")
 
     def get_dataframe(self):
+        """
+        Computes and returns a unified dataframe using the input file with specified parameters.
+        Returns:
+            self.df (pd.DataFrame): unified dataframe
+
+        """
         self.df = self.parser.unify()
 
         return self.df

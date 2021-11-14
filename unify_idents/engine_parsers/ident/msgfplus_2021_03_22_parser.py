@@ -1,15 +1,28 @@
 import multiprocessing as mp
+import sys
 import xml.etree.ElementTree as ETree
 from itertools import repeat
 
 import pandas as pd
 import regex as re
+from loguru import logger
 from tqdm import tqdm
 
 from unify_idents.engine_parsers.base_parser import __IdentBaseParser
 
 
 def _get_single_spec_df(reference_dict, mapping_dict, spectrum):
+    """
+    Method for reading and storing information from a single spectrum
+    Args:
+        reference_dict (dict): dict with reference columns to be filled in
+        mapping_dict (dict): mapping of engine level column names to ursgal unified column names
+        spectrum (xml Element): namespace of single spectrum with potentially multiple PSMs
+
+    Returns:
+        (pd.DataFrame): dataframe containing spectrum information
+
+    """
     spec_records = []
     spec_level_dict = reference_dict.copy()
     spec_level_info = {
@@ -86,6 +99,15 @@ class MSGFPlus_2021_03_22(__IdentBaseParser):
 
     @classmethod
     def check_parser_compatibility(cls, file):
+        """
+        Asserts compatibility between file and parser.
+        Args:
+            file (str): path to input file
+
+        Returns:
+            bool: True if parser and file are compatible
+
+        """
         is_mzid = file.as_posix().endswith(".mzid")
 
         with open(file.as_posix()) as f:
@@ -100,6 +122,10 @@ class MSGFPlus_2021_03_22(__IdentBaseParser):
         return is_mzid and contains_engine and contains_correct_version
 
     def _get_peptide_lookup(self):
+        """
+        Replace internal tags to retrieve sequences and formatted modification strings.
+        Operations are performed inplace.
+        """
         lookup = {}
         for pep in self.root.findall(".//{*}Peptide"):
             id = pep.attrib.get("id", "")
@@ -114,21 +140,32 @@ class MSGFPlus_2021_03_22(__IdentBaseParser):
         return lookup
 
     def unify(self):
+        """
+        Main method to read and unify engine output
+
+        Returns:
+            self.df (pd.DataFrame): unified dataframe
+        """
         peptide_lookup = self._get_peptide_lookup()
         spec_idents = self.root.findall(".//{*}SpectrumIdentificationResult")
+        logger.remove()
+        logger.add(lambda msg: tqdm.write(msg, end=""))
+        pbar_iterator = tqdm(
+            zip(
+                repeat(self.reference_dict),
+                repeat(self.mapping_dict),
+                spec_idents,
+            ),
+            total=len(spec_idents),
+        )
         with mp.Pool(self.params.get("cpus", mp.cpu_count() - 1)) as pool:
             chunk_dfs = pool.starmap(
                 _get_single_spec_df,
-                tqdm(
-                    zip(
-                        repeat(self.reference_dict),
-                        repeat(self.mapping_dict),
-                        spec_idents,
-                    ),
-                    total=len(spec_idents),
-                ),
+                pbar_iterator,
                 chunksize=1,
             )
+        logger.remove()
+        logger.add(sys.stdout)
         self.df = pd.concat(chunk_dfs, axis=0, ignore_index=True)
         seq_mods = pd.DataFrame(self.df["Sequence"].map(peptide_lookup).to_list())
         self.df.loc[:, seq_mods.columns] = seq_mods

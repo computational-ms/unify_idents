@@ -37,6 +37,15 @@ class MSAmanda_2_Parser(__IdentBaseParser):
 
     @classmethod
     def check_parser_compatibility(cls, file):
+        """
+        Asserts compatibility between file and parser.
+        Args:
+            file (str): path to input file
+
+        Returns:
+            bool: True if parser and file are compatible
+
+        """
         is_csv = file.as_posix().endswith(".csv")
         with open(file.as_posix()) as f:
             head = "".join([next(f) for x in range(1)])
@@ -44,6 +53,14 @@ class MSAmanda_2_Parser(__IdentBaseParser):
         return is_csv and matches_version
 
     def _map_mod_translation(self, row):
+        """
+        Replaces single mod string
+        Args:
+            row (str): unprocessed modification string
+
+        Returns:
+            mod_str (str): formatted modification string
+        """
         mod_str = ""
         if row == "" or row == [""]:
             return mod_str
@@ -58,12 +75,24 @@ class MSAmanda_2_Parser(__IdentBaseParser):
         return mod_str
 
     def translate_mods(self):
+        """
+        Replace internal modification nomenclature with formatted modification strings.
+
+        Returns:
+            (pd.Series): column with formatted mod strings
+        """
         mod_split_col = self.df["Modifications"].fillna("").str.split(";")
         mods_translated = mod_split_col.apply(self._map_mod_translation)
 
         return mods_translated.str.rstrip(";")
 
     def unify(self):
+        """
+        Main method to read and unify engine output
+
+        Returns:
+            self.df (pd.DataFrame): unified dataframe
+        """
         self.df["Search Engine"] = "msamanda_2_0_0_17442"
         self.df["Raw data location"] = self.params["Raw data location"]
         self.df["Spectrum ID"] = self.df["Spectrum Title"].str.split(".").str[1]

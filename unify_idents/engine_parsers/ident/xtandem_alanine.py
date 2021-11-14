@@ -1,14 +1,27 @@
 import multiprocessing as mp
+import sys
 import xml.etree.ElementTree as ETree
 from itertools import repeat
 
 import pandas as pd
+from loguru import logger
 from tqdm import tqdm
 
 from unify_idents.engine_parsers.base_parser import __IdentBaseParser
 
 
 def _get_single_spec_df(reference_dict, mapping_dict, spectrum):
+    """
+    Method for reading and storing information from a single spectrum
+    Args:
+        reference_dict (dict): dict with reference columns to be filled in
+        mapping_dict (dict): mapping of engine level column names to ursgal unified column names
+        spectrum (xml Element): namespace of single spectrum with potentially multiple PSMs
+
+    Returns:
+        (pd.DataFrame): dataframe containing spectrum information
+
+    """
     spec_records = []
     spec_level_dict = reference_dict.copy()
     spec_level_info = mapping_dict.keys() & spectrum.attrib.keys()
@@ -79,6 +92,15 @@ class XTandemAlanine(__IdentBaseParser):
 
     @classmethod
     def check_parser_compatibility(cls, file):
+        """
+        Asserts compatibility between file and parser.
+        Args:
+            file (str): path to input file
+
+        Returns:
+            bool: True if parser and file are compatible
+
+        """
         is_xml = file.as_posix().endswith(".xml")
         with open(file.as_posix()) as f:
             head = "".join([next(f) for x in range(10)])
@@ -87,13 +109,14 @@ class XTandemAlanine(__IdentBaseParser):
         return is_xml and contains_ref
 
     def map_mod_names(self, df):
-        """Map massshifts to unimod names.
-
+        """
+        Maps modification names in unify style.
         Args:
-            row (dict): dict containing psm based data from engine file
+            df (pd.DataFrame): input dataframe
 
         Returns:
-            str: Description
+            df (pd.DataFrame): dataframe with processed modification column
+
         """
         unique_mods = set().union(*df["Modifications"].apply(set).values)
         unique_mod_masses = {m.split(":")[0] for m in unique_mods}
@@ -133,18 +156,26 @@ class XTandemAlanine(__IdentBaseParser):
         return df
 
     def unify(self):
+        """
+        Main method to read and unify engine output
+
+        Returns:
+            self.df (pd.DataFrame): unified dataframe
+        """
+        logger.remove()
+        logger.add(lambda msg: tqdm.write(msg, end=""))
+        pbar_iterator = tqdm(
+            zip(
+                repeat(self.reference_dict),
+                repeat(self.mapping_dict),
+                self.root,
+            ),
+            total=len(self.root),
+        )
         with mp.Pool(self.params.get("cpus", mp.cpu_count() - 1)) as pool:
-            chunk_dfs = pool.starmap(
-                _get_single_spec_df,
-                tqdm(
-                    zip(
-                        repeat(self.reference_dict),
-                        repeat(self.mapping_dict),
-                        self.root,
-                    ),
-                    total=len(self.root),
-                ),
-            )
+            chunk_dfs = pool.starmap(_get_single_spec_df, pbar_iterator)
+        logger.remove()
+        logger.add(sys.stdout)
         chunk_dfs = [df for df in chunk_dfs if not df is None]
         self.df = pd.concat(chunk_dfs, axis=0, ignore_index=True)
         self.df["Calc m/z"] = (

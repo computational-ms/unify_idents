@@ -1,15 +1,29 @@
 import multiprocessing as mp
+import sys
 import xml.etree.ElementTree as ETree
 from itertools import repeat
 
+import numpy as np
 import pandas as pd
 import regex as re
+from loguru import logger
 from tqdm import tqdm
 
 from unify_idents.engine_parsers.base_parser import __IdentBaseParser
 
 
 def _get_single_spec_df(reference_dict, mapping_dict, spectrum):
+    """
+    Method for reading and storing information from a single spectrum
+    Args:
+        reference_dict (dict): dict with reference columns to be filled in
+        mapping_dict (dict): mapping of engine level column names to ursgal unified column names
+        spectrum (xml Element): namespace of single spectrum with potentially multiple PSMs
+
+    Returns:
+        (pd.DataFrame): dataframe containing spectrum information
+
+    """
     spec_records = []
     spec_level_dict = reference_dict.copy()
     spec_level_dict["Spectrum ID"] = spectrum.attrib["spectrumID"].split("scan=")[-1]
@@ -66,6 +80,15 @@ class Comet_2020_01_4_Parser(__IdentBaseParser):
 
     @classmethod
     def check_parser_compatibility(cls, file):
+        """
+        Asserts compatibility between file and parser.
+        Args:
+            file (str): path to input file
+
+        Returns:
+            bool: True if parser and file are compatible
+
+        """
         is_mzid = file.as_posix().endswith(".mzid")
 
         with open(file.as_posix()) as f:
@@ -77,15 +100,51 @@ class Comet_2020_01_4_Parser(__IdentBaseParser):
         contains_correct_version = "2020.01 rev. 4" in head
         return is_mzid and contains_engine and contains_correct_version
 
-    def _get_peptide_lookup(self):
+    def _map_mods_and_sequences(self):
+        """
+        Replace internal tags to retrieve sequences and formatted modification strings.
+        Operations are performed inplace.
+        """
+        # Register fixed mods
         modifications = self.root.findall(
             ".//{*}AnalysisProtocolCollection/{*}SpectrumIdentificationProtocol/{*}ModificationParams/{*}SearchModification"
         )
-        modification_mass_map = {
-            m.attrib["massDelta"]: m.find(".//{*}cvParam[@cvRef='UNIMOD']").attrib[
+        fixed_mods = {
+            sm.attrib["residues"]: sm.find(".//{*}cvParam[@cvRef='UNIMOD']").attrib[
                 "name"
             ]
-            for m in modifications
+            for sm in modifications
+            if sm.attrib["fixedMod"] == "true"
+        }
+        if len(fixed_mods) > 0:
+            fixed_mod_strings = []
+            for fm_res, fm_name in fixed_mods.items():
+                fixed_mod_strings.append(
+                    self.df["Sequence"]
+                    .str.split(fm_res)
+                    .apply(
+                        lambda l: ";".join(
+                            [
+                                fm_name + ":" + ind
+                                for ind in (
+                                    np.cumsum(list(map(len, l[:-1]))) + range(1, len(l))
+                                ).astype(str)
+                            ]
+                        )
+                    )
+                )
+
+            fixed_mod_strings = (
+                pd.concat(fixed_mod_strings, axis=1)
+                .agg(";".join, axis=1)
+                .str.rstrip(";")
+            )
+
+        modification_mass_map = {
+            sm.attrib["massDelta"]: sm.find(".//{*}cvParam[@cvRef='UNIMOD']").attrib[
+                "name"
+            ]
+            for sm in modifications
         }
         lookup = {}
         for pep in self.root.findall(".//{*}Peptide"):
@@ -97,29 +156,42 @@ class Comet_2020_01_4_Parser(__IdentBaseParser):
                     f"{modification_mass_map[child.attrib['monoisotopicMassDelta']]}:{child.attrib['location']}"
                 )
             lookup[id]["Modifications"] = ";".join(lookup[id]["Modifications"])
-        return lookup
+
+        seq_mods = pd.DataFrame(self.df["Sequence"].map(lookup).to_list())
+        self.df.loc[:, "Modifications"] = (
+            seq_mods["Modifications"].str.cat(fixed_mod_strings, sep=";").str.strip(";")
+        )
+        self.df.loc[:, "Sequence"] = seq_mods["Sequence"]
 
     def unify(self):
-        peptide_lookup = self._get_peptide_lookup()
+        """
+        Main method to read and unify engine output
+
+        Returns:
+            self.df (pd.DataFrame): unified dataframe
+        """
         spec_idents = self.root.findall(
             ".//{*}SpectrumIdentificationList/{*}SpectrumIdentificationResult"
         )
-        with mp.Pool(1) as pool:
-            # with mp.Pool(self.params.get("cpus", mp.cpu_count() - 1)) as pool:
+        logger.remove()
+        logger.add(lambda msg: tqdm.write(msg, end=""))
+        pbar_iterator = tqdm(
+            zip(
+                repeat(self.reference_dict),
+                repeat(self.mapping_dict),
+                spec_idents,
+            ),
+            total=len(spec_idents),
+        )
+        with mp.Pool(self.params.get("cpus", mp.cpu_count() - 1)) as pool:
             chunk_dfs = pool.starmap(
                 _get_single_spec_df,
-                tqdm(
-                    zip(
-                        repeat(self.reference_dict),
-                        repeat(self.mapping_dict),
-                        spec_idents,
-                    ),
-                    total=len(spec_idents),
-                ),
+                pbar_iterator,
             )
+        logger.remove()
+        logger.add(sys.stdout)
         self.df = pd.concat(chunk_dfs, axis=0, ignore_index=True)
-        seq_mods = pd.DataFrame(self.df["Sequence"].map(peptide_lookup).to_list())
-        self.df.loc[:, seq_mods.columns] = seq_mods
+        self._map_mods_and_sequences()
         # TODO: what to do with the spectrum titles?
         self.process_unify_style()
 
