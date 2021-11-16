@@ -34,7 +34,7 @@ class MSFragger3Parser(__IdentBaseParser):
     def check_parser_compatibility(cls, file):
         is_tsv = file.as_posix().endswith(".tsv")
         with open(file.as_posix()) as f:
-            head = "".join([next(f) for x in range(1)])
+            head = "".join([next(f) for _ in range(1)])
         head = set(head.rstrip("\n").split("\t"))
         ref_columns = {
             "scannum",
@@ -165,7 +165,7 @@ class MSFragger3Parser(__IdentBaseParser):
             self.df (pd.DataFrame): unified dataframe
         """
         self.df["Search Engine"] = "msfragger_3_0"
-        self.df["Raw data location"] = self.params["Raw data location"]
+        self.df["Raw data location"] = str(self.params["Raw data location"])
         spec_title = (
             self.df["Raw data location"].str.split(".").str[0].str.split("/").str[-1]
         )

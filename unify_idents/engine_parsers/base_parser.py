@@ -10,7 +10,7 @@ from unimod_mapper.unimod_mapper import UnimodMapper
 cc = ChemicalComposition()
 
 
-def get_cc(seq, mods):
+def get_mass_and_composition(seq, mods):
     """
     Computes theoretical mass and hill_notation of any single peptidoform.
     Args:
@@ -92,7 +92,7 @@ class __IdentBaseParser(BaseParser):
         self.df = None
         self.mod_mapper = UnimodMapper()
         self.params["mapped_mods"] = self.mod_mapper.map_mods(
-            mod_list=self.params["modifications"]
+            mod_list=self.params.get("modifications", [])
         )
         self.mod_dict = self._create_mod_dicts()
         self.reference_dict = {
@@ -121,7 +121,7 @@ class __IdentBaseParser(BaseParser):
             "uCalc Mass": "float32",
             "Accuracy (ppm)": "float32",
             "Mass Difference": "float32",
-            "Chemical composition": "str",
+            "Chemical Composition": "str",
             "Sequence Start": "str",
             "Sequence Stop": "str",
             "Sequence Pre AA": "str",
@@ -207,11 +207,11 @@ class __IdentBaseParser(BaseParser):
         """
         with mp.Pool(self.params.get("cpus", mp.cpu_count() - 1)) as pool:
             cc_masses_and_comp = pool.starmap(
-                get_cc,
+                get_mass_and_composition,
                 zip(self.df["Sequence"].values, self.df["Modifications"].values),
                 chunksize=1,
             )
-        self.df.loc[:, ["uCalc Mass", "Chemical composition"]] = cc_masses_and_comp
+        self.df.loc[:, ["uCalc Mass", "Chemical Composition"]] = cc_masses_and_comp
         self.df.loc[:, "uCalc m/z"] = self._calc_mz(
             mass=self.df["uCalc Mass"], charge=self.df["Charge"]
         )
@@ -248,8 +248,10 @@ class __IdentBaseParser(BaseParser):
         ranking_needs_to_be_ascending = False if top_is_highest is True else True
 
         # TODO: Min or dense?
-        self.df.loc[:, "Rank"] = self.df.groupby("Spectrum ID")[score_col].rank(
-            ascending=ranking_needs_to_be_ascending, method="min"
+        self.df.loc[:, "Rank"] = (
+            self.df.groupby("Spectrum ID")[score_col]
+            .rank(ascending=ranking_needs_to_be_ascending, method="min")
+            .astype(int)
         )
 
     def sanitize(self):
@@ -270,7 +272,7 @@ class __IdentBaseParser(BaseParser):
             ".mgf", ".mzML", regex=False
         )
 
-        # Set missing columns to None
+        # Set missing columns to None and reorder columns in standardized manner
         new_cols = self.col_order[~self.col_order.isin(self.df.columns)].to_list()
         self.df.loc[:, new_cols] = None
         self.df = self.df.loc[

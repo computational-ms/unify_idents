@@ -112,7 +112,7 @@ class MSGFPlus_2021_03_22(__IdentBaseParser):
 
         with open(file.as_posix()) as f:
             try:
-                head = "".join([next(f) for x in range(20)])
+                head = "".join([next(f) for _ in range(20)])
             except StopIteration:
                 head = ""
         contains_engine = "MS-GF+" in head

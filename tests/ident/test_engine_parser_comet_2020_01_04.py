@@ -45,13 +45,13 @@ def test_engine_parsers_comet_init():
     )
 
 
-def test_engine_parsers_comet_file_matches_parser():
+def test_engine_parsers_comet_check_parser_compatibility():
     msgf_parser_class = Comet_2020_01_4_Parser
     input_file = Path(__file__).parent.parent / "data" / "BSA1_comet_2020_01_4.mzid"
     assert msgf_parser_class.check_parser_compatibility(input_file) is True
 
 
-def test_engine_parsers_comet_file_matches_parser_fail_with_omssa_file():
+def test_engine_parsers_comet_check_parser_compatibility_fail_with_omssa_file():
     msgf_parser_class = Comet_2020_01_4_Parser
     input_file = (
         Path(__file__).parent.parent

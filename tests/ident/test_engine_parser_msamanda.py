@@ -44,7 +44,7 @@ def test_engine_parsers_msamanda_init():
     )
 
 
-def test_engine_parsers_msamanda_file_matches_parser():
+def test_engine_parsers_msamanda_check_parser_compatibility():
     input_file = Path(__file__).parent.parent / "data" / "BSA1_msamanda_2_0_0_17442.csv"
     assert MSAmanda_2_Parser.check_parser_compatibility(input_file) is True
 

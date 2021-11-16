@@ -93,7 +93,7 @@ class Comet_2020_01_4_Parser(__IdentBaseParser):
 
         with open(file.as_posix()) as f:
             try:
-                head = "".join([next(f) for x in range(10)])
+                head = "".join([next(f) for _ in range(10)])
             except StopIteration:
                 head = ""
         contains_engine = "Comet" in head

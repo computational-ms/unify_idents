@@ -44,7 +44,7 @@ def test_engine_parsers_msfragger_init():
     )
 
 
-def test_engine_parsers_msfragger_file_matches_parser():
+def test_engine_parsers_msfragger_check_parser_compatibility():
     input_file = (
         Path(__file__).parent.parent
         / "data"

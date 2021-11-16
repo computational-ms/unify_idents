@@ -25,12 +25,12 @@ def test_engine_parsers_QuantBaseParser_init():
     )
 
 
-def test_engine_parsers_QuantBaseParser_file_matches_parser_non_existing():
+def test_engine_parsers_QuantBaseParser_check_parser_compatibility_non_existing():
     # should always return False
     assert __QuantBaseParser.check_parser_compatibility("whatever") is False
 
 
-def test_engine_parsers_QuantBaseParser_file_matches_parser_existing():
+def test_engine_parsers_QuantBaseParser_check_parser_compatibility_existing():
     # should always return False
     assert (
         __QuantBaseParser.check_parser_compatibility(

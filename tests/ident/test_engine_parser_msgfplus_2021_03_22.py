@@ -45,13 +45,13 @@ def test_engine_parsers_msgfplus_init():
     )
 
 
-def test_engine_parsers_msgfplus_file_matches_parser():
+def test_engine_parsers_msgfplus_check_parser_compatibility():
     msgf_parser_class = MSGFPlus_2021_03_22
     input_file = Path(__file__).parent.parent / "data" / "BSA1_msgfplus_2021_03_22.mzid"
     assert msgf_parser_class.check_parser_compatibility(input_file) is True
 
 
-def test_engine_parsers_msgfplus_file_matches_parser_fail_with_omsa_file():
+def test_engine_parsers_msgfplus_check_parser_compatibility_fail_with_omsa_file():
     msgf_parser_class = MSGFPlus_2021_03_22
     input_file = (
         Path(__file__).parent.parent

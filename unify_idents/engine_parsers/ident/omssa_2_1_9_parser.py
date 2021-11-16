@@ -46,7 +46,7 @@ class OmssaParser(__IdentBaseParser):
         """
         is_csv = file.as_posix().endswith(".csv")
         with open(file.as_posix()) as f:
-            head = "".join([next(f) for x in range(1)])
+            head = "".join([next(f) for _ in range(1)])
         head = set(head.rstrip("\n").split(","))
         ref_columns = {
             "Spectrum number",
@@ -103,13 +103,13 @@ class OmssaParser(__IdentBaseParser):
             (pd.Series): column with formatted mod strings
         """
         self.df["Sequence"] = self.df["Sequence"].str.upper()
-        fix_mods = []
+        fix_mods = None
         # Map fixed mods
         fixed_mod_types = [
             d for d in self.params["modifications"] if d["type"] == "fix"
         ]
         for fm in fixed_mod_types:
-            fix_mods.append(
+            fm_strings = (
                 self.df["Sequence"]
                 .str.split(fm["aa"])
                 .apply(
@@ -123,6 +123,10 @@ class OmssaParser(__IdentBaseParser):
                     )
                 )
             )
+            if fix_mods is None:
+                fix_mods = fm_strings
+            else:
+                fix_mods = fix_mods + ";" + fm_strings
 
         unique_mods = (
             set()
@@ -219,7 +223,6 @@ class OmssaParser(__IdentBaseParser):
             .apply(lambda r: self._replace_mod_strings(r, mod_translations))
         )
         if len(fix_mods) > 0:
-            fix_mods = pd.concat(fix_mods, axis=1)
             comb = pd.concat([opt_mods, fix_mods], axis=1)
             comb = (
                 comb["Modifications"]

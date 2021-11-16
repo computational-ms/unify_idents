@@ -103,7 +103,7 @@ class XTandemAlanine(__IdentBaseParser):
         """
         is_xml = file.as_posix().endswith(".xml")
         with open(file.as_posix()) as f:
-            head = "".join([next(f) for x in range(10)])
+            head = "".join([next(f) for _ in range(10)])
         contains_ref = "tandem-style.xsl" in head
 
         return is_xml and contains_ref

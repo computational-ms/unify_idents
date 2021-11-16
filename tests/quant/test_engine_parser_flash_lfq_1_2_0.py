@@ -18,7 +18,7 @@ def test_engine_parsers_flashLFQ_init():
     )
 
 
-def test_engine_parsers_flashLFQ_file_matches_parser():
+def test_engine_parsers_flashLFQ_check_parser_compatibility():
     input_file = (
         Path(__file__).parent.parent / "data" / "flash_lfq_1_2_0_quantified_peaks.tsv"
     )
