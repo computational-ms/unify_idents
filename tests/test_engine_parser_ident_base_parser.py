@@ -258,3 +258,20 @@ def test_merge_and_join_dicts():
     dict_b = {"a": "part_b", "b": "part_b"}
     out_dict = merge_and_join_dicts([dict_a, dict_b], ";")
     assert out_dict == {"a": "part_a;part_b", "b": "part_a;part_b"}
+
+
+def test_assert_only_iupac_aas():
+    obj = __IdentBaseParser(
+        input_file=None,
+        params={
+            "rt_pickle_name": Path(__file__).parent / "data/_ursgal_lookup.csv.bz2"
+        },
+    )
+    obj.df = pd.DataFrame(
+        np.ones((4, len(obj.col_order) + 1)),
+        columns=obj.col_order.to_list() + ["MSFragger:Hyperscore"],
+    )
+    obj.df["Sequence"] = ["PEPTIDE", "[3jd2]", "ACDU", "MREPEPTIDE"]
+    obj.assert_only_iupac_aas()
+
+    assert all(obj.df.index == [0, 3])

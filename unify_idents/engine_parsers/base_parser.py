@@ -173,6 +173,22 @@ class __IdentBaseParser(BaseParser):
 
         return mod_dict
 
+    def assert_only_iupac_aas(self):
+        """
+        Asserts that only IUPAC nomenclature one letter amino acids are used in sequence.
+        Non-IUPAC designations are dropped.
+        Operations are performed inplace.
+        """
+        iupac_aas = set("ACDEFGHIKLMNPQRSTVWY")
+        iupac_conform_seqs = self.df["Sequence"].apply(
+            lambda seq: set(seq).issubset(iupac_aas)
+        )
+        if any(~iupac_conform_seqs):
+            self.df = self.df.loc[iupac_conform_seqs, :]
+            logger.warning(
+                f"Sequences are not IUPAC conform. {(~iupac_conform_seqs).sum()} PSMs were dropped."
+            )
+
     def add_protein_ids(self):
         """
         Add all Protein IDs that matching the sequence.
@@ -304,6 +320,7 @@ class __IdentBaseParser(BaseParser):
         Operations are performed inplace on self.df
         """
         self.df.drop_duplicates(inplace=True, ignore_index=True)
+        self.assert_only_iupac_aas()
         self.add_protein_ids()
         self.calc_masses_offsets_and_composition()
         self.get_exp_rt_and_mz()
