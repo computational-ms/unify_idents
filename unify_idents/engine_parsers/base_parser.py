@@ -179,6 +179,7 @@ class __IdentBaseParser(BaseParser):
         Non-IUPAC designations are dropped.
         Operations are performed inplace.
         """
+        self.df["Sequence"] = self.df["Sequence"].str.upper()
         iupac_aas = set("ACDEFGHIKLMNPQRSTVWY")
         iupac_conform_seqs = self.df["Sequence"].apply(
             lambda seq: set(seq).issubset(iupac_aas)
@@ -194,7 +195,6 @@ class __IdentBaseParser(BaseParser):
         Add all Protein IDs that matching the sequence.
         Operations are performed inplace on self.df
         """
-        self.df["Sequence"] = self.df["Sequence"].str.upper()
         peptide_mapper = UPeptideMapper(self.params["database"])
         mapped_peptides = peptide_mapper.map_peptides(self.df["Sequence"].tolist())
 
