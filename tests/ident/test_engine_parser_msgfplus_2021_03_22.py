@@ -66,9 +66,7 @@ def test_engine_parsers_msgfplus_unify():
     rt_lookup_path = (
         Path(__file__).parent.parent / "data" / "BSA1_ursgal_lookup.csv.bz2"
     )
-    db_path = (
-        Path(__file__).parent.parent / "data" / "test_Creinhardtii_target_decoy.fasta"
-    )
+    db_path = Path(__file__).parent.parent / "data" / "BSA.fasta"
 
     parser = MSGFPlus_2021_03_22(
         input_file,
@@ -152,9 +150,7 @@ def test_engine_parsers_msgfplus_internal_next():
     rt_lookup_path = (
         Path(__file__).parent.parent / "data" / "BSA1_ursgal_lookup.csv.bz2"
     )
-    db_path = (
-        Path(__file__).parent.parent / "data" / "test_Creinhardtii_target_decoy.fasta"
-    )
+    db_path = Path(__file__).parent.parent / "data" / "BSA.fasta"
 
     parser = MSGFPlus_2021_03_22(
         input_file,

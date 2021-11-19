@@ -126,9 +126,9 @@ class __IdentBaseParser(BaseParser):
             "Sequence Stop": "str",
             "Sequence Pre AA": "str",
             "Sequence Post AA": "str",
-            "Enzyme Specificity": "str",
-            "Complies search criteria": "str",
-            "Conflicting uparma": "str",
+            "enzN": "str",
+            "enzC": "str",
+            "Missed Cleavages": "int32",
             "Search Engine": "str",
         }
         self.col_order = pd.Series(self.dtype_mapping.keys())
@@ -210,10 +210,62 @@ class __IdentBaseParser(BaseParser):
             "id": "Protein ID",
             "pre": "Sequence Pre AA",
         }
-        new_columns = pd.DataFrame(peptide_mappings)
+        new_columns = pd.DataFrame(peptide_mappings).fillna("")
         new_columns.rename(columns=columns_translations, inplace=True)
 
         self.df.loc[:, new_columns.columns] = new_columns.values
+
+    def check_enzyme_specificity(self):
+        """
+        Checks consistency of N/C-terminal cleavage sites.
+        Calculates number of missed cleavage sites.
+        Operations are performed inplace.
+        """
+        enzyme_pattern = self.param_mapper.get_default_params("unify_csv_style_1")[
+            "enzyme"
+        ]["translated_value"]
+
+        pren_seq = (
+            pd.concat(
+                [
+                    self.df["Sequence Pre AA"].str.split("<\\|>"),
+                    self.df["Sequence"].str[:1],
+                ],
+                axis=1,
+            )
+            .explode("Sequence Pre AA")
+            .sum(axis=1)
+        )
+        self.df.loc[:, "enzN"] = (
+            pren_seq.str.split(fr"{enzyme_pattern}").str[0].str.len() == 1
+        ).groupby(pren_seq.index).agg("any") | (pren_seq.str[0] == "-").groupby(
+            pren_seq.index
+        ).agg(
+            "any"
+        )
+        postc_seq = (
+            pd.concat(
+                [
+                    self.df["Sequence"].str[-1:],
+                    self.df["Sequence Post AA"].str.split("<\\|>"),
+                ],
+                axis=1,
+            )
+            .explode("Sequence Post AA")
+            .sum(axis=1)
+        )
+        self.df.loc[:, "enzC"] = (
+            postc_seq.str.split(fr"{enzyme_pattern}").str[0].str.len() == 1
+        ).groupby(postc_seq.index).agg("any") | (postc_seq.str[-1] == "-").groupby(
+            postc_seq.index
+        ).agg(
+            "any"
+        )
+
+        internal_cuts = self.df["Sequence"].str.split(fr"{enzyme_pattern}")
+        self.df.loc[:, "Missed Cleavages"] = internal_cuts.apply(
+            len
+        ) - internal_cuts.apply(lambda row: "" in row).astype(int)
 
     def calc_masses_offsets_and_composition(self):
         """
@@ -270,6 +322,14 @@ class __IdentBaseParser(BaseParser):
             .astype(int)
         )
 
+    def add_decoy_identity(self):
+        """
+        Adds boolean decoy state if designated decoy prefix is in Protein IDs.
+        Operations are performed inplace on self.df
+        """
+        decoy_tag = self.params.get("decoy_tag", "decoy_")
+        self.df.loc[:, "Is decoy"] = self.df["Protein ID"].str.contains(decoy_tag)
+
     def sanitize(self):
         """
         Series of dataframe sanitation steps:
@@ -322,9 +382,11 @@ class __IdentBaseParser(BaseParser):
         self.df.drop_duplicates(inplace=True, ignore_index=True)
         self.assert_only_iupac_aas()
         self.add_protein_ids()
-        self.calc_masses_offsets_and_composition()
         self.get_exp_rt_and_mz()
+        self.calc_masses_offsets_and_composition()
+        self.check_enzyme_specificity()
         self.add_ranks()
+        self.add_decoy_identity()
         self.sanitize()
 
 

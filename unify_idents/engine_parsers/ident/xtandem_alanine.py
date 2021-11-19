@@ -34,15 +34,12 @@ def _get_single_spec_df(reference_dict, mapping_dict, spectrum):
     spec_title = spectrum.findall('.//**[@label="Description"]')[0].text.split()[0]
     spec_level_dict["Spectrum Title"] = spec_title
     spec_level_dict["Spectrum ID"] = spec_title.split(".")[1]
-    # precursor_mh = float(spectrum.attrib["mh"])
 
     # Iterate children
     for psm in spectrum.findall(".//protein/*/domain"):
         psm_level_dict = spec_level_dict.copy()
 
-        # TODO: Which mh is Exp and which is Calc --> divide by charge
         psm_level_dict["Calc m/z"] = psm.attrib["mh"]
-        # psm_level_dict["Exp m/z"] = precursor_mh / int(psm_level_dict["Charge"])
 
         psm_level_info = mapping_dict.keys() & psm.attrib.keys()
         psm_level_dict.update({mapping_dict[k]: psm.attrib[k] for k in psm_level_info})
@@ -123,8 +120,8 @@ class XTandemAlanine(__IdentBaseParser):
         potential_names = {
             m: [
                 name
-                for name in self.mod_mapper.appMass2name_list(
-                    round(float(m), 4), decimal_places=4
+                for name in self.mod_mapper.mass_to_names(
+                    round(float(m), 4), decimals=4
                 )
                 if name in self.mod_dict
             ]

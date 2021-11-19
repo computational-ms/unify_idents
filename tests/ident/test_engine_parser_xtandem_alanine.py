@@ -206,7 +206,7 @@ def test_engine_parsers_xtandem_multiple_psms():
     input_file = Path(__file__).parent.parent / "data" / "multiple_psms_xtandem.xml"
     rt_lookup_path = Path(__file__).parent.parent / "data" / "_ursgal_lookup.csv.bz2"
     db_path = (
-        Path(__file__).parent.parent / "data" / "test_Creinhardtii_target_decoy.fasta"
+        Path(__file__).parent.parent / "data" / "human_ecoli_test_target_decoy.fasta"
     )
 
     parser = XTandemAlanine(

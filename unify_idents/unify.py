@@ -72,3 +72,59 @@ class Unify:
         self.df = self.parser.unify()
 
         return self.df
+
+
+if __name__ == "__main__":
+    rt_lookup_path = "/Users/tr341516/PycharmProjects/ursgal2/data/04854_F1_R8_P0109699E13_TMT10_ursgal_lookup.csv.bz2"
+    input_file = "/Users/tr341516/PycharmProjects/ursgal2/data/xtandem_vengeance_8bc71feada0641dac433424377a4b36b/04854_F1_R8_P0109699E13_TMT10_xtandem_vengeance.xml"
+    # input_file = "/Users/tr341516/PycharmProjects/ursgal2/data/msgfplus_2021_03_22_53574949adc37d787f5ae9934c14cf36/04854_F1_R8_P0109699E13_TMT10_msgfplus_2021_03_22.mzid"
+    # input_file = "/Users/tr341516/PycharmProjects/ursgal2/data/msgfplus_2021_03_22/04854_F1_R8_P0109699E13_TMT10_msgfplus_2021_03_22.mzid"
+    # input_file = "/Users/tr341516/PycharmProjects/ursgal2/data/msfragger_3/04854_F1_R8_P0109699E13_TMT10_msfragger_3.tsv"
+    # input_file = "/Users/tr341516/PycharmProjects/unify_idents/tests/data/test_Creinhardtii_QE_pH11_msamanda_2_0_0_17442.csv"
+    # input_file = "/Users/tr341516/PycharmProjects/ursgal2/data/comet_2020_01_4/04854_F1_R8_P0109699E13_TMT10_comet_2020_01_4.mzid"
+    # input_file = "/Users/tr341516/Downloads/07634_F1_R3_P0215547J46_TMT11_thermo_raw_file_parser_1_1_11_comet_2020_01_4.mzid"
+    # input_file = "/Users/tr341516/PycharmProjects/unify_idents/tests/data/flash_lfq_1_2_0_quantified_peaks.tsv"
+    db_path = "/Users/tr341516/PycharmProjects/ursgal2/data/uniprot_human-ecoli_20180814_IL.fasta"
+    obj = Unify(
+        input_file,
+        params={
+            "omssa_mod_dir": Path(__file__).parent.parent / "tests" / "data",
+            "rt_pickle_name": rt_lookup_path,
+            "Raw data location": "/Users/tr341516/PycharmProjects/ursgal2/data/04854_F1_R8_P0109699E13_TMT10.mzML",
+            "database": db_path,
+            "modifications": [
+                {
+                    "aa": "M",
+                    "type": "opt",
+                    "position": "any",
+                    "name": "Oxidation",
+                },
+                {
+                    "aa": "*",
+                    "type": "opt",
+                    "position": "Prot-N-term",
+                    "name": "Acetyl",
+                },
+                {
+                    "aa": "*",
+                    "type": "opt",
+                    "position": "N-term",
+                    "name": "TMT6plex",
+                },
+                {
+                    "aa": "C",
+                    "type": "fix",
+                    "position": "any",
+                    "name": "Carbamidomethyl",
+                },
+                {
+                    "aa": "K",
+                    "type": "fix",
+                    "position": "any",
+                    "name": "TMT6plex",
+                },
+            ],
+        },
+    )
+    df = obj.get_dataframe()
+    print("done")

@@ -275,3 +275,45 @@ def test_assert_only_iupac_aas():
     obj.assert_only_iupac_aas()
 
     assert all(obj.df.index == [0, 3])
+
+
+def test_add_decoy_identity():
+    obj = __IdentBaseParser(
+        input_file=None,
+        params={
+            "rt_pickle_name": Path(__file__).parent / "data/_ursgal_lookup.csv.bz2"
+        },
+    )
+    obj.df = pd.DataFrame(
+        np.ones((4, len(obj.col_order) + 1)),
+        columns=obj.col_order.to_list() + ["MSFragger:Hyperscore"],
+    )
+    obj.df["Protein ID"] = ["NOTADECOY", "PEPTIDE", "decoy_PEPTIDE", "decoy_ASDF"]
+
+    obj.add_decoy_identity()
+
+    assert all(obj.df["Is decoy"] == [False, False, True, True])
+
+
+def test_add_decoy_identity_non_default_prefix():
+    obj = __IdentBaseParser(
+        input_file=None,
+        params={
+            "rt_pickle_name": Path(__file__).parent / "data/_ursgal_lookup.csv.bz2",
+            "decoy_tag": "non_default_tag_",
+        },
+    )
+    obj.df = pd.DataFrame(
+        np.ones((4, len(obj.col_order) + 1)),
+        columns=obj.col_order.to_list() + ["MSFragger:Hyperscore"],
+    )
+    obj.df["Protein ID"] = [
+        "NOTADECOY",
+        "PEPTIDE",
+        "decoy_PEPTIDE",
+        "non_default_tag_ASDF",
+    ]
+
+    obj.add_decoy_identity()
+
+    assert all(obj.df["Is decoy"] == [False, False, False, True])
