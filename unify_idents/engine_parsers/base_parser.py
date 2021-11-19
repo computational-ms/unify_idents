@@ -143,9 +143,9 @@ class __IdentBaseParser(BaseParser):
         Returns:
             (pd.Series): m/z
         """
-        return (
-            mass.astype(float) + (charge.astype(int) * self.PROTON)
-        ) / charge.astype(int)
+        return (mass.astype(float) + (charge.astype(int) * self.PROTON)) / charge.astype(
+            int
+        )
 
     def _create_mod_dicts(self):
         """
@@ -310,9 +310,9 @@ class __IdentBaseParser(BaseParser):
         score_col = self.param_mapper.get_default_params(style="unify_csv_style_1")[
             "validation_score_field"
         ]["translated_value"][eng_name]
-        top_is_highest = self.param_mapper.get_default_params(
-            style="unify_csv_style_1"
-        )["bigger_scores_better"]["translated_value"][eng_name]
+        top_is_highest = self.param_mapper.get_default_params(style="unify_csv_style_1")[
+            "bigger_scores_better"
+        ]["translated_value"][eng_name]
         ranking_needs_to_be_ascending = False if top_is_highest is True else True
 
         # TODO: Min or dense?

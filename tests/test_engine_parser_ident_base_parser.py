@@ -144,9 +144,7 @@ def test_add_protein_ids():
 def test_calc_masses_offsets_and_composition():
     obj = __IdentBaseParser(
         input_file=None,
-        params={
-            "rt_pickle_name": Path(__file__).parent / "data/_ursgal_lookup.csv.bz2"
-        },
+        params={"rt_pickle_name": Path(__file__).parent / "data/_ursgal_lookup.csv.bz2"},
     )
     obj.df = pd.DataFrame(
         np.ones((3, len(obj.col_order) + 1)),
@@ -175,9 +173,7 @@ def test_calc_masses_offsets_and_composition():
 def test_get_exp_rt_and_mz():
     obj = __IdentBaseParser(
         input_file=None,
-        params={
-            "rt_pickle_name": Path(__file__).parent / "data/_ursgal_lookup.csv.bz2"
-        },
+        params={"rt_pickle_name": Path(__file__).parent / "data/_ursgal_lookup.csv.bz2"},
     )
     obj.df = pd.DataFrame(
         np.ones((5, len(obj.col_order) + 1)),
@@ -263,9 +259,7 @@ def test_merge_and_join_dicts():
 def test_assert_only_iupac_aas():
     obj = __IdentBaseParser(
         input_file=None,
-        params={
-            "rt_pickle_name": Path(__file__).parent / "data/_ursgal_lookup.csv.bz2"
-        },
+        params={"rt_pickle_name": Path(__file__).parent / "data/_ursgal_lookup.csv.bz2"},
     )
     obj.df = pd.DataFrame(
         np.ones((4, len(obj.col_order) + 1)),
@@ -280,9 +274,7 @@ def test_assert_only_iupac_aas():
 def test_add_decoy_identity():
     obj = __IdentBaseParser(
         input_file=None,
-        params={
-            "rt_pickle_name": Path(__file__).parent / "data/_ursgal_lookup.csv.bz2"
-        },
+        params={"rt_pickle_name": Path(__file__).parent / "data/_ursgal_lookup.csv.bz2"},
     )
     obj.df = pd.DataFrame(
         np.ones((4, len(obj.col_order) + 1)),

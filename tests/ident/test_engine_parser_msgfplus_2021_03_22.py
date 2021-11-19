@@ -8,9 +8,7 @@ from unify_idents.engine_parsers.ident.msgfplus_2021_03_22_parser import (
 
 def test_engine_parsers_msgfplus_init():
     input_file = Path(__file__).parent.parent / "data" / "BSA1_msgfplus_2021_03_22.mzid"
-    rt_lookup_path = (
-        Path(__file__).parent.parent / "data" / "BSA1_ursgal_lookup.csv.bz2"
-    )
+    rt_lookup_path = Path(__file__).parent.parent / "data" / "BSA1_ursgal_lookup.csv.bz2"
     db_path = (
         Path(__file__).parent.parent / "data" / "test_Creinhardtii_target_decoy.fasta"
     )
@@ -63,9 +61,7 @@ def test_engine_parsers_msgfplus_check_parser_compatibility_fail_with_omsa_file(
 
 def test_engine_parsers_msgfplus_unify():
     input_file = Path(__file__).parent.parent / "data" / "BSA1_msgfplus_2021_03_22.mzid"
-    rt_lookup_path = (
-        Path(__file__).parent.parent / "data" / "BSA1_ursgal_lookup.csv.bz2"
-    )
+    rt_lookup_path = Path(__file__).parent.parent / "data" / "BSA1_ursgal_lookup.csv.bz2"
     db_path = Path(__file__).parent.parent / "data" / "BSA.fasta"
 
     parser = MSGFPlus_2021_03_22(
@@ -103,9 +99,7 @@ def test_engine_parsers_msgfplus_unify():
 
 def test_engine_parsers_msgfplus_get_peptide_lookup():
     input_file = Path(__file__).parent.parent / "data" / "BSA1_msgfplus_2021_03_22.mzid"
-    rt_lookup_path = (
-        Path(__file__).parent.parent / "data" / "BSA1_ursgal_lookup.csv.bz2"
-    )
+    rt_lookup_path = Path(__file__).parent.parent / "data" / "BSA1_ursgal_lookup.csv.bz2"
     db_path = (
         Path(__file__).parent.parent / "data" / "test_Creinhardtii_target_decoy.fasta"
     )
@@ -147,9 +141,7 @@ def test_engine_parsers_msgfplus_get_peptide_lookup():
 
 def test_engine_parsers_msgfplus_internal_next():
     input_file = Path(__file__).parent.parent / "data" / "BSA1_msgfplus_2021_03_22.mzid"
-    rt_lookup_path = (
-        Path(__file__).parent.parent / "data" / "BSA1_ursgal_lookup.csv.bz2"
-    )
+    rt_lookup_path = Path(__file__).parent.parent / "data" / "BSA1_ursgal_lookup.csv.bz2"
     db_path = Path(__file__).parent.parent / "data" / "BSA.fasta"
 
     parser = MSGFPlus_2021_03_22(

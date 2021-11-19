@@ -8,9 +8,7 @@ from unify_idents.engine_parsers.ident.comet_2020_01_4_parser import (
 
 def test_engine_parsers_comet_init():
     input_file = Path(__file__).parent.parent / "data" / "BSA1_comet_2020_01_4.mzid"
-    rt_lookup_path = (
-        Path(__file__).parent.parent / "data" / "BSA1_ursgal_lookup.csv.bz2"
-    )
+    rt_lookup_path = Path(__file__).parent.parent / "data" / "BSA1_ursgal_lookup.csv.bz2"
     db_path = (
         Path(__file__).parent.parent / "data" / "test_Creinhardtii_target_decoy.fasta"
     )
@@ -63,9 +61,7 @@ def test_engine_parsers_comet_check_parser_compatibility_fail_with_omssa_file():
 
 def test_engine_parsers_comet_unify():
     input_file = Path(__file__).parent.parent / "data" / "BSA1_comet_2020_01_4.mzid"
-    rt_lookup_path = (
-        Path(__file__).parent.parent / "data" / "BSA1_ursgal_lookup.csv.bz2"
-    )
+    rt_lookup_path = Path(__file__).parent.parent / "data" / "BSA1_ursgal_lookup.csv.bz2"
     db_path = Path(__file__).parent.parent / "data" / "BSA.fasta"
 
     parser = Comet_2020_01_4_Parser(
@@ -103,9 +99,7 @@ def test_engine_parsers_comet_unify():
 
 def test_engine_parsers_comet_internal_next():
     input_file = Path(__file__).parent.parent / "data" / "BSA1_comet_2020_01_4.mzid"
-    rt_lookup_path = (
-        Path(__file__).parent.parent / "data" / "BSA1_ursgal_lookup.csv.bz2"
-    )
+    rt_lookup_path = Path(__file__).parent.parent / "data" / "BSA1_ursgal_lookup.csv.bz2"
     db_path = Path(__file__).parent.parent / "data" / "BSA.fasta"
 
     parser = Comet_2020_01_4_Parser(

@@ -10,12 +10,8 @@ def test_engine_parsers_flashLFQ_init():
     input_file = (
         Path(__file__).parent.parent / "data" / "flash_lfq_1_2_0_quantified_peaks.tsv"
     )
-    rt_lookup_path = (
-        Path(__file__).parent.parent / "data" / "BSA1_ursgal_lookup.csv.bz2"
-    )
-    parser = FlashLFQ_1_2_0_Parser(
-        input_file, params={"rt_pickle_name": rt_lookup_path}
-    )
+    rt_lookup_path = Path(__file__).parent.parent / "data" / "BSA1_ursgal_lookup.csv.bz2"
+    parser = FlashLFQ_1_2_0_Parser(input_file, params={"rt_pickle_name": rt_lookup_path})
 
 
 def test_engine_parsers_flashLFQ_check_parser_compatibility():
