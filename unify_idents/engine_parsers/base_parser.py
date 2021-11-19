@@ -58,6 +58,12 @@ class BaseParser:
             params = {}
         self.params = params
         self.param_mapper = uparma.UParma()
+        self.translated_params = self.param_mapper.get_default_params(
+            "unify_csv_style_1"
+        )
+        self.translated_params.update(
+            self.param_mapper.convert(self.params, "unify_csv_style_1")
+        )
 
     @classmethod
     def check_parser_compatibility(cls, file):
@@ -118,6 +124,7 @@ class __IdentBaseParser(BaseParser):
             "Sequence": "str",
             "Modifications": "str",
             "Charge": "int32",
+            "Is decoy": "bool",
             "Rank": "int32",
             "Protein ID": "str",
             "Retention Time (s)": "float32",
@@ -227,8 +234,14 @@ class __IdentBaseParser(BaseParser):
         Calculates number of missed cleavage sites.
         Operations are performed inplace.
         """
-        enzyme_pattern = self.param_mapper.get_default_params("unify_csv_style_1")[
-            "enzyme"
+        if self.translated_params["enzyme"]["original_value"] == "nonspecific":
+            self.df.loc[:, ["enzN", "enzC"]] = True
+            self.df.loc[:, "Missed Cleavages"] = 0
+            return None
+
+        enzyme_pattern = self.translated_params["enzyme"]["translated_value"]
+        integrity_strictness = self.translated_params[
+            "terminal_cleavage_site_integrity"
         ]["translated_value"]
 
         pren_seq = (
@@ -244,10 +257,12 @@ class __IdentBaseParser(BaseParser):
         )
         self.df.loc[:, "enzN"] = (
             pren_seq.str.split(fr"{enzyme_pattern}").str[0].str.len() == 1
-        ).groupby(pren_seq.index).agg("any") | (pren_seq.str[0] == "-").groupby(
+        ).groupby(pren_seq.index).agg(integrity_strictness) | (
+            pren_seq.str[0] == "-"
+        ).groupby(
             pren_seq.index
         ).agg(
-            "any"
+            integrity_strictness
         )
         postc_seq = (
             pd.concat(
@@ -262,16 +277,20 @@ class __IdentBaseParser(BaseParser):
         )
         self.df.loc[:, "enzC"] = (
             postc_seq.str.split(fr"{enzyme_pattern}").str[0].str.len() == 1
-        ).groupby(postc_seq.index).agg("any") | (postc_seq.str[-1] == "-").groupby(
+        ).groupby(postc_seq.index).agg(integrity_strictness) | (
+            postc_seq.str[-1] == "-"
+        ).groupby(
             postc_seq.index
         ).agg(
-            "any"
+            integrity_strictness
         )
 
         internal_cuts = self.df["Sequence"].str.split(fr"{enzyme_pattern}")
-        self.df.loc[:, "Missed Cleavages"] = internal_cuts.apply(
-            len
-        ) - internal_cuts.apply(lambda row: "" in row).astype(int)
+        self.df.loc[:, "Missed Cleavages"] = (
+            internal_cuts.apply(len)
+            - internal_cuts.apply(lambda row: "" in row).astype(int)
+            - 1
+        )
 
     def calc_masses_offsets_and_composition(self):
         """Theoretical masses and mass-to-charge ratios are computed and added.
@@ -313,12 +332,12 @@ class __IdentBaseParser(BaseParser):
         Operations are performed inplace on self.df
         """
         eng_name = self.df["Search Engine"].unique()[0]
-        score_col = self.param_mapper.get_default_params(style="unify_csv_style_1")[
-            "validation_score_field"
-        ]["translated_value"][eng_name]
-        top_is_highest = self.param_mapper.get_default_params(style="unify_csv_style_1")[
-            "bigger_scores_better"
-        ]["translated_value"][eng_name]
+        score_col = self.translated_params["validation_score_field"]["translated_value"][
+            eng_name
+        ]
+        top_is_highest = self.translated_params["bigger_scores_better"][
+            "translated_value"
+        ][eng_name]
         ranking_needs_to_be_ascending = False if top_is_highest is True else True
 
         # TODO: Min or dense?

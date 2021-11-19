@@ -309,3 +309,72 @@ def test_add_decoy_identity_non_default_prefix():
     obj.add_decoy_identity()
 
     assert all(obj.df["Is decoy"] == [False, False, False, True])
+
+
+def test_check_enzyme_specificity_trypsin_all():
+    obj = __IdentBaseParser(
+        input_file=None,
+        params={
+            "rt_pickle_name": Path(__file__).parent / "data/_ursgal_lookup.csv.bz2",
+            "enzyme": "trypsin",
+            "terminal_cleavage_site_integrity": "all",
+        },
+    )
+    obj.df = pd.DataFrame(
+        np.ones((4, len(obj.col_order) + 1)),
+        columns=obj.col_order.to_list() + ["MSFragger:Hyperscore"],
+    )
+    obj.df["Sequence"] = ["PEPRTIDEK", "EPTIDEK", "EPTIDEK", "EPRPTRIRDEK"]
+    obj.df["Sequence Pre AA"] = ["K", "K", "A", "K"]
+    obj.df["Sequence Post AA"] = ["A", "P", "A<|>P", "A<|>V"]
+    obj.check_enzyme_specificity()
+
+    assert all(obj.df["enzN"] == [False, True, False, True])
+    assert all(obj.df["enzC"] == [True, False, False, True])
+    assert all(obj.df["Missed Cleavages"] == [1, 0, 0, 2])
+
+
+def test_check_enzyme_specificity_trypsin_any():
+    obj = __IdentBaseParser(
+        input_file=None,
+        params={
+            "rt_pickle_name": Path(__file__).parent / "data/_ursgal_lookup.csv.bz2",
+            "enzyme": "trypsin",
+            "terminal_cleavage_site_integrity": "any",
+        },
+    )
+    obj.df = pd.DataFrame(
+        np.ones((4, len(obj.col_order) + 1)),
+        columns=obj.col_order.to_list() + ["MSFragger:Hyperscore"],
+    )
+    obj.df["Sequence"] = ["PEPRTIDEK", "EPTIDEK", "EPTIDEK", "EPTIDEK"]
+    obj.df["Sequence Pre AA"] = ["K", "K", "A", "K"]
+    obj.df["Sequence Post AA"] = ["A", "P", "A<|>P", "A<|>V"]
+    obj.check_enzyme_specificity()
+
+    assert all(obj.df["enzN"] == [False, True, False, True])
+    assert all(obj.df["enzC"] == [True, False, True, True])
+    assert all(obj.df["Missed Cleavages"] == [1, 0, 0, 0])
+
+
+def test_check_enzyme_specificity_nonspecific():
+    obj = __IdentBaseParser(
+        input_file=None,
+        params={
+            "rt_pickle_name": Path(__file__).parent / "data/_ursgal_lookup.csv.bz2",
+            "enzyme": "nonspecific",
+            "terminal_cleavage_site_integrity": "all",
+        },
+    )
+    obj.df = pd.DataFrame(
+        np.ones((4, len(obj.col_order) + 1)),
+        columns=obj.col_order.to_list() + ["MSFragger:Hyperscore"],
+    )
+    obj.df["Sequence"] = ["ASDF", "EPTIDEK", "EPTIDEK", "EPTIDEK"]
+    obj.df["Sequence Pre AA"] = ["L<|>E", "A", "R", "P"]
+    obj.df["Sequence Post AA"] = ["F", "L<|>E", "A<|>P", "A<|>V"]
+    obj.check_enzyme_specificity()
+
+    assert all(obj.df["enzN"] == [True, True, True, True])
+    assert all(obj.df["enzC"] == [True, True, True, True])
+    assert all(obj.df["Missed Cleavages"] == [0, 0, 0, 0])
