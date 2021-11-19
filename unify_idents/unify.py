@@ -1,3 +1,4 @@
+"""Unify handler."""
 from importlib import import_module
 from pathlib import Path
 
@@ -17,7 +18,8 @@ class Unify:
     """
 
     def __init__(self, input_file, params={}):
-        """
+        """Initialize unifier.
+
         Args:
             input_file (str): path to input file
             params (dict): ursgal param dict
@@ -34,8 +36,8 @@ class Unify:
         self.PROTON = 1.00727646677
 
     def _get_parser(self):
-        """
-        Checks input file / parser compatibility and init matching parser in self.parser.
+        """Check input file / parser compatibility and init matching parser in self.parser.
+
         Raises error if no matching parser can be found.
         """
         # Get all files except __init__.pys
@@ -63,8 +65,8 @@ class Unify:
         raise IOError(f"No suitable parser found for {self.input_file}.")
 
     def get_dataframe(self):
-        """
-        Computes and returns a unified dataframe using the input file with specified parameters.
+        """Compute and returns a unified dataframe using the input file with specified parameters.
+
         Returns:
             self.df (pd.DataFrame): unified dataframe
 

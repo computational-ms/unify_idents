@@ -1,3 +1,4 @@
+"""Engine parser."""
 import multiprocessing as mp
 import sys
 import xml.etree.ElementTree as ETree
@@ -13,8 +14,8 @@ from unify_idents.engine_parsers.base_parser import __IdentBaseParser
 
 
 def _get_single_spec_df(reference_dict, mapping_dict, spectrum):
-    """
-    Method for reading and storing information from a single spectrum
+    """Primary method for reading and storing information from a single spectrum.
+
     Args:
         reference_dict (dict): dict with reference columns to be filled in
         mapping_dict (dict): mapping of engine level column names to ursgal unified column names
@@ -50,7 +51,13 @@ def _get_single_spec_df(reference_dict, mapping_dict, spectrum):
 
 
 class Comet_2020_01_4_Parser(__IdentBaseParser):
+    """File parser for Comet."""
+
     def __init__(self, *args, **kwargs):
+        """Initialize parser.
+
+        Reads in data file and provides mappings.
+        """
         super().__init__(*args, **kwargs)
         self.style = "comet_style_1"
 
@@ -80,8 +87,8 @@ class Comet_2020_01_4_Parser(__IdentBaseParser):
 
     @classmethod
     def check_parser_compatibility(cls, file):
-        """
-        Asserts compatibility between file and parser.
+        """Assert compatibility between file and parser.
+
         Args:
             file (str): path to input file
 
@@ -101,8 +108,8 @@ class Comet_2020_01_4_Parser(__IdentBaseParser):
         return is_mzid and contains_engine and contains_correct_version
 
     def _map_mods_and_sequences(self):
-        """
-        Replace internal tags to retrieve sequences and formatted modification strings.
+        """Replace internal tags to retrieve sequences and formatted modification strings.
+
         Operations are performed inplace.
         """
         # Register fixed mods
@@ -165,7 +172,7 @@ class Comet_2020_01_4_Parser(__IdentBaseParser):
 
     def unify(self):
         """
-        Main method to read and unify engine output
+        Primary method to read and unify engine output.
 
         Returns:
             self.df (pd.DataFrame): unified dataframe

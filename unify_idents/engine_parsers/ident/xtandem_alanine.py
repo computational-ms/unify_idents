@@ -1,3 +1,4 @@
+"""Engine parser."""
 import multiprocessing as mp
 import sys
 import xml.etree.ElementTree as ETree
@@ -11,8 +12,8 @@ from unify_idents.engine_parsers.base_parser import __IdentBaseParser
 
 
 def _get_single_spec_df(reference_dict, mapping_dict, spectrum):
-    """
-    Method for reading and storing information from a single spectrum
+    """Primary method for reading and storing information from a single spectrum.
+
     Args:
         reference_dict (dict): dict with reference columns to be filled in
         mapping_dict (dict): mapping of engine level column names to ursgal unified column names
@@ -59,14 +60,13 @@ def _get_single_spec_df(reference_dict, mapping_dict, spectrum):
 
 
 class XTandemAlanine(__IdentBaseParser):
-    """Engine parser to unify X!TandemAlanine results.
-
-    Args:
-        input_file (str): path to file to unify
-        params (dict, optional): parser specific parameters
-    """
+    """File parser for X!Tandem Alanine."""
 
     def __init__(self, *args, **kwargs):
+        """Initialize parser.
+
+        Reads in data file and provides mappings.
+        """
         super().__init__(*args, **kwargs)
         self.style = "xtandem_style_1"
         tree = ETree.parse(self.input_file)
@@ -89,8 +89,8 @@ class XTandemAlanine(__IdentBaseParser):
 
     @classmethod
     def check_parser_compatibility(cls, file):
-        """
-        Asserts compatibility between file and parser.
+        """Assert compatibility between file and parser.
+
         Args:
             file (str): path to input file
 
@@ -106,8 +106,8 @@ class XTandemAlanine(__IdentBaseParser):
         return is_xml and contains_ref
 
     def map_mod_names(self, df):
-        """
-        Maps modification names in unify style.
+        """Map modification names in unify style.
+
         Args:
             df (pd.DataFrame): input dataframe
 
@@ -152,7 +152,7 @@ class XTandemAlanine(__IdentBaseParser):
 
     def unify(self):
         """
-        Main method to read and unify engine output
+        Primary method to read and unify engine output.
 
         Returns:
             self.df (pd.DataFrame): unified dataframe

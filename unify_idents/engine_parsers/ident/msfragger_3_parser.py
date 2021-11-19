@@ -1,3 +1,4 @@
+"""Engine parser."""
 import itertools
 
 import pandas as pd
@@ -8,7 +9,13 @@ from unify_idents.engine_parsers.base_parser import __IdentBaseParser
 
 
 class MSFragger3Parser(__IdentBaseParser):
+    """File parser for MSFragger 3."""
+
     def __init__(self, *args, **kwargs):
+        """Initialize parser.
+
+        Reads in data file and provides mappings.
+        """
         super().__init__(*args, **kwargs)
         self.style = "msfragger_style_3"
         # 15N handling missing for now
@@ -32,6 +39,15 @@ class MSFragger3Parser(__IdentBaseParser):
 
     @classmethod
     def check_parser_compatibility(cls, file):
+        """Assert compatibility between file and parser.
+
+        Args:
+            file (str): path to input file
+
+        Returns:
+            bool: True if parser and file are compatible
+
+        """
         is_tsv = file.as_posix().endswith(".tsv")
         with open(file.as_posix()) as f:
             head = "".join([next(f) for _ in range(1)])
@@ -66,8 +82,8 @@ class MSFragger3Parser(__IdentBaseParser):
         return is_tsv and columns_match
 
     def _map_mod_translation(self, row, map_dict):
-        """
-        Replaces single mod string
+        """Replace single mod string.
+
         Args:
             row (str): unprocessed modification string
             map_dict (dict): mod mapping dict
@@ -157,7 +173,7 @@ class MSFragger3Parser(__IdentBaseParser):
 
     def unify(self):
         """
-        Main method to read and unify engine output
+        Primary method to read and unify engine output.
 
         Returns:
             self.df (pd.DataFrame): unified dataframe

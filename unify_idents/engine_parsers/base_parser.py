@@ -1,3 +1,4 @@
+"""Parser handler."""
 import multiprocessing as mp
 
 import pandas as pd
@@ -11,8 +12,8 @@ cc = ChemicalComposition()
 
 
 def get_mass_and_composition(seq, mods):
-    """
-    Computes theoretical mass and hill_notation of any single peptidoform.
+    """Compute theoretical mass and hill_notation of any single peptidoform.
+
     Args:
         seq (str): peptide sequence
         mods (str): modifications of the peptide sequence, given as "UnimodName:Position"
@@ -26,8 +27,8 @@ def get_mass_and_composition(seq, mods):
 
 
 def merge_and_join_dicts(dictlist, delim):
-    """
-    Merges list of dicts with identical keys as strings into single merged dict.
+    """Merge list of dicts with identical keys as strings into single merged dict.
+
     Args:
         dictlist (list): list of dicts which are to be merged
         delim (str): delimiter
@@ -43,11 +44,15 @@ def merge_and_join_dicts(dictlist, delim):
 
 
 class BaseParser:
-    """
-    Base class of all parser types.
-    """
+    """Base class of all parser types."""
 
     def __init__(self, input_file, params):
+        """Initialize parser.
+
+        Args:
+            input_file (str): path to input file
+            params (dict): ursgal param dict
+        """
         self.input_file = input_file
         if params is None:
             params = {}
@@ -56,8 +61,8 @@ class BaseParser:
 
     @classmethod
     def check_parser_compatibility(cls, file):
-        """
-        Asserts compatibility between file and parser.
+        """Assert compatibility between file and parser.
+
         Args:
             file (str): path to input file
 
@@ -68,8 +73,7 @@ class BaseParser:
         return False
 
     def _read_rt_lookup_file(self):
-        """
-        Reads retention time lookup file.
+        """Read retention time lookup file.
 
         Returns:
             rt_lookup (pd.DataFrame): loaded rt_pickle_file indexable by Spectrum ID
@@ -81,11 +85,13 @@ class BaseParser:
 
 
 class __IdentBaseParser(BaseParser):
-    """
-    Base class of all ident parsers.
-    """
+    """Base class of all ident parsers."""
 
     def __init__(self, *args, **kwargs):
+        """Initialize parser.
+
+        Reads in data file and provides mappings.
+        """
         super().__init__(*args, **kwargs)
         self.DELIMITER = self.params.get("delimiter", "<|>")
         self.PROTON = 1.00727646677
@@ -134,8 +140,8 @@ class __IdentBaseParser(BaseParser):
         self.col_order = pd.Series(self.dtype_mapping.keys())
 
     def _calc_mz(self, mass, charge):
-        """
-        Calulates mass-to-charge ratio.
+        """Calulates mass-to-charge ratio.
+
         Args:
             mass (pd.Series): masses
             charge (pd.Series): charges
@@ -149,7 +155,7 @@ class __IdentBaseParser(BaseParser):
 
     def _create_mod_dicts(self):
         """
-        Create dict containing meta information about static and variable mods
+        Create dict containing meta information about static and variable mods.
 
         Returns:
             mod_dict (dict): mapped modifications and information
@@ -174,8 +180,8 @@ class __IdentBaseParser(BaseParser):
         return mod_dict
 
     def assert_only_iupac_aas(self):
-        """
-        Asserts that only IUPAC nomenclature one letter amino acids are used in sequence.
+        """Assert that only IUPAC nomenclature one letter amino acids are used in sequence.
+
         Non-IUPAC designations are dropped.
         Operations are performed inplace.
         """
@@ -191,8 +197,8 @@ class __IdentBaseParser(BaseParser):
             )
 
     def add_protein_ids(self):
-        """
-        Add all Protein IDs that matching the sequence.
+        """Add all Protein IDs that matching the sequence.
+
         Operations are performed inplace on self.df
         """
         peptide_mapper = UPeptideMapper(self.params["database"])
@@ -216,8 +222,8 @@ class __IdentBaseParser(BaseParser):
         self.df.loc[:, new_columns.columns] = new_columns.values
 
     def check_enzyme_specificity(self):
-        """
-        Checks consistency of N/C-terminal cleavage sites.
+        """Check consistency of N/C-terminal cleavage sites.
+
         Calculates number of missed cleavage sites.
         Operations are performed inplace.
         """
@@ -268,8 +274,8 @@ class __IdentBaseParser(BaseParser):
         ) - internal_cuts.apply(lambda row: "" in row).astype(int)
 
     def calc_masses_offsets_and_composition(self):
-        """
-        Theoretical masses and mass-to-charge ratios are computed and added.
+        """Theoretical masses and mass-to-charge ratios are computed and added.
+
         Offsets are calculated between theoretical and experimental mass-to-charge ratio.
         Operations are performed inplace on self.df
         """
@@ -290,8 +296,8 @@ class __IdentBaseParser(BaseParser):
         )
 
     def get_exp_rt_and_mz(self):
-        """
-        Experimental mass-to-charge ratios and retention times are added.
+        """Experimental mass-to-charge ratios and retention times are added.
+
         Operations are performed inplace on self.df
         """
         rt_lookup = self._read_rt_lookup_file()
@@ -302,8 +308,8 @@ class __IdentBaseParser(BaseParser):
         self.df["Exp m/z"] = rt_lookup.loc[spec_ids, "Precursor mz"].to_list()
 
     def add_ranks(self):
-        """
-        Ranks are calculated based on the engine scoring column at Spectrum ID level.
+        """Ranks are calculated based on the engine scoring column at Spectrum ID level.
+
         Operations are performed inplace on self.df
         """
         eng_name = self.df["Search Engine"].unique()[0]
@@ -323,21 +329,21 @@ class __IdentBaseParser(BaseParser):
         )
 
     def add_decoy_identity(self):
-        """
-        Adds boolean decoy state if designated decoy prefix is in Protein IDs.
+        """Add boolean decoy state if designated decoy prefix is in Protein IDs.
+
         Operations are performed inplace on self.df
         """
         decoy_tag = self.params.get("decoy_tag", "decoy_")
         self.df.loc[:, "Is decoy"] = self.df["Protein ID"].str.contains(decoy_tag)
 
     def sanitize(self):
-        """
-        Series of dataframe sanitation steps:
-            - Missing raw data locations are replaced by their respective spectrum title identifiers
-            - .mgf file extensions are renamed to point to the .mzML files
-            - Columns that were not filled in but should exist in the unified format are added and set to None
-            - Modifications are sorted alphabetically
-            - Columns in the dataframe which could not be properly mapped are removed (warning is raised)
+        """Perform dataframe sanitation steps.
+
+        - Missing raw data locations are replaced by their respective spectrum title identifiers
+        - .mgf file extensions are renamed to point to the .mzML files
+        - Columns that were not filled in but should exist in the unified format are added and set to None
+        - Modifications are sorted alphabetically
+        - Columns in the dataframe which could not be properly mapped are removed (warning is raised)
         Operations are performed inplace on self.df
         """
         missing_data_locs = ~(self.df["Raw data location"].str.len() > 0)
@@ -375,8 +381,8 @@ class __IdentBaseParser(BaseParser):
             self.df.drop(columns=unmapped_add_cols, inplace=True, errors="ignore")
 
     def process_unify_style(self):
-        """
-        Combines all additional operations that are needed to calculate new columns and sanitize the dataframe.
+        """Combine all additional operations that are needed to calculate new columns and sanitize the dataframe.
+
         Operations are performed inplace on self.df
         """
         self.df.drop_duplicates(inplace=True, ignore_index=True)
@@ -391,11 +397,13 @@ class __IdentBaseParser(BaseParser):
 
 
 class __QuantBaseParser(BaseParser):
-    """
-    Base class of all quant parsers.
-    """
+    """Base class of all quant parsers."""
 
     def __init__(self, *args, **kwargs):
+        """Initialize parser.
+
+        Reads in data file and provides mappings.
+        """
         super().__init__(*args, **kwargs)
         self.cc = ChemicalComposition()
         self.scan_rt_lookup = self._read_rt_lookup_file()

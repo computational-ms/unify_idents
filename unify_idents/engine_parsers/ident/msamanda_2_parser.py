@@ -1,3 +1,4 @@
+"""Engine parser."""
 import pandas as pd
 import regex as re
 
@@ -5,7 +6,13 @@ from unify_idents.engine_parsers.base_parser import __IdentBaseParser
 
 
 class MSAmanda_2_Parser(__IdentBaseParser):
+    """File parser for MS Amanda 2."""
+
     def __init__(self, *args, **kwargs):
+        """Initialize parser.
+
+        Reads in data file and provides mappings.
+        """
         super().__init__(*args, **kwargs)
         self.style = "msamanda_style_1"
 
@@ -37,8 +44,8 @@ class MSAmanda_2_Parser(__IdentBaseParser):
 
     @classmethod
     def check_parser_compatibility(cls, file):
-        """
-        Asserts compatibility between file and parser.
+        """Assert compatibility between file and parser.
+
         Args:
             file (str): path to input file
 
@@ -54,8 +61,8 @@ class MSAmanda_2_Parser(__IdentBaseParser):
         return is_csv and matches_version
 
     def _map_mod_translation(self, row):
-        """
-        Replaces single mod string
+        """Replace single mod string.
+
         Args:
             row (str): unprocessed modification string
 
@@ -89,7 +96,7 @@ class MSAmanda_2_Parser(__IdentBaseParser):
 
     def unify(self):
         """
-        Main method to read and unify engine output
+        Primary method to read and unify engine output.
 
         Returns:
             self.df (pd.DataFrame): unified dataframe

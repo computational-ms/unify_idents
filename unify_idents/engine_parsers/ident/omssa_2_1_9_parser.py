@@ -1,3 +1,4 @@
+"""Engine parser."""
 import xml.etree.ElementTree as ETree
 
 import numpy as np
@@ -7,7 +8,13 @@ from unify_idents.engine_parsers.base_parser import __IdentBaseParser
 
 
 class OmssaParser(__IdentBaseParser):
+    """File parser for OMSSA."""
+
     def __init__(self, *args, **kwargs):
+        """Initialize parser.
+
+        Reads in data file and provides mappings.
+        """
         super().__init__(*args, **kwargs)
         self.style = "omssa_style_1"
 
@@ -35,8 +42,8 @@ class OmssaParser(__IdentBaseParser):
 
     @classmethod
     def check_parser_compatibility(cls, file):
-        """
-        Asserts compatibility between file and parser.
+        """Assert compatibility between file and parser.
+
         Args:
             file (str): path to input file
 
@@ -69,8 +76,8 @@ class OmssaParser(__IdentBaseParser):
         return is_csv and columns_match
 
     def _replace_mod_strings(self, row, mod_translations):
-        """
-        Replaces single mod string
+        """Replace single mod string.
+
         Args:
             row (str): unprocessed modification string
             mod_translations (dict): mod translation dict
@@ -234,7 +241,7 @@ class OmssaParser(__IdentBaseParser):
 
     def unify(self):
         """
-        Main method to read and unify engine output
+        Primary method to read and unify engine output.
 
         Returns:
             self.df (pd.DataFrame): unified dataframe
