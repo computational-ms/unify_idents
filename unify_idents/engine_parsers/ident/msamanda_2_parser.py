@@ -73,7 +73,7 @@ class MSAmanda_2_Parser(__IdentBaseParser):
         if row == "" or row == [""]:
             return mod_str
         for mod in row:
-            mod_name = re.search("\(([^|]+)", mod).group(1)
+            mod_name = re.search(r"\(([^|]+)", mod).group(1)
             pos = mod.split("(")[0]
             if "N-TERM" in pos.upper():
                 pos = 0

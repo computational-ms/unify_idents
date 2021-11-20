@@ -95,7 +95,7 @@ class MSFragger3Parser(__IdentBaseParser):
         if row == "" or row == [""]:
             return mod_str
         for mod in row:
-            mass = re.search("\(([^)]+)", mod).group(1)
+            mass = re.search(r"\(([^)]+)", mod).group(1)
             name = map_dict[mass]
             if len(name) > 0:
                 for m in name:
@@ -117,7 +117,7 @@ class MSFragger3Parser(__IdentBaseParser):
         """
         mod_split_col = self.df["Modifications"].fillna("").str.split(", ")
         unique_mods = set().union(*mod_split_col.apply(set)).difference({""})
-        unique_mod_masses = {re.search("\(([^)]+)", m).group(1) for m in unique_mods}
+        unique_mod_masses = {re.search(r"\(([^)]+)", m).group(1) for m in unique_mods}
         # Map single mods
         potential_names = {
             m: [
@@ -155,7 +155,7 @@ class MSFragger3Parser(__IdentBaseParser):
             if v == []
         }
         non_mappable_percent = pd.Series(
-            [v / len(self.df) for v in non_mappable_mods.values()]
+            [v / len(self.df) for v in non_mappable_mods.values()], dtype="float64"
         )
         if any(non_mappable_percent > 0.001):
             raise ValueError(
