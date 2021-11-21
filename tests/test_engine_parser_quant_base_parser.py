@@ -14,6 +14,7 @@ def test_engine_parsers_QuantBaseParser_init():
     parser = __QuantBaseParser(
         input_file,
         params={
+            "cpus": 2,
             "rt_pickle_name": rt_lookup_path,
             "database": db_path,
             "modifications": [

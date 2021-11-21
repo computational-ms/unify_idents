@@ -16,6 +16,7 @@ def test_engine_parsers_msgfplus_init():
     parser = MSGFPlus_2021_03_22(
         input_file,
         params={
+            "cpus": 2,
             "rt_pickle_name": rt_lookup_path,
             "database": db_path,
             "modifications": [
@@ -67,6 +68,7 @@ def test_engine_parsers_msgfplus_unify():
     parser = MSGFPlus_2021_03_22(
         input_file,
         params={
+            "cpus": 2,
             "rt_pickle_name": rt_lookup_path,
             "database": db_path,
             "modifications": [
@@ -107,6 +109,7 @@ def test_engine_parsers_msgfplus_get_peptide_lookup():
     parser = MSGFPlus_2021_03_22(
         input_file,
         params={
+            "cpus": 2,
             "rt_pickle_name": rt_lookup_path,
             "database": db_path,
             "modifications": [
@@ -147,6 +150,7 @@ def test_engine_parsers_msgfplus_internal_next():
     parser = MSGFPlus_2021_03_22(
         input_file,
         params={
+            "cpus": 2,
             "rt_pickle_name": rt_lookup_path,
             "database": db_path,
             "modifications": [

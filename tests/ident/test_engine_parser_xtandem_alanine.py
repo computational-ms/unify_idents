@@ -20,6 +20,7 @@ def test_engine_parsers_xtandem_init():
     parser = XTandemAlanine(
         input_file,
         params={
+            "cpus": 2,
             "rt_pickle_name": rt_lookup_path,
             "database": db_path,
             "modifications": [
@@ -80,6 +81,7 @@ def test_engine_parsers_xtandem_iterable():
     parser = XTandemAlanine(
         input_file,
         params={
+            "cpus": 2,
             "rt_pickle_name": rt_lookup_path,
             "database": db_path,
             "modifications": [
@@ -121,6 +123,7 @@ def test_engine_parsers_xtandem_unify():
     parser = XTandemAlanine(
         input_file,
         params={
+            "cpus": 2,
             "rt_pickle_name": rt_lookup_path,
             "database": db_path,
             "modifications": [
@@ -171,6 +174,7 @@ def test_engine_parsers_xtandem_nterminal_mod():
     parser = XTandemAlanine(
         input_file,
         params={
+            "cpus": 2,
             "rt_pickle_name": rt_lookup_path,
             "database": db_path,
             "modifications": [
@@ -212,6 +216,7 @@ def test_engine_parsers_xtandem_multiple_psms():
     parser = XTandemAlanine(
         input_file,
         params={
+            "cpus": 2,
             "rt_pickle_name": rt_lookup_path,
             "database": db_path,
             "modifications": [
@@ -275,6 +280,7 @@ def test_engine_parsers_xtandem_map_mod_names():
     parser = XTandemAlanine(
         input_file,
         params={
+            "cpus": 2,
             "rt_pickle_name": rt_lookup_path,
             "database": db_path,
             "modifications": [
@@ -317,6 +323,7 @@ def test_engine_parsers_xtandem_map_mod_names_nterm():
     parser = XTandemAlanine(
         input_file,
         params={
+            "cpus": 2,
             "rt_pickle_name": rt_lookup_path,
             "database": db_path,
             "modifications": [

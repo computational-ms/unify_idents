@@ -15,6 +15,7 @@ def test_engine_parsers_msamanda_init():
     parser = MSAmanda_2_Parser(
         input_file,
         params={
+            "cpus": 2,
             "rt_pickle_name": rt_lookup_path,
             "database": db_path,
             "modifications": [
@@ -55,6 +56,7 @@ def test_engine_parsers_msamanda_iterable():
     parser = MSAmanda_2_Parser(
         input_file,
         params={
+            "cpus": 2,
             "rt_pickle_name": rt_lookup_path,
             "database": db_path,
             "modifications": [
@@ -92,6 +94,7 @@ def test_engine_parsers_msamanda_next():
     parser = Unify(
         input_file,
         params={
+            "cpus": 2,
             "rt_pickle_name": rt_lookup_path,
             "database": db_path,
             "modifications": [

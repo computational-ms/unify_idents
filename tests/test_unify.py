@@ -168,6 +168,7 @@ def test_engine_parsers_msfragger_unified_frame():
     u = Unify(
         input_file,
         params={
+            "cpus": 2,
             "rt_pickle_name": rt_lookup_path,
             "database": db_path,
             "modifications": [
@@ -206,6 +207,7 @@ def test_engine_parsers_msgf_unified_frame():
     u = Unify(
         input_file,
         params={
+            "cpus": 2,
             "rt_pickle_name": rt_lookup_path,
             "database": db_path,
             "modifications": [
@@ -328,6 +330,7 @@ def test_engine_parsers_msamanda_unified_frame():
     u = Unify(
         input_file,
         params={
+            "cpus": 2,
             "rt_pickle_name": rt_lookup_path,
             "database": db_path,
             "modifications": [
@@ -584,6 +587,7 @@ def test_unify_read_rt_lookup_file():
     parser = Unify(
         input_file,
         params={
+            "cpus": 2,
             "rt_pickle_name": rt_lookup_path,
             "database": db_path,
             "modifications": [

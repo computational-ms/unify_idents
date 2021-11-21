@@ -16,6 +16,7 @@ def test_engine_parsers_comet_init():
     parser = Comet_2020_01_4_Parser(
         input_file,
         params={
+            "cpus": 2,
             "rt_pickle_name": rt_lookup_path,
             "database": db_path,
             "modifications": [
@@ -67,6 +68,7 @@ def test_engine_parsers_comet_unify():
     parser = Comet_2020_01_4_Parser(
         input_file,
         params={
+            "cpus": 2,
             "rt_pickle_name": rt_lookup_path,
             "database": db_path,
             "modifications": [
@@ -105,6 +107,7 @@ def test_engine_parsers_comet_internal_next():
     parser = Comet_2020_01_4_Parser(
         input_file,
         params={
+            "cpus": 2,
             "rt_pickle_name": rt_lookup_path,
             "database": db_path,
             "modifications": [

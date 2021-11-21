@@ -21,6 +21,7 @@ def test_engine_parsers_IdentBaseParser_init():
     parser = __IdentBaseParser(
         input_file,
         params={
+            "cpus": 2,
             "rt_pickle_name": rt_lookup_path,
             "database": db_path,
             "modifications": [
@@ -111,8 +112,9 @@ def test_add_protein_ids():
     obj = __IdentBaseParser(
         input_file=None,
         params={
+            "cpus": 2,
             "database": Path(__file__).parent
-            / "data/test_Creinhardtii_target_decoy.fasta"
+            / "data/test_Creinhardtii_target_decoy.fasta",
         },
     )
     obj.df = pd.DataFrame(
@@ -144,7 +146,10 @@ def test_add_protein_ids():
 def test_calc_masses_offsets_and_composition():
     obj = __IdentBaseParser(
         input_file=None,
-        params={"rt_pickle_name": Path(__file__).parent / "data/_ursgal_lookup.csv.bz2"},
+        params={
+            "cpus": 2,
+            "rt_pickle_name": Path(__file__).parent / "data/_ursgal_lookup.csv.bz2",
+        },
     )
     obj.df = pd.DataFrame(
         np.ones((3, len(obj.col_order) + 1)),
@@ -173,7 +178,10 @@ def test_calc_masses_offsets_and_composition():
 def test_get_exp_rt_and_mz():
     obj = __IdentBaseParser(
         input_file=None,
-        params={"rt_pickle_name": Path(__file__).parent / "data/_ursgal_lookup.csv.bz2"},
+        params={
+            "cpus": 2,
+            "rt_pickle_name": Path(__file__).parent / "data/_ursgal_lookup.csv.bz2",
+        },
     )
     obj.df = pd.DataFrame(
         np.ones((5, len(obj.col_order) + 1)),
@@ -195,6 +203,7 @@ def test_create_mod_dicts():
     obj = __IdentBaseParser(
         input_file=None,
         params={
+            "cpus": 2,
             "modifications": [
                 {
                     "aa": "*",
@@ -208,7 +217,7 @@ def test_create_mod_dicts():
                     "position": "any",
                     "name": "Carbamidomethyl",
                 },
-            ]
+            ],
         },
     )
     mod_dict = obj._create_mod_dicts()
@@ -259,7 +268,10 @@ def test_merge_and_join_dicts():
 def test_assert_only_iupac_aas():
     obj = __IdentBaseParser(
         input_file=None,
-        params={"rt_pickle_name": Path(__file__).parent / "data/_ursgal_lookup.csv.bz2"},
+        params={
+            "cpus": 2,
+            "rt_pickle_name": Path(__file__).parent / "data/_ursgal_lookup.csv.bz2",
+        },
     )
     obj.df = pd.DataFrame(
         np.ones((4, len(obj.col_order) + 1)),
@@ -274,7 +286,10 @@ def test_assert_only_iupac_aas():
 def test_add_decoy_identity():
     obj = __IdentBaseParser(
         input_file=None,
-        params={"rt_pickle_name": Path(__file__).parent / "data/_ursgal_lookup.csv.bz2"},
+        params={
+            "cpus": 2,
+            "rt_pickle_name": Path(__file__).parent / "data/_ursgal_lookup.csv.bz2",
+        },
     )
     obj.df = pd.DataFrame(
         np.ones((4, len(obj.col_order) + 1)),
@@ -291,6 +306,7 @@ def test_add_decoy_identity_non_default_prefix():
     obj = __IdentBaseParser(
         input_file=None,
         params={
+            "cpus": 2,
             "rt_pickle_name": Path(__file__).parent / "data/_ursgal_lookup.csv.bz2",
             "decoy_tag": "non_default_tag_",
         },
@@ -315,6 +331,7 @@ def test_check_enzyme_specificity_trypsin_all():
     obj = __IdentBaseParser(
         input_file=None,
         params={
+            "cpus": 2,
             "rt_pickle_name": Path(__file__).parent / "data/_ursgal_lookup.csv.bz2",
             "enzyme": "trypsin",
             "terminal_cleavage_site_integrity": "all",
@@ -338,6 +355,7 @@ def test_check_enzyme_specificity_trypsin_any():
     obj = __IdentBaseParser(
         input_file=None,
         params={
+            "cpus": 2,
             "rt_pickle_name": Path(__file__).parent / "data/_ursgal_lookup.csv.bz2",
             "enzyme": "trypsin",
             "terminal_cleavage_site_integrity": "any",
@@ -361,6 +379,7 @@ def test_check_enzyme_specificity_nonspecific():
     obj = __IdentBaseParser(
         input_file=None,
         params={
+            "cpus": 2,
             "rt_pickle_name": Path(__file__).parent / "data/_ursgal_lookup.csv.bz2",
             "enzyme": "nonspecific",
             "terminal_cleavage_site_integrity": "all",
