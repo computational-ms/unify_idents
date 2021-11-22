@@ -3,7 +3,7 @@ from pathlib import Path
 
 import pandas as pd
 
-from unify_idents.engine_parsers.ident.xtandem_alanine import XTandemAlanine
+from unify_idents.engine_parsers.ident.xtandem_alanine import XTandemAlanine_Parser
 
 
 def test_engine_parsers_xtandem_init():
@@ -17,7 +17,7 @@ def test_engine_parsers_xtandem_init():
         Path(__file__).parent.parent / "data" / "test_Creinhardtii_target_decoy.fasta"
     )
 
-    parser = XTandemAlanine(
+    parser = XTandemAlanine_Parser(
         input_file,
         params={
             "cpus": 2,
@@ -54,7 +54,7 @@ def test_engine_parsers_xtandem_file_matches_xtandem_parser():
         / "test_Creinhardtii_QE_pH11_xtandem_alanine.xml"
     )
 
-    assert XTandemAlanine.check_parser_compatibility(input_file) is True
+    assert XTandemAlanine_Parser.check_parser_compatibility(input_file) is True
 
 
 def test_engine_parsers_xtandem_file_not_matches_xtandem_parser():
@@ -64,7 +64,7 @@ def test_engine_parsers_xtandem_file_not_matches_xtandem_parser():
         / "test_Creinhardtii_QE_pH11_mzml2mgf_0_0_1_msfragger_3.tsv"
     )
 
-    assert XTandemAlanine.check_parser_compatibility(input_file) is False
+    assert XTandemAlanine_Parser.check_parser_compatibility(input_file) is False
 
 
 def test_engine_parsers_xtandem_iterable():
@@ -78,7 +78,7 @@ def test_engine_parsers_xtandem_iterable():
         Path(__file__).parent.parent / "data" / "test_Creinhardtii_target_decoy.fasta"
     )
 
-    parser = XTandemAlanine(
+    parser = XTandemAlanine_Parser(
         input_file,
         params={
             "cpus": 2,
@@ -120,7 +120,7 @@ def test_engine_parsers_xtandem_unify():
         Path(__file__).parent.parent / "data" / "test_Creinhardtii_target_decoy.fasta"
     )
 
-    parser = XTandemAlanine(
+    parser = XTandemAlanine_Parser(
         input_file,
         params={
             "cpus": 2,
@@ -171,7 +171,7 @@ def test_engine_parsers_xtandem_nterminal_mod():
         Path(__file__).parent.parent / "data" / "test_Creinhardtii_target_decoy.fasta"
     )
 
-    parser = XTandemAlanine(
+    parser = XTandemAlanine_Parser(
         input_file,
         params={
             "cpus": 2,
@@ -213,7 +213,7 @@ def test_engine_parsers_xtandem_multiple_psms():
         Path(__file__).parent.parent / "data" / "human_ecoli_test_target_decoy.fasta"
     )
 
-    parser = XTandemAlanine(
+    parser = XTandemAlanine_Parser(
         input_file,
         params={
             "cpus": 2,
@@ -277,7 +277,7 @@ def test_engine_parsers_xtandem_map_mod_names():
         Path(__file__).parent.parent / "data" / "test_Creinhardtii_target_decoy.fasta"
     )
 
-    parser = XTandemAlanine(
+    parser = XTandemAlanine_Parser(
         input_file,
         params={
             "cpus": 2,
@@ -320,7 +320,7 @@ def test_engine_parsers_xtandem_map_mod_names_nterm():
         Path(__file__).parent.parent / "data" / "test_Creinhardtii_target_decoy.fasta"
     )
 
-    parser = XTandemAlanine(
+    parser = XTandemAlanine_Parser(
         input_file,
         params={
             "cpus": 2,

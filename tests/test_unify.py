@@ -6,9 +6,9 @@ import pytest
 
 from unify_idents.engine_parsers.ident.msamanda_2_parser import MSAmanda_2_Parser
 from unify_idents.engine_parsers.ident.msgfplus_2021_03_22_parser import (
-    MSGFPlus_2021_03_22,
+    MSGFPlus_2021_03_22_Parser,
 )
-from unify_idents.engine_parsers.ident.omssa_2_1_9_parser import OmssaParser
+from unify_idents.engine_parsers.ident.omssa_2_1_9_parser import Omssa_Parser
 from unify_idents.unify import Unify
 
 
@@ -44,8 +44,8 @@ def test_unify_get_parser_classes():
             "omssa_mod_dir": Path(__file__).parent / "data",
         },
     )
-    # currently msamanda, msfragger, msgfplus, omssa, xtandem, comet, flash_lfq, and dummy
-    assert len(u._parser_classes) == 8
+    # currently mascot, msamanda, msfragger, msgfplus, omssa, xtandem, comet, flash_lfq, and dummy
+    assert len(u._parser_classes) == 9
 
 
 def test_unify_get_omssa_parser():
@@ -80,7 +80,7 @@ def test_unify_get_omssa_parser():
             "omssa_mod_dir": Path(__file__).parent / "data",
         },
     )
-    assert isinstance(u.parser, OmssaParser)
+    assert isinstance(u.parser, Omssa_Parser)
 
 
 def test_unify_get_msgfplus_parser():
@@ -114,7 +114,7 @@ def test_unify_get_msgfplus_parser():
             ],
         },
     )
-    assert isinstance(u.parser, MSGFPlus_2021_03_22)
+    assert isinstance(u.parser, MSGFPlus_2021_03_22_Parser)
 
 
 def test_engine_parsers_omssa_unified_frame():

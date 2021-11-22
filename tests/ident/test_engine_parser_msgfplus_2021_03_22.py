@@ -2,7 +2,7 @@
 from pathlib import Path
 
 from unify_idents.engine_parsers.ident.msgfplus_2021_03_22_parser import (
-    MSGFPlus_2021_03_22,
+    MSGFPlus_2021_03_22_Parser,
 )
 
 
@@ -13,7 +13,7 @@ def test_engine_parsers_msgfplus_init():
         Path(__file__).parent.parent / "data" / "test_Creinhardtii_target_decoy.fasta"
     )
 
-    parser = MSGFPlus_2021_03_22(
+    parser = MSGFPlus_2021_03_22_Parser(
         input_file,
         params={
             "cpus": 2,
@@ -45,13 +45,13 @@ def test_engine_parsers_msgfplus_init():
 
 
 def test_engine_parsers_msgfplus_check_parser_compatibility():
-    msgf_parser_class = MSGFPlus_2021_03_22
+    msgf_parser_class = MSGFPlus_2021_03_22_Parser
     input_file = Path(__file__).parent.parent / "data" / "BSA1_msgfplus_2021_03_22.mzid"
     assert msgf_parser_class.check_parser_compatibility(input_file) is True
 
 
 def test_engine_parsers_msgfplus_check_parser_compatibility_fail_with_omsa_file():
-    msgf_parser_class = MSGFPlus_2021_03_22
+    msgf_parser_class = MSGFPlus_2021_03_22_Parser
     input_file = (
         Path(__file__).parent.parent
         / "data"
@@ -65,7 +65,7 @@ def test_engine_parsers_msgfplus_unify():
     rt_lookup_path = Path(__file__).parent.parent / "data" / "BSA1_ursgal_lookup.csv.bz2"
     db_path = Path(__file__).parent.parent / "data" / "BSA.fasta"
 
-    parser = MSGFPlus_2021_03_22(
+    parser = MSGFPlus_2021_03_22_Parser(
         input_file,
         params={
             "cpus": 2,
@@ -106,7 +106,7 @@ def test_engine_parsers_msgfplus_get_peptide_lookup():
         Path(__file__).parent.parent / "data" / "test_Creinhardtii_target_decoy.fasta"
     )
 
-    parser = MSGFPlus_2021_03_22(
+    parser = MSGFPlus_2021_03_22_Parser(
         input_file,
         params={
             "cpus": 2,
@@ -147,7 +147,7 @@ def test_engine_parsers_msgfplus_internal_next():
     rt_lookup_path = Path(__file__).parent.parent / "data" / "BSA1_ursgal_lookup.csv.bz2"
     db_path = Path(__file__).parent.parent / "data" / "BSA.fasta"
 
-    parser = MSGFPlus_2021_03_22(
+    parser = MSGFPlus_2021_03_22_Parser(
         input_file,
         params={
             "cpus": 2,

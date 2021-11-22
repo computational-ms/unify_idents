@@ -8,12 +8,15 @@ from loguru import logger
 from peptide_mapper.mapper import UPeptideMapper
 from unimod_mapper.unimod_mapper import UnimodMapper
 
+from unify_idents.utils import merge_and_join_dicts
+
 cc = ChemicalComposition()
 
 
 def get_mass_and_composition(seq, mods):
     """Compute theoretical mass and hill_notation of any single peptidoform.
 
+    Returns None if sequence contains unknown amino acids.
     Args:
         seq (str): peptide sequence
         mods (str): modifications of the peptide sequence, given as "UnimodName:Position"
@@ -22,25 +25,11 @@ def get_mass_and_composition(seq, mods):
         tuple: (computed mass, hill_notation_unimod string)
 
     """
-    cc.use(sequence=seq, modifications=mods)
+    try:
+        cc.use(sequence=seq, modifications=mods)
+    except (KeyError, Exception):
+        return None, None
     return cc.mass(), cc.hill_notation_unimod()
-
-
-def merge_and_join_dicts(dictlist, delim):
-    """Merge list of dicts with identical keys as strings into single merged dict.
-
-    Args:
-        dictlist (list): list of dicts which are to be merged
-        delim (str): delimiter
-
-    Returns:
-        dict: preserved original keys with all values merged as strings with delimiter
-
-    """
-    return {
-        key: delim.join([str(d.get(key)) for d in dictlist])
-        for key in set().union(*dictlist)
-    }
 
 
 class BaseParser:
@@ -186,14 +175,15 @@ class __IdentBaseParser(BaseParser):
 
         return mod_dict
 
-    def assert_only_iupac_aas(self):
+    def assert_only_iupac_and_missing_aas(self):
         """Assert that only IUPAC nomenclature one letter amino acids are used in sequence.
 
         Non-IUPAC designations are dropped.
         Operations are performed inplace.
         """
         self.df["Sequence"] = self.df["Sequence"].str.upper()
-        iupac_aas = set("ACDEFGHIKLMNPQRSTVWY")
+        # Added X for missing AAs
+        iupac_aas = set("ACDEFGHIKLMNPQRSTVWYX")
         iupac_conform_seqs = self.df["Sequence"].apply(
             lambda seq: set(seq).issubset(iupac_aas)
         )
@@ -340,7 +330,6 @@ class __IdentBaseParser(BaseParser):
         ][eng_name]
         ranking_needs_to_be_ascending = False if top_is_highest is True else True
 
-        # TODO: Min or dense?
         self.df.loc[:, "Rank"] = (
             self.df.groupby("Spectrum ID")[score_col]
             .rank(ascending=ranking_needs_to_be_ascending, method="min")
@@ -385,12 +374,19 @@ class __IdentBaseParser(BaseParser):
 
         # Ensure same order of modifications
         self.df.loc[:, "Modifications"] = (
-            self.df["Modifications"].str.split(";").apply(sorted).str.join(";")
+            self.df["Modifications"]
+            .str.split(";")
+            .apply(sorted, key=lambda x: x.split(":")[::-1])
+            .str.join(";")
         )
 
         # Ensure there arent any column that should not be
+        if hasattr(self, "mapping_dict"):
+            new_cols = set(self.mapping_dict.keys())
+        else:
+            new_cols = set()
         additional_cols = set(self.df.columns).difference(
-            set(self.dtype_mapping.keys()) | set(self.mapping_dict.keys())
+            set(self.dtype_mapping.keys()) | new_cols
         )
         unmapped_add_cols = [c for c in additional_cols if ":" not in c]
         if len(unmapped_add_cols) > 0:
@@ -405,7 +401,7 @@ class __IdentBaseParser(BaseParser):
         Operations are performed inplace on self.df
         """
         self.df.drop_duplicates(inplace=True, ignore_index=True)
-        self.assert_only_iupac_aas()
+        self.assert_only_iupac_and_missing_aas()
         self.add_protein_ids()
         self.get_exp_rt_and_mz()
         self.calc_masses_offsets_and_composition()

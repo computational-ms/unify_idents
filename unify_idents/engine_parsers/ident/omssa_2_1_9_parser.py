@@ -7,7 +7,7 @@ import pandas as pd
 from unify_idents.engine_parsers.base_parser import __IdentBaseParser
 
 
-class OmssaParser(__IdentBaseParser):
+class Omssa_Parser(__IdentBaseParser):
     """File parser for OMSSA."""
 
     def __init__(self, *args, **kwargs):

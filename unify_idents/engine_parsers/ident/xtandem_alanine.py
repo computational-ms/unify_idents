@@ -59,7 +59,7 @@ def _get_single_spec_df(reference_dict, mapping_dict, spectrum):
     return pd.DataFrame(spec_records)
 
 
-class XTandemAlanine(__IdentBaseParser):
+class XTandemAlanine_Parser(__IdentBaseParser):
     """File parser for X!Tandem Alanine."""
 
     def __init__(self, *args, **kwargs):

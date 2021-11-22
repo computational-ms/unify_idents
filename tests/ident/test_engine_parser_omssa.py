@@ -3,7 +3,7 @@ from pathlib import Path
 
 import pytest
 
-from unify_idents.engine_parsers.ident.omssa_2_1_9_parser import OmssaParser
+from unify_idents.engine_parsers.ident.omssa_2_1_9_parser import Omssa_Parser
 from unify_idents.unify import Unify
 
 
@@ -18,7 +18,7 @@ def test_engine_parsers_omssa_init():
         Path(__file__).parent.parent / "data" / "test_Creinhardtii_target_decoy.fasta"
     )
 
-    parser = OmssaParser(
+    parser = Omssa_Parser(
         input_file,
         params={
             "cpus": 2,
@@ -55,7 +55,7 @@ def test_engine_parsers_omssa_check_parser_compatibility():
         / "data"
         / "test_Creinhardtii_QE_pH11_omssa_2_1_9.csv"
     )
-    assert OmssaParser.check_parser_compatibility(input_file) is True
+    assert Omssa_Parser.check_parser_compatibility(input_file) is True
 
 
 def test_engine_parsers_omssa_unify():
@@ -69,7 +69,7 @@ def test_engine_parsers_omssa_unify():
         Path(__file__).parent.parent / "data" / "test_Creinhardtii_target_decoy.fasta"
     )
 
-    parser = OmssaParser(
+    parser = Omssa_Parser(
         input_file,
         params={
             "cpus": 2,
@@ -120,7 +120,7 @@ def test_engine_parsers_omssa_is_iterable():
         Path(__file__).parent.parent / "data" / "test_Creinhardtii_target_decoy.fasta"
     )
 
-    parser = OmssaParser(
+    parser = Omssa_Parser(
         input_file,
         params={
             "cpus": 2,

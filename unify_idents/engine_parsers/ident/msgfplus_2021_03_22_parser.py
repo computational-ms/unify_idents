@@ -69,7 +69,7 @@ def _get_single_spec_df(reference_dict, mapping_dict, spectrum):
     return pd.DataFrame(spec_records)
 
 
-class MSGFPlus_2021_03_22(__IdentBaseParser):
+class MSGFPlus_2021_03_22_Parser(__IdentBaseParser):
     """File parser for MSGF+."""
 
     def __init__(self, *args, **kwargs):

@@ -76,7 +76,7 @@ def test_engine_parsers_IdentBase_Parser_sanitize():
     obj.sanitize()
     assert not obj.df["Raw data location"].str.contains(".mgf").any()
     assert obj.df.loc[3, "Raw data location"] == "spec_title"
-    assert (obj.df["Modifications"] == "AA:8;ZZ:1").all()
+    assert (obj.df["Modifications"] == "ZZ:1;AA:8").all()
     assert obj.df.columns.to_list() == obj.col_order.to_list() + [
         "Engine:A",
         "Engine:B",
@@ -265,7 +265,7 @@ def test_merge_and_join_dicts():
     assert out_dict == {"a": "part_a;part_b", "b": "part_a;part_b"}
 
 
-def test_assert_only_iupac_aas():
+def test_assert_only_iupac_and_missing_aas():
     obj = __IdentBaseParser(
         input_file=None,
         params={
@@ -277,8 +277,8 @@ def test_assert_only_iupac_aas():
         np.ones((4, len(obj.col_order) + 1)),
         columns=obj.col_order.to_list() + ["MSFragger:Hyperscore"],
     )
-    obj.df["Sequence"] = ["PEPTIDE", "[3jd2]", "ACDU", "MREPEPTIDE"]
-    obj.assert_only_iupac_aas()
+    obj.df["Sequence"] = ["PEPTIDE", "[3jd2]", "ACDXU", "MREPEPTIDE"]
+    obj.assert_only_iupac_and_missing_aas()
 
     assert all(obj.df.index == [0, 3])
 
