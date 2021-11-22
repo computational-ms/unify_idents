@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 from pathlib import Path
-
+import pytest
 from unify_idents.engine_parsers.ident.msgfplus_2021_03_22_parser import (
     MSGFPlus_2021_03_22_Parser,
 )
@@ -60,7 +60,7 @@ def test_engine_parsers_msgfplus_check_parser_compatibility_fail_with_omsa_file(
     assert msgf_parser_class.check_parser_compatibility(input_file) is False
 
 
-def test_engine_parsers_msgfplus_unify():
+def test_engine_parsers_msgfplus_check_dataframe_integrity():
     input_file = Path(__file__).parent.parent / "data" / "BSA1_msgfplus_2021_03_22.mzid"
     rt_lookup_path = Path(__file__).parent.parent / "data" / "BSA1_ursgal_lookup.csv.bz2"
     db_path = Path(__file__).parent.parent / "data" / "BSA.fasta"
@@ -97,6 +97,7 @@ def test_engine_parsers_msgfplus_unify():
     df = parser.unify()
 
     assert len(df) == 92
+    assert pytest.approx(df["uCalc m/z"].mean()) == 488.03167
 
 
 def test_engine_parsers_msgfplus_get_peptide_lookup():
@@ -142,48 +143,5 @@ def test_engine_parsers_msgfplus_get_peptide_lookup():
     assert lookup["Pep_YICDNQDTISSK"]["Modifications"] == "Carbamidomethyl:3"
 
 
-def test_engine_parsers_msgfplus_internal_next():
-    input_file = Path(__file__).parent.parent / "data" / "BSA1_msgfplus_2021_03_22.mzid"
-    rt_lookup_path = Path(__file__).parent.parent / "data" / "BSA1_ursgal_lookup.csv.bz2"
-    db_path = Path(__file__).parent.parent / "data" / "BSA.fasta"
-
-    parser = MSGFPlus_2021_03_22_Parser(
-        input_file,
-        params={
-            "cpus": 2,
-            "rt_pickle_name": rt_lookup_path,
-            "database": db_path,
-            "modifications": [
-                {
-                    "aa": "M",
-                    "type": "opt",
-                    "position": "any",
-                    "name": "Oxidation",
-                },
-                {
-                    "aa": "C",
-                    "type": "fix",
-                    "position": "any",
-                    "name": "Carbamidomethyl",
-                },
-                {
-                    "aa": "*",
-                    "type": "opt",
-                    "position": "Prot-N-term",
-                    "name": "Acetyl",
-                },
-            ],
-            "omssa_mod_dir": Path(__file__).parent.parent / "data",
-        },
-    )
-    df = parser.unify()
-    row = df.iloc[0, :]
-    assert (
-        row["Raw data location"]
-        == "/Users/cellzome/Dev/Gits/Ursgal/ursgal_master/example_data/BSA1.mzML"
-    )
-    assert row["Sequence"] == "YICDNQDTISSK"
-    assert row["Modifications"] == "Carbamidomethyl:3"
-    assert row["MS-GF:RawScore"] == "40"
-    assert row["MS-GF:Num Matched Ions"] == "3"
-    assert row["Search Engine"] == "msgfplus_2021_03_22"
+def test_get_single_spec_df():
+    assert 1 == 2
