@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 from pathlib import Path
-
+import pytest
 import pandas as pd
 
 from unify_idents.engine_parsers.ident.xtandem_alanine import XTandemAlanine
@@ -57,7 +57,7 @@ def test_engine_parsers_xtandem_file_matches_xtandem_parser():
     assert XTandemAlanine.check_parser_compatibility(input_file) is True
 
 
-def test_engine_parsers_xtandem_file_not_matches_xtandem_parser():
+def test_engine_parsers_msfragger_file_not_matches_xtandem_parser():
     input_file = (
         Path(__file__).parent.parent
         / "data"
@@ -67,7 +67,7 @@ def test_engine_parsers_xtandem_file_not_matches_xtandem_parser():
     assert XTandemAlanine.check_parser_compatibility(input_file) is False
 
 
-def test_engine_parsers_xtandem_iterable():
+def test_engine_parsers_xtandem_check_dataframe_integrity():
     input_file = (
         Path(__file__).parent.parent
         / "data"
@@ -106,58 +106,17 @@ def test_engine_parsers_xtandem_iterable():
             ],
         },
     )
+    df = parser.unify()
     assert len(parser.root) == 79
+    assert pytest.approx(df["uCalc m/z"].mean(), 457.85944)
 
 
-def test_engine_parsers_xtandem_unify():
-    input_file = (
-        Path(__file__).parent.parent
-        / "data"
-        / "test_Creinhardtii_QE_pH11_xtandem_alanine.xml"
-    )
-    rt_lookup_path = Path(__file__).parent.parent / "data" / "_ursgal_lookup.csv.bz2"
-    db_path = (
-        Path(__file__).parent.parent / "data" / "test_Creinhardtii_target_decoy.fasta"
-    )
+def test_get_single_spec_df():
+    assert 1 == 2
 
-    parser = XTandemAlanine(
-        input_file,
-        params={
-            "cpus": 2,
-            "rt_pickle_name": rt_lookup_path,
-            "database": db_path,
-            "modifications": [
-                {
-                    "aa": "M",
-                    "type": "opt",
-                    "position": "any",
-                    "name": "Oxidation",
-                },
-                {
-                    "aa": "C",
-                    "type": "fix",
-                    "position": "any",
-                    "name": "Carbamidomethyl",
-                },
-                {
-                    "aa": "*",
-                    "type": "opt",
-                    "position": "Prot-N-term",
-                    "name": "Acetyl",
-                },
-            ],
-            "Raw file location": "test_Creinhardtii_QE_pH11.mzML",
-            "15N": False,
-        },
-    )
-    first_row = parser.unify().iloc[0, :]
-    assert (
-        first_row["Raw data location"]
-        == "/Users/cellzome/Dev/Gits/Ursgal/ursgal2_dev/tests/data/test_Creinhardtii_QE_pH11.mzML"
-    )
-    assert first_row["Sequence"] == "DDVHNMGADGIR"
-    assert first_row["Modifications"] == "Oxidation:6"
-    assert first_row["Search Engine"] == "xtandem_alanine"
+
+def test_map_mod_names():
+    assert 1 == 2
 
 
 def test_engine_parsers_xtandem_nterminal_mod():
