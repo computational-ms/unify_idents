@@ -9,9 +9,7 @@ from unify_idents.engine_parsers.quant.flash_lfq_1_2_0_parser import (
 def test_engine_parsers_flashLFQ_init():
     input_file = pytest._test_path / "data" / "flash_lfq_1_2_0_quantified_peaks.tsv"
     rt_lookup_path = pytest._test_path / "data" / "BSA1_ursgal_lookup.csv.bz2"
-    parser = FlashLFQ_1_2_0_Parser(
-        input_file, params={"rt_pickle_name": rt_lookup_path}
-    )
+    parser = FlashLFQ_1_2_0_Parser(input_file, params={"rt_pickle_name": rt_lookup_path})
 
 
 def test_engine_parsers_flashLFQ_check_parser_compatibility():
@@ -21,9 +19,7 @@ def test_engine_parsers_flashLFQ_check_parser_compatibility():
 
 
 def test_engine_parsers_flashLFQ_file_not_matches_parser():
-    input_file = (
-        pytest._test_path / "data" / "test_Creinhardtii_QE_pH11_msfragger_3.tsv"
-    )
+    input_file = pytest._test_path / "data" / "test_Creinhardtii_QE_pH11_msfragger_3.tsv"
 
     assert FlashLFQ_1_2_0_Parser.check_parser_compatibility(input_file) is False
 

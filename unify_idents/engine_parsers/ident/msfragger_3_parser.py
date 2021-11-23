@@ -122,9 +122,7 @@ class MSFragger_3_Parser(IdentBaseParser):
         potential_names = {
             m: [
                 name
-                for name in self.mod_mapper.mass_to_names(
-                    round(float(m), 4), decimals=4
-                )
+                for name in self.mod_mapper.mass_to_names(round(float(m), 4), decimals=4)
                 if name in self.mod_dict
             ]
             for m in unique_mod_masses

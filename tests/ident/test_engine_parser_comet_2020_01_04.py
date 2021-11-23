@@ -54,9 +54,7 @@ def test_engine_parsers_comet_check_parser_compatibility():
 
 def test_engine_parsers_comet_check_parser_compatibility_fail_with_omssa_file():
     msgf_parser_class = Comet_2020_01_4_Parser
-    input_file = (
-        pytest._test_path / "data" / "test_Creinhardtii_QE_pH11_omssa_2_1_9.csv"
-    )
+    input_file = pytest._test_path / "data" / "test_Creinhardtii_QE_pH11_omssa_2_1_9.csv"
     assert msgf_parser_class.check_parser_compatibility(input_file) is False
 
 
