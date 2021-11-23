@@ -5,6 +5,9 @@ import os
 version_path = os.path.join(os.path.dirname(__file__), "unify_idents", "version.txt")
 with open(version_path, "r") as version_file:
     unify_idents_version = version_file.read().strip()
+    
+with open('requirements.txt') as req_file:
+    reqs = req_file.readlines()
 
 setup(
     name="unify_idents",
@@ -21,7 +24,7 @@ setup(
     #        "": ["tests", "example_scripts"],
     #    },
     python_requires=">=3.8.0",
-    install_requires=["pytest", "uparma"],
+    install_requires=reqs,
     description="Unify PSM idents",
     long_description="Unifying PSM identifications of different peptide search engines",
     author="M. Koesters, A. Vlasov, C. Fufezan",
