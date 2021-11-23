@@ -73,13 +73,14 @@ class BaseParser:
         Returns:
             rt_lookup (pd.DataFrame): loaded rt_pickle_file indexable by Spectrum ID
         """
+
         rt_lookup = pd.read_csv(self.params["rt_pickle_name"], compression="bz2")
         rt_lookup.set_index("Spectrum ID", inplace=True)
         rt_lookup["Unit"] = rt_lookup["Unit"].replace({"second": 1, "minute": 60})
         return rt_lookup
 
 
-class __IdentBaseParser(BaseParser):
+class IdentBaseParser(BaseParser):
     """Base class of all ident parsers."""
 
     def __init__(self, *args, **kwargs):
@@ -411,7 +412,7 @@ class __IdentBaseParser(BaseParser):
         self.sanitize()
 
 
-class __QuantBaseParser(BaseParser):
+class QuantBaseParser(BaseParser):
     """Base class of all quant parsers."""
 
     def __init__(self, *args, **kwargs):

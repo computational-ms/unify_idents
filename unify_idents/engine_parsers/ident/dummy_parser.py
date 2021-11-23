@@ -1,8 +1,8 @@
 """Dummy parser."""
-from unify_idents.engine_parsers.base_parser import __IdentBaseParser
+from unify_idents.engine_parsers.base_parser import IdentBaseParser
 
 
-class Dummy(__IdentBaseParser):
+class Dummy(IdentBaseParser):
     """File parser for Dummy."""
 
     def __init__(self, *args, **kwargs):

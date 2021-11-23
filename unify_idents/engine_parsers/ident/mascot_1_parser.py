@@ -9,7 +9,7 @@ import regex as re
 from loguru import logger
 from tqdm import tqdm
 
-from unify_idents.engine_parsers.base_parser import __IdentBaseParser
+from unify_idents.engine_parsers.base_parser import IdentBaseParser
 from unify_idents.utils import merge_and_join_dicts
 
 mascot_custom_psm_regex = re.compile(
@@ -56,7 +56,7 @@ def _get_single_spec_df(reference_dict, spectrum):
     return pd.DataFrame(spec_records)
 
 
-class Mascot_1_Parser(__IdentBaseParser):
+class Mascot_1_Parser(IdentBaseParser):
     """File parser for MSGF+."""
 
     def __init__(self, *args, **kwargs):

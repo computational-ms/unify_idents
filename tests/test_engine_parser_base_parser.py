@@ -1,6 +1,8 @@
 from pathlib import Path
-from unify_idents.engine_parsers.base_parser import BaseParser
+
 import pytest
+
+from unify_idents.engine_parsers.base_parser import BaseParser
 
 
 def test_base_parser_read_rt_lookup_file():

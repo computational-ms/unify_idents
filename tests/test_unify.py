@@ -1,17 +1,14 @@
 #!/usr/bin/env python
 from pathlib import Path
 
-import pandas as pd
-import pytest
-
+from unify_idents.engine_parsers.ident.comet_2020_01_4_parser import Comet_2020_01_4_Parser
 from unify_idents.engine_parsers.ident.msamanda_2_parser import MSAmanda_2_Parser
+from unify_idents.engine_parsers.ident.msfragger_3_parser import MSFragger_3_Parser
 from unify_idents.engine_parsers.ident.msgfplus_2021_03_22_parser import (
     MSGFPlus_2021_03_22_Parser,
 )
-from unify_idents.engine_parsers.ident.xtandem_alanine import XTandemAlanine_Parser
-from unify_idents.engine_parsers.ident.msfragger_3_parser import MSFragger3Parser
 from unify_idents.engine_parsers.ident.omssa_2_1_9_parser import Omssa_Parser
-from unify_idents.engine_parsers.ident.comet_2020_01_4_parser import Comet_2020_01_4_Parser
+from unify_idents.engine_parsers.ident.xtandem_alanine import XTandemAlanine_Parser
 from unify_idents.unify import Unify
 
 
@@ -219,7 +216,7 @@ def test_unify_get_msfragger_parser():
             ],
         },
     )
-    assert isinstance(u.parser, MSFragger3Parser)
+    assert isinstance(u.parser, MSFragger_3_Parser)
 
 
 def test_unify_get_comet_parser():

@@ -2,10 +2,10 @@
 import pandas as pd
 import regex as re
 
-from unify_idents.engine_parsers.base_parser import __IdentBaseParser
+from unify_idents.engine_parsers.base_parser import IdentBaseParser
 
 
-class MSAmanda_2_Parser(__IdentBaseParser):
+class MSAmanda_2_Parser(IdentBaseParser):
     """File parser for MS Amanda 2."""
 
     def __init__(self, *args, **kwargs):

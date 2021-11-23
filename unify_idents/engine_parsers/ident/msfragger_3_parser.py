@@ -5,10 +5,10 @@ import pandas as pd
 import regex as re
 from loguru import logger
 
-from unify_idents.engine_parsers.base_parser import __IdentBaseParser
+from unify_idents.engine_parsers.base_parser import IdentBaseParser
 
 
-class MSFragger3Parser(__IdentBaseParser):
+class MSFragger_3_Parser(IdentBaseParser):
     """File parser for MSFragger 3."""
 
     def __init__(self, *args, **kwargs):

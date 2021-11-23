@@ -5,7 +5,7 @@ import pandas as pd
 import pytest
 
 from unify_idents.engine_parsers.base_parser import (
-    __IdentBaseParser,
+    IdentBaseParser,
     get_mass_and_composition,
     merge_and_join_dicts,
 )
@@ -18,7 +18,7 @@ def test_engine_parsers_IdentBaseParser_init():
     rt_lookup_path = Path(__file__).parent / "data" / "_ursgal_lookup.csv.bz2"
     db_path = Path(__file__).parent / "data" / "test_Creinhardtii_target_decoy.fasta"
 
-    parser = __IdentBaseParser(
+    parser = IdentBaseParser(
         input_file,
         params={
             "cpus": 2,
@@ -50,18 +50,18 @@ def test_engine_parsers_IdentBaseParser_init():
 
 def test_engine_parsers_IdentBaseParser_check_parser_compatibility_non_existing():
     # should always return False
-    __IdentBaseParser.check_parser_compatibility("whatever") is False
+    IdentBaseParser.check_parser_compatibility("whatever") is False
 
 
 def test_engine_parsers_IdentBaseParser_check_parser_compatibility_existing():
     # should always return False
-    __IdentBaseParser.check_parser_compatibility(
+    IdentBaseParser.check_parser_compatibility(
         Path(__file__).parent / "data" / "test_Creinhardtii_QE_pH11_xtandem_alanine.xml"
     ) is False
 
 
 def test_engine_parsers_IdentBase_Parser_sanitize():
-    obj = __IdentBaseParser(input_file=None, params=None)
+    obj = IdentBaseParser(input_file=None, params=None)
     obj.mapping_dict = {"Engine:C": None, "Engine:B": None, "Engine:A": None}
     obj.df = pd.DataFrame(
         np.ones((5, len(obj.col_order) + 4)),
@@ -85,7 +85,7 @@ def test_engine_parsers_IdentBase_Parser_sanitize():
 
 
 def test_add_ranks_increasing_engine_scores_better():
-    obj = __IdentBaseParser(input_file=None, params=None)
+    obj = IdentBaseParser(input_file=None, params=None)
     obj.df = pd.DataFrame(
         np.ones((5, len(obj.col_order) + 1)),
         columns=obj.col_order.to_list() + ["MSFragger:Hyperscore"],
@@ -97,7 +97,7 @@ def test_add_ranks_increasing_engine_scores_better():
 
 
 def test_add_ranks_decreasing_engine_scores_better():
-    obj = __IdentBaseParser(input_file=None, params=None)
+    obj = IdentBaseParser(input_file=None, params=None)
     obj.df = pd.DataFrame(
         np.ones((5, len(obj.col_order) + 1)),
         columns=obj.col_order.to_list() + ["MSFragger:Hyperscore"],
@@ -109,7 +109,7 @@ def test_add_ranks_decreasing_engine_scores_better():
 
 
 def test_add_protein_ids():
-    obj = __IdentBaseParser(
+    obj = IdentBaseParser(
         input_file=None,
         params={
             "cpus": 2,
@@ -144,7 +144,7 @@ def test_add_protein_ids():
 
 
 def test_calc_masses_offsets_and_composition():
-    obj = __IdentBaseParser(
+    obj = IdentBaseParser(
         input_file=None,
         params={
             "cpus": 2,
@@ -176,7 +176,7 @@ def test_calc_masses_offsets_and_composition():
 
 
 def test_get_exp_rt_and_mz():
-    obj = __IdentBaseParser(
+    obj = IdentBaseParser(
         input_file=None,
         params={
             "cpus": 2,
@@ -200,7 +200,7 @@ def test_get_exp_rt_and_mz():
 
 
 def test_create_mod_dicts():
-    obj = __IdentBaseParser(
+    obj = IdentBaseParser(
         input_file=None,
         params={
             "cpus": 2,
@@ -233,7 +233,7 @@ def test_create_mod_dicts():
 
 
 def test_calc_mz():
-    obj = __IdentBaseParser(input_file=None, params=None)
+    obj = IdentBaseParser(input_file=None, params=None)
     masses_in_weird_types = pd.Series(["10", 20, 30.0])
     charges_in_weird_types = pd.Series(["2", 2, 2.0])
     mz = obj._calc_mz(masses_in_weird_types, charges_in_weird_types).to_list()
@@ -266,7 +266,7 @@ def test_merge_and_join_dicts():
 
 
 def test_assert_only_iupac_and_missing_aas():
-    obj = __IdentBaseParser(
+    obj = IdentBaseParser(
         input_file=None,
         params={
             "cpus": 2,
@@ -284,7 +284,7 @@ def test_assert_only_iupac_and_missing_aas():
 
 
 def test_add_decoy_identity():
-    obj = __IdentBaseParser(
+    obj = IdentBaseParser(
         input_file=None,
         params={
             "cpus": 2,
@@ -303,7 +303,7 @@ def test_add_decoy_identity():
 
 
 def test_add_decoy_identity_non_default_prefix():
-    obj = __IdentBaseParser(
+    obj = IdentBaseParser(
         input_file=None,
         params={
             "cpus": 2,
@@ -328,7 +328,7 @@ def test_add_decoy_identity_non_default_prefix():
 
 
 def test_check_enzyme_specificity_trypsin_all():
-    obj = __IdentBaseParser(
+    obj = IdentBaseParser(
         input_file=None,
         params={
             "cpus": 2,
@@ -352,7 +352,7 @@ def test_check_enzyme_specificity_trypsin_all():
 
 
 def test_check_enzyme_specificity_trypsin_any():
-    obj = __IdentBaseParser(
+    obj = IdentBaseParser(
         input_file=None,
         params={
             "cpus": 2,
@@ -376,7 +376,7 @@ def test_check_enzyme_specificity_trypsin_any():
 
 
 def test_check_enzyme_specificity_nonspecific():
-    obj = __IdentBaseParser(
+    obj = IdentBaseParser(
         input_file=None,
         params={
             "cpus": 2,

@@ -4,18 +4,17 @@ from pathlib import Path
 import pytest
 
 from unify_idents.engine_parsers.ident.omssa_2_1_9_parser import Omssa_Parser
-from unify_idents.unify import Unify
 
 
 def test_engine_parsers_omssa_init():
     input_file = (
-        Path(__file__).parent.parent
+        pytest._test_path
         / "data"
         / "test_Creinhardtii_QE_pH11_omssa_2_1_9.csv"
     )
-    rt_lookup_path = Path(__file__).parent.parent / "data" / "_ursgal_lookup.csv.bz2"
+    rt_lookup_path = pytest._test_path / "data" / "_ursgal_lookup.csv.bz2"
     db_path = (
-        Path(__file__).parent.parent / "data" / "test_Creinhardtii_target_decoy.fasta"
+        pytest._test_path / "data" / "test_Creinhardtii_target_decoy.fasta"
     )
 
     parser = Omssa_Parser(
@@ -44,14 +43,14 @@ def test_engine_parsers_omssa_init():
                     "name": "Acetyl",
                 },
             ],
-            "omssa_mod_dir": Path(__file__).parent.parent / "data",
+            "omssa_mod_dir": pytest._test_path / "data",
         },
     )
 
 
 def test_engine_parsers_omssa_check_parser_compatibility():
     input_file = (
-        Path(__file__).parent.parent
+        pytest._test_path
         / "data"
         / "test_Creinhardtii_QE_pH11_omssa_2_1_9.csv"
     )
@@ -60,13 +59,13 @@ def test_engine_parsers_omssa_check_parser_compatibility():
 
 def test_engine_parsers_omssa_check_dataframe_integrity():
     input_file = (
-        Path(__file__).parent.parent
+        pytest._test_path
         / "data"
         / "test_Creinhardtii_QE_pH11_omssa_2_1_9.csv"
     )
-    rt_lookup_path = Path(__file__).parent.parent / "data" / "_ursgal_lookup.csv.bz2"
+    rt_lookup_path = pytest._test_path / "data" / "_ursgal_lookup.csv.bz2"
     db_path = (
-        Path(__file__).parent.parent / "data" / "test_Creinhardtii_target_decoy.fasta"
+        pytest._test_path / "data" / "test_Creinhardtii_target_decoy.fasta"
     )
 
     parser = Omssa_Parser(
@@ -95,7 +94,7 @@ def test_engine_parsers_omssa_check_dataframe_integrity():
                     "name": "Acetyl",
                 },
             ],
-            "omssa_mod_dir": Path(__file__).parent.parent / "data",
+            "omssa_mod_dir": pytest._test_path / "data",
         },
     )
     df = parser.unify()

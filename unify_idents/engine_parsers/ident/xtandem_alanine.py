@@ -8,7 +8,7 @@ import pandas as pd
 from loguru import logger
 from tqdm import tqdm
 
-from unify_idents.engine_parsers.base_parser import __IdentBaseParser
+from unify_idents.engine_parsers.base_parser import IdentBaseParser
 
 
 def _get_single_spec_df(reference_dict, mapping_dict, spectrum):
@@ -59,7 +59,7 @@ def _get_single_spec_df(reference_dict, mapping_dict, spectrum):
     return pd.DataFrame(spec_records)
 
 
-class XTandemAlanine_Parser(__IdentBaseParser):
+class XTandemAlanine_Parser(IdentBaseParser):
     """File parser for X!Tandem Alanine."""
 
     def __init__(self, *args, **kwargs):

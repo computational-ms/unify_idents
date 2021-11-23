@@ -1,16 +1,18 @@
 #!/usr/bin/env python
 from pathlib import Path
+
 import pytest
+
 from unify_idents.engine_parsers.ident.msgfplus_2021_03_22_parser import (
     MSGFPlus_2021_03_22_Parser,
 )
 
 
 def test_engine_parsers_msgfplus_init():
-    input_file = Path(__file__).parent.parent / "data" / "BSA1_msgfplus_2021_03_22.mzid"
-    rt_lookup_path = Path(__file__).parent.parent / "data" / "BSA1_ursgal_lookup.csv.bz2"
+    input_file = pytest._test_path / "data" / "BSA1_msgfplus_2021_03_22.mzid"
+    rt_lookup_path = pytest._test_path / "data" / "BSA1_ursgal_lookup.csv.bz2"
     db_path = (
-        Path(__file__).parent.parent / "data" / "test_Creinhardtii_target_decoy.fasta"
+        pytest._test_path / "data" / "test_Creinhardtii_target_decoy.fasta"
     )
 
     parser = MSGFPlus_2021_03_22_Parser(
@@ -39,21 +41,21 @@ def test_engine_parsers_msgfplus_init():
                     "name": "Acetyl",
                 },
             ],
-            "omssa_mod_dir": Path(__file__).parent.parent / "data",
+            "omssa_mod_dir": pytest._test_path / "data",
         },
     )
 
 
 def test_engine_parsers_msgfplus_check_parser_compatibility():
     msgf_parser_class = MSGFPlus_2021_03_22_Parser
-    input_file = Path(__file__).parent.parent / "data" / "BSA1_msgfplus_2021_03_22.mzid"
+    input_file = pytest._test_path / "data" / "BSA1_msgfplus_2021_03_22.mzid"
     assert msgf_parser_class.check_parser_compatibility(input_file) is True
 
 
 def test_engine_parsers_msgfplus_check_parser_compatibility_fail_with_omsa_file():
     msgf_parser_class = MSGFPlus_2021_03_22_Parser
     input_file = (
-        Path(__file__).parent.parent
+        pytest._test_path
         / "data"
         / "test_Creinhardtii_QE_pH11_omssa_2_1_9.csv"
     )
@@ -61,9 +63,9 @@ def test_engine_parsers_msgfplus_check_parser_compatibility_fail_with_omsa_file(
 
 
 def test_engine_parsers_msgfplus_check_dataframe_integrity():
-    input_file = Path(__file__).parent.parent / "data" / "BSA1_msgfplus_2021_03_22.mzid"
-    rt_lookup_path = Path(__file__).parent.parent / "data" / "BSA1_ursgal_lookup.csv.bz2"
-    db_path = Path(__file__).parent.parent / "data" / "BSA.fasta"
+    input_file = pytest._test_path / "data" / "BSA1_msgfplus_2021_03_22.mzid"
+    rt_lookup_path = pytest._test_path / "data" / "BSA1_ursgal_lookup.csv.bz2"
+    db_path = pytest._test_path / "data" / "BSA.fasta"
 
     parser = MSGFPlus_2021_03_22_Parser(
         input_file,
@@ -91,7 +93,7 @@ def test_engine_parsers_msgfplus_check_dataframe_integrity():
                     "name": "Acetyl",
                 },
             ],
-            "omssa_mod_dir": Path(__file__).parent.parent / "data",
+            "omssa_mod_dir": pytest._test_path / "data",
         },
     )
     df = parser.unify()
@@ -101,10 +103,10 @@ def test_engine_parsers_msgfplus_check_dataframe_integrity():
 
 
 def test_engine_parsers_msgfplus_get_peptide_lookup():
-    input_file = Path(__file__).parent.parent / "data" / "BSA1_msgfplus_2021_03_22.mzid"
-    rt_lookup_path = Path(__file__).parent.parent / "data" / "BSA1_ursgal_lookup.csv.bz2"
+    input_file = pytest._test_path / "data" / "BSA1_msgfplus_2021_03_22.mzid"
+    rt_lookup_path = pytest._test_path / "data" / "BSA1_ursgal_lookup.csv.bz2"
     db_path = (
-        Path(__file__).parent.parent / "data" / "test_Creinhardtii_target_decoy.fasta"
+        pytest._test_path / "data" / "test_Creinhardtii_target_decoy.fasta"
     )
 
     parser = MSGFPlus_2021_03_22_Parser(
@@ -133,7 +135,7 @@ def test_engine_parsers_msgfplus_get_peptide_lookup():
                     "name": "Acetyl",
                 },
             ],
-            "omssa_mod_dir": Path(__file__).parent.parent / "data",
+            "omssa_mod_dir": pytest._test_path / "data",
         },
     )
     lookup = parser._get_peptide_lookup()

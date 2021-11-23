@@ -1,10 +1,10 @@
 """Quant parser."""
 import pandas as pd
 
-from unify_idents.engine_parsers.base_parser import __QuantBaseParser
+from unify_idents.engine_parsers.base_parser import QuantBaseParser
 
 
-class FlashLFQ_1_2_0_Parser(__QuantBaseParser):
+class FlashLFQ_1_2_0_Parser(QuantBaseParser):
     """File parser for Flash LFQ."""
 
     def __init__(self, *args, **kwargs):

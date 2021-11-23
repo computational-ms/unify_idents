@@ -1,20 +1,21 @@
 #!/usr/bin/env python
 from pathlib import Path
-import pytest
+
 import pandas as pd
+import pytest
 
 from unify_idents.engine_parsers.ident.xtandem_alanine import XTandemAlanine_Parser
 
 
 def test_engine_parsers_xtandem_init():
     input_file = (
-        Path(__file__).parent.parent
+        pytest._test_path
         / "data"
         / "test_Creinhardtii_QE_pH11_xtandem_alanine.xml"
     )
-    rt_lookup_path = Path(__file__).parent.parent / "data" / "_ursgal_lookup.csv.bz2"
+    rt_lookup_path = pytest._test_path / "data" / "_ursgal_lookup.csv.bz2"
     db_path = (
-        Path(__file__).parent.parent / "data" / "test_Creinhardtii_target_decoy.fasta"
+        pytest._test_path / "data" / "test_Creinhardtii_target_decoy.fasta"
     )
 
     parser = XTandemAlanine_Parser(
@@ -49,7 +50,7 @@ def test_engine_parsers_xtandem_init():
 
 def test_engine_parsers_xtandem_file_matches_xtandem_parser():
     input_file = (
-        Path(__file__).parent.parent
+        pytest._test_path
         / "data"
         / "test_Creinhardtii_QE_pH11_xtandem_alanine.xml"
     )
@@ -59,7 +60,7 @@ def test_engine_parsers_xtandem_file_matches_xtandem_parser():
 
 def test_engine_parsers_msfragger_file_not_matches_xtandem_parser():
     input_file = (
-        Path(__file__).parent.parent
+        pytest._test_path
         / "data"
         / "test_Creinhardtii_QE_pH11_mzml2mgf_0_0_1_msfragger_3.tsv"
     )
@@ -69,13 +70,13 @@ def test_engine_parsers_msfragger_file_not_matches_xtandem_parser():
 
 def test_engine_parsers_xtandem_check_dataframe_integrity():
     input_file = (
-        Path(__file__).parent.parent
+        pytest._test_path
         / "data"
         / "test_Creinhardtii_QE_pH11_xtandem_alanine.xml"
     )
-    rt_lookup_path = Path(__file__).parent.parent / "data" / "_ursgal_lookup.csv.bz2"
+    rt_lookup_path = pytest._test_path / "data" / "_ursgal_lookup.csv.bz2"
     db_path = (
-        Path(__file__).parent.parent / "data" / "test_Creinhardtii_target_decoy.fasta"
+        pytest._test_path / "data" / "test_Creinhardtii_target_decoy.fasta"
     )
 
     parser = XTandemAlanine_Parser(
@@ -121,13 +122,13 @@ def test_map_mod_names():
 
 def test_engine_parsers_xtandem_nterminal_mod():
     input_file = (
-        Path(__file__).parent.parent
+        pytest._test_path
         / "data"
         / "test_Creinhardtii_QE_pH11_xtandem_alanine.xml"
     )
-    rt_lookup_path = Path(__file__).parent.parent / "data" / "_ursgal_lookup.csv.bz2"
+    rt_lookup_path = pytest._test_path / "data" / "_ursgal_lookup.csv.bz2"
     db_path = (
-        Path(__file__).parent.parent / "data" / "test_Creinhardtii_target_decoy.fasta"
+        pytest._test_path / "data" / "test_Creinhardtii_target_decoy.fasta"
     )
 
     parser = XTandemAlanine_Parser(
@@ -166,10 +167,10 @@ def test_engine_parsers_xtandem_nterminal_mod():
 
 
 def test_engine_parsers_xtandem_multiple_psms():
-    input_file = Path(__file__).parent.parent / "data" / "multiple_psms_xtandem.xml"
-    rt_lookup_path = Path(__file__).parent.parent / "data" / "_ursgal_lookup.csv.bz2"
+    input_file = pytest._test_path / "data" / "multiple_psms_xtandem.xml"
+    rt_lookup_path = pytest._test_path / "data" / "_ursgal_lookup.csv.bz2"
     db_path = (
-        Path(__file__).parent.parent / "data" / "human_ecoli_test_target_decoy.fasta"
+        pytest._test_path / "data" / "human_ecoli_test_target_decoy.fasta"
     )
 
     parser = XTandemAlanine_Parser(
@@ -227,13 +228,13 @@ def test_engine_parsers_xtandem_multiple_psms():
 
 def test_engine_parsers_xtandem_map_mod_names():
     input_file = (
-        Path(__file__).parent.parent
+        pytest._test_path
         / "data"
         / "test_Creinhardtii_QE_pH11_xtandem_alanine.xml"
     )
-    rt_lookup_path = Path(__file__).parent.parent / "data" / "_ursgal_lookup.csv.bz2"
+    rt_lookup_path = pytest._test_path / "data" / "_ursgal_lookup.csv.bz2"
     db_path = (
-        Path(__file__).parent.parent / "data" / "test_Creinhardtii_target_decoy.fasta"
+        pytest._test_path / "data" / "test_Creinhardtii_target_decoy.fasta"
     )
 
     parser = XTandemAlanine_Parser(
@@ -270,13 +271,13 @@ def test_engine_parsers_xtandem_map_mod_names():
 
 def test_engine_parsers_xtandem_map_mod_names_nterm():
     input_file = (
-        Path(__file__).parent.parent
+        pytest._test_path
         / "data"
         / "test_Creinhardtii_QE_pH11_xtandem_alanine.xml"
     )
-    rt_lookup_path = Path(__file__).parent.parent / "data" / "_ursgal_lookup.csv.bz2"
+    rt_lookup_path = pytest._test_path / "data" / "_ursgal_lookup.csv.bz2"
     db_path = (
-        Path(__file__).parent.parent / "data" / "test_Creinhardtii_target_decoy.fasta"
+        pytest._test_path / "data" / "test_Creinhardtii_target_decoy.fasta"
     )
 
     parser = XTandemAlanine_Parser(

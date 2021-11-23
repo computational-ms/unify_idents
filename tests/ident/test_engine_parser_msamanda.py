@@ -3,14 +3,13 @@ from pathlib import Path
 
 import pytest
 
-from unify_idents import Unify
 from unify_idents.engine_parsers.ident.msamanda_2_parser import MSAmanda_2_Parser
 
 
 def test_engine_parsers_msamanda_init():
-    input_file = Path(__file__).parent.parent / "data" / "BSA1_msamanda_2_0_0_17442.csv"
+    input_file = pytest._test_path / "data" / "BSA1_msamanda_2_0_0_17442.csv"
     rt_lookup_path = (
-        Path(__file__).parent.parent / "data" / "BSA1_ursgal_lookup.csv.bz2"
+        pytest._test_path / "data" / "BSA1_ursgal_lookup.csv.bz2"
     )
     db_path = Path(__file__).parent / "data" / "BSA.fasta"
 
@@ -46,16 +45,16 @@ def test_engine_parsers_msamanda_init():
 
 
 def test_engine_parsers_msamanda_check_parser_compatibility():
-    input_file = Path(__file__).parent.parent / "data" / "BSA1_msamanda_2_0_0_17442.csv"
+    input_file = pytest._test_path / "data" / "BSA1_msamanda_2_0_0_17442.csv"
     assert MSAmanda_2_Parser.check_parser_compatibility(input_file) is True
 
 
 def test_engine_parsers_msamanda_check_dataframe_integrity():
-    input_file = Path(__file__).parent.parent / "data" / "BSA1_msamanda_2_0_0_17442.csv"
+    input_file = pytest._test_path / "data" / "BSA1_msamanda_2_0_0_17442.csv"
     rt_lookup_path = (
-        Path(__file__).parent.parent / "data" / "BSA1_ursgal_lookup.csv.bz2"
+        pytest._test_path / "data" / "BSA1_ursgal_lookup.csv.bz2"
     )
-    db_path = Path(__file__).parent.parent / "data" / "BSA.fasta"
+    db_path = pytest._test_path / "data" / "BSA.fasta"
 
     parser = MSAmanda_2_Parser(
         input_file,
@@ -100,9 +99,9 @@ def test_translate_mods():
 
 
 # def test_engine_parsers_msamanda_next():
-#     input_file = Path(__file__).parent.parent / "data" / "BSA1_msamanda_2_0_0_17442.csv"
-#     rt_lookup_path = Path(__file__).parent.parent / "data" / "BSA1_ursgal_lookup.csv.bz2"
-#     db_path = Path(__file__).parent.parent / "data" / "BSA.fasta"
+#     input_file = pytest._test_path / "data" / "BSA1_msamanda_2_0_0_17442.csv"
+#     rt_lookup_path = pytest._test_path / "data" / "BSA1_ursgal_lookup.csv.bz2"
+#     db_path = pytest._test_path / "data" / "BSA.fasta"
 
 #     parser = Unify(
 #         input_file,

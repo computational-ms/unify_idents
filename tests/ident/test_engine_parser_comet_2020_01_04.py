@@ -1,18 +1,20 @@
 #!/usr/bin/env python
 from pathlib import Path
+
 import pytest
+
 from unify_idents.engine_parsers.ident.comet_2020_01_4_parser import (
     Comet_2020_01_4_Parser,
 )
 
 
 def test_engine_parsers_comet_init():
-    input_file = Path(__file__).parent.parent / "data" / "BSA1_comet_2020_01_4.mzid"
+    input_file = pytest._test_path / "data" / "BSA1_comet_2020_01_4.mzid"
     rt_lookup_path = (
-        Path(__file__).parent.parent / "data" / "BSA1_ursgal_lookup.csv.bz2"
+        pytest._test_path / "data" / "BSA1_ursgal_lookup.csv.bz2"
     )
     db_path = (
-        Path(__file__).parent.parent / "data" / "test_Creinhardtii_target_decoy.fasta"
+        pytest._test_path / "data" / "test_Creinhardtii_target_decoy.fasta"
     )
 
     parser = Comet_2020_01_4_Parser(
@@ -41,21 +43,21 @@ def test_engine_parsers_comet_init():
                     "name": "Acetyl",
                 },
             ],
-            "omssa_mod_dir": Path(__file__).parent.parent / "data",
+            "omssa_mod_dir": pytest._test_path / "data",
         },
     )
 
 
 def test_engine_parsers_comet_check_parser_compatibility():
     msgf_parser_class = Comet_2020_01_4_Parser
-    input_file = Path(__file__).parent.parent / "data" / "BSA1_comet_2020_01_4.mzid"
+    input_file = pytest._test_path / "data" / "BSA1_comet_2020_01_4.mzid"
     assert msgf_parser_class.check_parser_compatibility(input_file) is True
 
 
 def test_engine_parsers_comet_check_parser_compatibility_fail_with_omssa_file():
     msgf_parser_class = Comet_2020_01_4_Parser
     input_file = (
-        Path(__file__).parent.parent
+        pytest._test_path
         / "data"
         / "test_Creinhardtii_QE_pH11_omssa_2_1_9.csv"
     )
@@ -63,11 +65,11 @@ def test_engine_parsers_comet_check_parser_compatibility_fail_with_omssa_file():
 
 
 def test_engine_parsers_comet_check_dataframe_integrity():
-    input_file = Path(__file__).parent.parent / "data" / "BSA1_comet_2020_01_4.mzid"
+    input_file = pytest._test_path / "data" / "BSA1_comet_2020_01_4.mzid"
     rt_lookup_path = (
-        Path(__file__).parent.parent / "data" / "BSA1_ursgal_lookup.csv.bz2"
+        pytest._test_path / "data" / "BSA1_ursgal_lookup.csv.bz2"
     )
-    db_path = Path(__file__).parent.parent / "data" / "BSA.fasta"
+    db_path = pytest._test_path / "data" / "BSA.fasta"
 
     parser = Comet_2020_01_4_Parser(
         input_file,
@@ -95,14 +97,18 @@ def test_engine_parsers_comet_check_dataframe_integrity():
                     "name": "Acetyl",
                 },
             ],
-            "omssa_mod_dir": Path(__file__).parent.parent / "data",
+            "omssa_mod_dir": pytest._test_path / "data",
         },
     )
     df = parser.unify()
 
     assert len(df) == 60
     assert pytest.approx(df["uCalc m/z"].mean()) == 485.26791
-    # assert mod count histo
+
+    assert df["Modifications"].str.contains("Acetyl:0").sum() == 5
+    assert (df["Modifications"].str.count("Carbamidomethyl:") == df["Sequence"].str.count("C")).all()
+    assert df["Modifications"].str.count(":").sum() == 38
+
     # assert mean uCalc mz
     # assert mean Exp mz
 

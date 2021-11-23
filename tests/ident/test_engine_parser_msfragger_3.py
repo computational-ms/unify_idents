@@ -1,20 +1,22 @@
 from pathlib import Path
+
 import pytest
-from unify_idents.engine_parsers.ident.msfragger_3_parser import MSFragger3Parser
+
+from unify_idents.engine_parsers.ident.msfragger_3_parser import MSFragger_3_Parser
 
 
 def test_engine_parsers_msfragger_init():
     input_file = (
-        Path(__file__).parent.parent
+        pytest._test_path
         / "data"
         / "test_Creinhardtii_QE_pH11_mzml2mgf_0_0_1_msfragger_3.tsv"
     )
-    rt_lookup_path = Path(__file__).parent.parent / "data" / "_ursgal_lookup.csv.bz2"
+    rt_lookup_path = pytest._test_path / "data" / "_ursgal_lookup.csv.bz2"
     db_path = (
-        Path(__file__).parent.parent / "data" / "test_Creinhardtii_target_decoy.fasta"
+        pytest._test_path / "data" / "test_Creinhardtii_target_decoy.fasta"
     )
 
-    parser = MSFragger3Parser(
+    parser = MSFragger_3_Parser(
         input_file,
         params={
             "cpus": 2,
@@ -40,32 +42,32 @@ def test_engine_parsers_msfragger_init():
                     "name": "Acetyl",
                 },
             ],
-            # "omssa_mod_dir": Path(__file__).parent.parent / "data",
+            # "omssa_mod_dir": pytest._test_path / "data",
         },
     )
 
 
 def test_engine_parsers_msfragger_check_parser_compatibility():
     input_file = (
-        Path(__file__).parent.parent
+        pytest._test_path
         / "data"
         / "test_Creinhardtii_QE_pH11_mzml2mgf_0_0_1_msfragger_3.tsv"
     )
-    assert MSFragger3Parser.check_parser_compatibility(input_file) is True
+    assert MSFragger_3_Parser.check_parser_compatibility(input_file) is True
 
 
 def test_engine_parsers_msfragger_check_dataframe_integrity():
     input_file = (
-        Path(__file__).parent.parent
+        pytest._test_path
         / "data"
         / "test_Creinhardtii_QE_pH11_mzml2mgf_0_0_1_msfragger_3.tsv"
     )
-    rt_lookup_path = Path(__file__).parent.parent / "data" / "_ursgal_lookup.csv.bz2"
+    rt_lookup_path = pytest._test_path / "data" / "_ursgal_lookup.csv.bz2"
     db_path = (
-        Path(__file__).parent.parent / "data" / "test_Creinhardtii_target_decoy.fasta"
+        pytest._test_path / "data" / "test_Creinhardtii_target_decoy.fasta"
     )
 
-    parser = MSFragger3Parser(
+    parser = MSFragger_3_Parser(
         input_file,
         params={
             "cpus": 2,
@@ -101,13 +103,13 @@ def test_engine_parsers_msfragger_check_dataframe_integrity():
 
 
 def test_engine_parsers_msfragger_merge_mods():
-    input_file = Path(__file__).parent.parent / "data" / "msfragger_merged_mods.tsv"
-    rt_lookup_path = Path(__file__).parent.parent / "data" / "_ursgal_lookup.csv.bz2"
+    input_file = pytest._test_path / "data" / "msfragger_merged_mods.tsv"
+    rt_lookup_path = pytest._test_path / "data" / "_ursgal_lookup.csv.bz2"
     db_path = (
-        Path(__file__).parent.parent / "data" / "test_Creinhardtii_target_decoy.fasta"
+        pytest._test_path / "data" / "test_Creinhardtii_target_decoy.fasta"
     )
 
-    parser = MSFragger3Parser(
+    parser = MSFragger_3_Parser(
         input_file,
         params={
             "cpus": 2,
@@ -148,13 +150,13 @@ def test_engine_parsers_msfragger_merge_mods():
 
 
 def test_engine_parsers_msfragger_single_mods():
-    input_file = Path(__file__).parent.parent / "data" / "msfragger_no_mods.tsv"
-    rt_lookup_path = Path(__file__).parent.parent / "data" / "_ursgal_lookup.csv.bz2"
+    input_file = pytest._test_path / "data" / "msfragger_no_mods.tsv"
+    rt_lookup_path = pytest._test_path / "data" / "_ursgal_lookup.csv.bz2"
     db_path = (
-        Path(__file__).parent.parent / "data" / "test_Creinhardtii_target_decoy.fasta"
+        pytest._test_path / "data" / "test_Creinhardtii_target_decoy.fasta"
     )
 
-    parser = MSFragger3Parser(
+    parser = MSFragger_3_Parser(
         input_file,
         params={
             "cpus": 2,

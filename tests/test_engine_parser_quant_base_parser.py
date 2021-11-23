@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 from pathlib import Path
 
-from unify_idents.engine_parsers.base_parser import __QuantBaseParser
+from unify_idents.engine_parsers.base_parser import QuantBaseParser
 
 
 def test_engine_parsers_QuantBaseParser_init():
@@ -11,7 +11,7 @@ def test_engine_parsers_QuantBaseParser_init():
     rt_lookup_path = Path(__file__).parent / "data" / "_ursgal_lookup.csv.bz2"
     db_path = Path(__file__).parent / "data" / "test_Creinhardtii_target_decoy.fasta"
 
-    parser = __QuantBaseParser(
+    parser = QuantBaseParser(
         input_file,
         params={
             "cpus": 2,
@@ -28,16 +28,16 @@ def test_engine_parsers_QuantBaseParser_init():
 
 def test_engine_parsers_QuantBaseParser_check_parser_compatibility_non_existing():
     # should always return False
-    assert __QuantBaseParser.check_parser_compatibility("whatever") is False
+    assert QuantBaseParser.check_parser_compatibility("whatever") is False
 
 
 def test_engine_parsers_QuantBaseParser_check_parser_compatibility_existing():
     # should always return False
     assert (
-        __QuantBaseParser.check_parser_compatibility(
+            QuantBaseParser.check_parser_compatibility(
             Path(__file__).parent
             / "data"
             / "test_Creinhardtii_QE_pH11_xtandem_alanine.xml"
         )
-        is False
+            is False
     )

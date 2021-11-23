@@ -4,10 +4,10 @@ import xml.etree.ElementTree as ETree
 import numpy as np
 import pandas as pd
 
-from unify_idents.engine_parsers.base_parser import __IdentBaseParser
+from unify_idents.engine_parsers.base_parser import IdentBaseParser
 
 
-class Omssa_Parser(__IdentBaseParser):
+class Omssa_Parser(IdentBaseParser):
     """File parser for OMSSA."""
 
     def __init__(self, *args, **kwargs):
