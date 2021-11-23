@@ -1,6 +1,7 @@
 """Quant parser."""
 import pandas as pd
-
+import re
+from pathlib import Path
 from unify_idents.engine_parsers.base_parser import QuantBaseParser
 
 
@@ -14,10 +15,14 @@ class FlashLFQ_1_2_0_Parser(QuantBaseParser):
         """
         super().__init__(*args, **kwargs)
         self.style = "flash_lfq_style_1"
-        self.reference_columns = self.param_mapper.get_default_params(style=self.style)[
-            "header_translations"
-        ]["translated_value"]
+        self.mapping_dict = {
+            v: k
+            for k, v in self.param_mapper.get_default_params(style=self.style)[
+                "header_translations"
+            ]["translated_value"].items()
+        }
         self.df = pd.read_csv(self.input_file, delimiter="\t")
+        self.df.rename(columns=self.mapping_dict, inplace=True)
 
     @classmethod
     def check_parser_compatibility(cls, file):
@@ -67,6 +72,43 @@ class FlashLFQ_1_2_0_Parser(QuantBaseParser):
             self.df (pd.DataFrame): unified dataframe
         """
         # TODO: fill this
-        raise NotImplementedError
-
+        # raise NotImplementedError
+        # do column conversion here
+        # breakpoint()
+        self.df["Spectrum ID"] = -1
+        self.df["Linked Spectrum ID"] = -1
+        self.df["Raw Quant Value"] = -1
+        self.df["FWHM"] = ""
+        self.df["Label"] = "LabelFree"
+        self.df["Condition"] = self.df["Raw Filename"]
+        self.df["Raw Filename"] = self.df["Raw Filename"].map(
+            lambda x: Path(self.params.get("Raw data location", "")) / Path(x).stem
+        )
+        self.df["Quant Group"] = ""
+        self.df["Score"] = ""
+        self.df["Processing Level"] = "ChromatographicPeak"
+        self.df["Quant Run ID"] = "FlashLFQ"
+        self.df["Coalescence"] = ""
+        self.process_unify_style()
         return self.df
+
+    def extract_mods(self, full_sequence):
+        """Extract modifications from full_sequence and format as {mod_1}:{pos_1};{mod_n}:{pos_n}
+
+        Args:
+            full_sequence (str): sequence including mod (e.g. ELVISC[Carbamidomethyl]M[Oxidation])
+
+        Returns:
+            str: extracted mods as described in summary
+        """
+        # TODO extract C-terminal mods, position should be seq_len + 1
+        cumulative_match_length = 0
+        regex = re.compile("\[(.*?)\]")
+        mods = []
+        for match in regex.finditer(full_sequence):
+            print(match.group())
+            mods.append(f"{match.group(1)}:{match.start() - cumulative_match_length}")
+            cumulative_match_length += len(match.group())
+        print()
+
+        return ";".join(mods)

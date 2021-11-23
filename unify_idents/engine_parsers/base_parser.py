@@ -444,3 +444,6 @@ class QuantBaseParser(BaseParser):
             "p2t",
             "coalescence",
         }
+
+    def process_unify_style(self):
+        pass
