@@ -89,7 +89,6 @@ def test_engine_parsers_msfragger_check_dataframe_integrity():
     )
     df = parser.unify()
     assert len(df) == 70
-    assert pytest.approx(df["uCalc m/z"].mean()) == 743.15216
     assert pytest.approx(df["uCalc m/z"].mean()) == 781.60675
     assert pytest.approx(df["Exp m/z"].mean()) == 781.7692
 

@@ -85,6 +85,7 @@ def test_engine_parsers_omssa_check_dataframe_integrity():
                 },
             ],
             "omssa_mod_dir": pytest._test_path / "data",
+            "Raw data location": "path/for/glory.mzML",
         },
     )
     df = parser.unify()

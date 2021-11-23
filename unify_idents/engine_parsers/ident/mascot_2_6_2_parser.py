@@ -221,7 +221,7 @@ class Mascot_2_6_2_Parser(IdentBaseParser):
             self.df["Modifications"].str.extract(r";*(.+);*").fillna("").values
         )
         self.df.loc[:, "Modifications"] = self.df["Modifications"].str.replace(
-            r"^;$", ""
+            r"^;$", "", regex=True
         )
         self.df.drop(columns="subst", inplace=True)
 
