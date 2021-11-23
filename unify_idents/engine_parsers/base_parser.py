@@ -145,9 +145,9 @@ class IdentBaseParser(BaseParser):
         Returns:
             (pd.Series): m/z
         """
-        return (
-            mass.astype(float) + (charge.astype(int) * self.PROTON)
-        ) / charge.astype(int)
+        return (mass.astype(float) + (charge.astype(int) * self.PROTON)) / charge.astype(
+            int
+        )
 
     def _create_mod_dicts(self):
         """
@@ -322,9 +322,9 @@ class IdentBaseParser(BaseParser):
         Operations are performed inplace on self.df
         """
         eng_name = self.df["Search Engine"].unique()[0]
-        score_col = self.translated_params["validation_score_field"][
-            "translated_value"
-        ][eng_name]
+        score_col = self.translated_params["validation_score_field"]["translated_value"][
+            eng_name
+        ]
         top_is_highest = self.translated_params["bigger_scores_better"][
             "translated_value"
         ][eng_name]
