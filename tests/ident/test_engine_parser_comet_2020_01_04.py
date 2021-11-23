@@ -1,10 +1,13 @@
 #!/usr/bin/env python
 from pathlib import Path
 
+import pandas as pd
 import pytest
+import xml.etree.ElementTree as ETree
 
 from unify_idents.engine_parsers.ident.comet_2020_01_4_parser import (
     Comet_2020_01_4_Parser,
+    _get_single_spec_df,
 )
 
 
@@ -39,7 +42,6 @@ def test_engine_parsers_comet_init():
                     "name": "Acetyl",
                 },
             ],
-            "omssa_mod_dir": pytest._test_path / "data",
         },
     )
 
@@ -89,32 +91,86 @@ def test_engine_parsers_comet_check_dataframe_integrity():
                     "name": "Acetyl",
                 },
             ],
-            "omssa_mod_dir": pytest._test_path / "data",
         },
     )
     df = parser.unify()
-
-    assert len(df) == 60
-    assert pytest.approx(df["uCalc m/z"].mean()) == 485.26791
+    assert pytest.approx(df["uCalc m/z"].mean()) == 457.85944
+    assert pytest.approx(df["Exp m/z"].mean()) == 457.87625
 
     assert df["Modifications"].str.contains("Acetyl:0").sum() == 5
+    assert df["Modifications"].str.contains("Oxidation:").sum() == 0
     assert (
         df["Modifications"].str.count("Carbamidomethyl:")
         == df["Sequence"].str.count("C")
     ).all()
     assert df["Modifications"].str.count(":").sum() == 38
-
-    # assert mean uCalc mz
-    # assert mean Exp mz
-    assert (
-        df["Raw data location"]
-        == "/Users/cellzome/Dev/Gits/Ursgal/ursgal2_dev/tests/data/BSA1.mzML"
-    ).all()
+    assert (df["Raw data location"] == "path/for/glory.mzML").all()
 
 
 def test_get_single_spec_df():
-    assert 1 == 2
+    input_file = pytest._test_path / "data" / "BSA1_comet_2020_01_4.mzid"
+    element = (
+        ETree.parse(input_file)
+        .getroot()
+        .find(".//{*}SpectrumIdentificationList/{*}SpectrumIdentificationResult")
+    )
+    ref_dict = {
+        "Exp m/z": None,
+        "Calc m/z": None,
+        "Spectrum Title": None,
+        "Raw data location": "path/for/glory.mgf",
+        "Search Engine": "comet_2020_01_4",
+        "Spectrum ID": None,
+        "Modifications": None,
+        "Retention Time (s)": None,
+        "Charge": None,
+        "Comet:Score": None,
+        "Comet:DeltaCn": None,
+        "Comet:XCorr": None,
+        "Comet:EValue": None,
+        "Sequence": None,
+        "Comet:SpecEValue": None,
+        "Comet:Num Matched Ions": None,
+        "Comet:Num Unmatched Ions": None,
+    }
+    mapping_dict = {
+        "chargeState": "Charge",
+        "Comet:spscore": "Comet:Score",
+        "Comet:deltacn": "Comet:DeltaCn",
+        "Comet:xcorr": "Comet:XCorr",
+        "Comet:expectation value": "Comet:EValue",
+        "peptide_ref": "Sequence",
+        "experimentalMassToCharge": "Exp m/z",
+        "calculatedMassToCharge": "Calc m/z",
+        "SpecEValue": "Comet:SpecEValue",
+        "number of matched peaks": "Comet:Num Matched Ions",
+        "number of unmatched peaks": "Comet:Num Unmatched Ions",
+    }
 
+    result = _get_single_spec_df(ref_dict, mapping_dict, element)
 
-def test_map_mods_and_sequences():
-    assert 1 == 2
+    assert isinstance(result, pd.DataFrame)
+    assert (
+        result.values
+        == [
+            [
+                "358.174682",
+                "358.174575",
+                None,
+                "path/for/glory.mgf",
+                "comet_2020_01_4",
+                "2458",
+                None,
+                None,
+                "3",
+                "5.9000",
+                "1.0000",
+                "0.2825",
+                "3.76E+01",
+                "SHCIAEVEK;",
+                None,
+                "3",
+                "29",
+            ]
+        ]
+    ).all()

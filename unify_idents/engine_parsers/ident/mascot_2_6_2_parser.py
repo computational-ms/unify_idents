@@ -56,7 +56,7 @@ def _get_single_spec_df(reference_dict, spectrum):
     return pd.DataFrame(spec_records)
 
 
-class Mascot_1_Parser(IdentBaseParser):
+class Mascot_2_6_2_Parser(IdentBaseParser):
     """File parser for MSGF+."""
 
     def __init__(self, *args, **kwargs):
@@ -211,14 +211,17 @@ class Mascot_1_Parser(IdentBaseParser):
             subst_df.apply(lambda col: "Subst(" + col.str[2] + "):" + col.str[0] + ";")
             .fillna("")
             .sum(axis=1)
-        )
+        ).replace(0.0, "")
 
         self.df.loc[:, "Modifications"] = (
             self.df["Modifications"].apply(self._translate_opt_mods).to_list()
         )
         self.df.loc[:, "Modifications"] += (fix_mods + subst_df).str.strip(";")
         self.df.loc[:, "Modifications"] = (
-            self.df["Modifications"].str.extract(r";+(.+);+").fillna("").values
+            self.df["Modifications"].str.extract(r";*(.+);*").fillna("").values
+        )
+        self.df.loc[:, "Modifications"] = self.df["Modifications"].str.replace(
+            r"^;$", ""
         )
         self.df.drop(columns="subst", inplace=True)
 
@@ -250,7 +253,7 @@ class Mascot_1_Parser(IdentBaseParser):
         self.df.loc[:, "Spectrum Title"] = self.df["Spectrum Title"].str.replace(
             "%2e", "."
         )
-        self.df.loc[:, "Exp m/z"] = self._calc_mz(
+        self.df.loc[:, "Calc m/z"] = self._calc_mz(
             mass=self.df["Exp m/z"], charge=self.df["Charge"]
         )
         self._format_mods()

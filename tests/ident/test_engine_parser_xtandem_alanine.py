@@ -4,7 +4,11 @@ from pathlib import Path
 import pandas as pd
 import pytest
 
-from unify_idents.engine_parsers.ident.xtandem_alanine import XTandemAlanine_Parser
+import xml.etree.ElementTree as ETree
+from unify_idents.engine_parsers.ident.xtandem_alanine import (
+    XTandemAlanine_Parser,
+    _get_single_spec_df,
+)
 
 
 def test_engine_parsers_xtandem_init():
@@ -54,9 +58,7 @@ def test_engine_parsers_xtandem_file_matches_xtandem_parser():
 
 def test_engine_parsers_msfragger_file_not_matches_xtandem_parser():
     input_file = (
-        pytest._test_path
-        / "data"
-        / "test_Creinhardtii_QE_pH11_mzml2mgf_0_0_1_msfragger_3.tsv"
+        pytest._test_path / "data" / "test_Creinhardtii_QE_pH11_msfragger_3.tsv"
     )
 
     assert XTandemAlanine_Parser.check_parser_compatibility(input_file) is False
@@ -100,18 +102,80 @@ def test_engine_parsers_xtandem_check_dataframe_integrity():
     df = parser.unify()
     assert len(parser.root) == 79
     assert pytest.approx(df["uCalc m/z"].mean(), 457.85944)
+    assert (df["Raw data location"] == "path/for/glory.mzML").all()
+    assert pytest.approx(df["uCalc m/z"].mean()) == 796.4324
+    assert pytest.approx(df["Exp m/z"].mean()) == 796.71967
+
+    assert df["Modifications"].str.contains("Acetyl:0").sum() == 1
+    assert df["Modifications"].str.contains("Oxidation:").sum() == 23
     assert (
-        df["Raw data location"]
-        == "/Users/cellzome/Dev/Gits/Ursgal/ursgal2_dev/tests/data/test_Creinhardtii_QE_pH11.mzML"
+        df["Modifications"].str.count("Carbamidomethyl:")
+        == df["Sequence"].str.count("C")
     ).all()
+    assert df["Modifications"].str.count(":").sum() == 50
 
 
 def test_get_single_spec_df():
-    assert 1 == 2
+    input_file = (
+        pytest._test_path / "data" / "test_Creinhardtii_QE_pH11_xtandem_alanine.xml"
+    )
+    element = ETree.parse(input_file).getroot()[0]
+    ref_dict = {
+        "Exp m/z": None,
+        "Calc m/z": None,
+        "Spectrum Title": None,
+        "Raw data location": "path/for/glory.mgf",
+        "Search Engine": "xtandem_alanine",
+        "Spectrum ID": None,
+        "Modifications": None,
+        "Retention Time (s)": None,
+        "X!Tandem:delta": None,
+        "X!Tandem:nextscore": None,
+        "X!Tandem:y_score": None,
+        "X!Tandem:y_ions": None,
+        "X!Tandem:b_score": None,
+        "X!Tandem:b_ions": None,
+        "Sequence": None,
+        "Charge": None,
+        "X!Tandem:Hyperscore": None,
+    }
+    mapping_dict = {
+        "delta": "X!Tandem:delta",
+        "nextscore": "X!Tandem:nextscore",
+        "y_score": "X!Tandem:y_score",
+        "y_ions": "X!Tandem:y_ions",
+        "b_score": "X!Tandem:b_score",
+        "b_ions": "X!Tandem:b_ions",
+        "seq": "Sequence",
+        "z": "Charge",
+        "hyperscore": "X!Tandem:Hyperscore",
+    }
 
+    result = _get_single_spec_df(ref_dict, mapping_dict, element)
 
-def test_map_mod_names():
-    assert 1 == 2
+    assert isinstance(result, pd.DataFrame)
+    assert (
+        result.values
+        == [
+            None,
+            "1315.5700",
+            "test_Creinhardtii_QE_pH11.10381.10381.3",
+            "path/for/glory.mgf",
+            "xtandem_alanine",
+            "10381",
+            list(["15.99492:5"]),
+            None,
+            "0.0057",
+            "8.0",
+            "9.9",
+            "5",
+            "0.0",
+            "0",
+            "DDVHNMGADGIR",
+            "3",
+            "14.2",
+        ]
+    ).all()
 
 
 def test_engine_parsers_xtandem_nterminal_mod():

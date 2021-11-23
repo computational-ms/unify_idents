@@ -104,8 +104,7 @@ class Comet_2020_01_4_Parser(IdentBaseParser):
             except StopIteration:
                 head = ""
         contains_engine = "Comet" in head
-        contains_correct_version = "2020.01 rev. 4" in head
-        return is_mzid and contains_engine and contains_correct_version
+        return is_mzid and contains_engine
 
     def _map_mods_and_sequences(self):
         """Replace internal tags to retrieve sequences and formatted modification strings.

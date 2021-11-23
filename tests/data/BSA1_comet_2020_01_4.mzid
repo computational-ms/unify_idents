@@ -264,7 +264,7 @@
     </DatabaseName>
     <cvParam cvRef="MS" accession="MS:1001073" name="database type amino acid" value="" />
    </SearchDatabase>
-   <SpectraData location="/Users/cellzome/Dev/Gits/Ursgal/ursgal_master/example_data/BSA1.mgf" id="SD_1" >
+   <SpectraData location="path/for/glory.mzML" id="SD_1" >
     <FileFormat>
      <cvParam cvRef="PSI-MS" accession="MS:1001062" name="Mascot MGF file" />
     </FileFormat>

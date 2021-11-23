@@ -13,7 +13,7 @@ def test_base_parser_read_rt_lookup_file():
 
     bp = BaseParser(input_file, params={"rt_pickle_name": rt_lookup_path})
     rt_lookup = bp._read_rt_lookup_file()
-    assert (rt_lookup["Unit"] == 60).all()
+    assert (rt_lookup["Unit"] == 1).all()
     assert pytest.approx(
         rt_lookup["Precursor mz"].mean(), 550.8444810049874
     )  # check consistency

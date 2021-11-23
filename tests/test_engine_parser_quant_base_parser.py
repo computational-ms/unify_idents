@@ -34,10 +34,10 @@ def test_engine_parsers_QuantBaseParser_check_parser_compatibility_non_existing(
 def test_engine_parsers_QuantBaseParser_check_parser_compatibility_existing():
     # should always return False
     assert (
-            QuantBaseParser.check_parser_compatibility(
+        QuantBaseParser.check_parser_compatibility(
             Path(__file__).parent
             / "data"
             / "test_Creinhardtii_QE_pH11_xtandem_alanine.xml"
         )
-            is False
+        is False
     )

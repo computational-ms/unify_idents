@@ -57,7 +57,7 @@ class MSAmanda_2_Parser(IdentBaseParser):
         is_csv = file.as_posix().endswith(".csv")
         with open(file.as_posix()) as f:
             head = "".join([next(f) for _ in range(1)])
-        matches_version = "#version: 2.0.0.17442" in head
+        matches_version = "#version: 2." in head
         return is_csv and matches_version
 
     def _map_mod_translation(self, row):

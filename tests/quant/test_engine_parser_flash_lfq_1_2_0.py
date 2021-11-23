@@ -22,9 +22,7 @@ def test_engine_parsers_flashLFQ_check_parser_compatibility():
 
 def test_engine_parsers_flashLFQ_file_not_matches_parser():
     input_file = (
-        pytest._test_path
-        / "data"
-        / "test_Creinhardtii_QE_pH11_mzml2mgf_0_0_1_msfragger_3.tsv"
+        pytest._test_path / "data" / "test_Creinhardtii_QE_pH11_msfragger_3.tsv"
     )
 
     assert FlashLFQ_1_2_0_Parser.check_parser_compatibility(input_file) is False
@@ -56,15 +54,15 @@ def test_engine_parsers_flashLFQ_extract_mods():
         params={"rt_pickle_name": rt_lookup_path},
     )
     test_sequence = "ELC[Carbamidomethyl]"
-    mods = parser.extract_mods(test_sequence)
+    mods = parser.translate_mods(test_sequence)
     assert mods == "Carbamidomethyl:3"
 
     test_sequence2 = "ELC[Carbamidomethyl]MMMM[Oxidation]"
-    mods = parser.extract_mods(test_sequence2)
+    mods = parser.translate_mods(test_sequence2)
     assert mods == "Carbamidomethyl:3;Oxidation:7"
 
     test_sequence3 = "[Acetyl]ELC[Carbamidomethyl]MMMM[Oxidation]"
-    mods = parser.extract_mods(test_sequence3)
+    mods = parser.translate_mods(test_sequence3)
     assert mods == "Acetyl:0;Carbamidomethyl:3;Oxidation:7"
 
     # TODO encode C-terminal mods
