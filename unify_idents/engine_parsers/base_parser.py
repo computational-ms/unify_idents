@@ -237,7 +237,7 @@ class IdentBaseParser(BaseParser):
         pren_seq = (
             pd.concat(
                 [
-                    self.df["Sequence Pre AA"].str.split("<\\|>"),
+                    self.df["Sequence Pre AA"].str.split(rf"{self.DELIMITER}"),
                     self.df["Sequence"].str[:1],
                 ],
                 axis=1,
