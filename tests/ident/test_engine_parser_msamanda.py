@@ -8,9 +8,7 @@ from unify_idents.engine_parsers.ident.msamanda_2_parser import MSAmanda_2_Parse
 
 def test_engine_parsers_msamanda_init():
     input_file = pytest._test_path / "data" / "BSA1_msamanda_2_0_0_17442.csv"
-    rt_lookup_path = (
-        pytest._test_path / "data" / "BSA1_ursgal_lookup.csv.bz2"
-    )
+    rt_lookup_path = pytest._test_path / "data" / "BSA1_ursgal_lookup.csv.bz2"
     db_path = Path(__file__).parent / "data" / "BSA.fasta"
 
     parser = MSAmanda_2_Parser(
@@ -51,9 +49,7 @@ def test_engine_parsers_msamanda_check_parser_compatibility():
 
 def test_engine_parsers_msamanda_check_dataframe_integrity():
     input_file = pytest._test_path / "data" / "BSA1_msamanda_2_0_0_17442.csv"
-    rt_lookup_path = (
-        pytest._test_path / "data" / "BSA1_ursgal_lookup.csv.bz2"
-    )
+    rt_lookup_path = pytest._test_path / "data" / "BSA1_ursgal_lookup.csv.bz2"
     db_path = pytest._test_path / "data" / "BSA.fasta"
 
     parser = MSAmanda_2_Parser(
@@ -88,6 +84,10 @@ def test_engine_parsers_msamanda_check_dataframe_integrity():
     df = parser.unify()
     assert len(df) == 87
     assert pytest.approx(df["uCalc m/z"].mean()) == 457.85944
+    assert (
+        df["Raw data location"]
+        == "/Users/cellzome/Dev/Gits/Ursgal/ursgal2_dev/tests/data/test_Creinhardtii_QE_pH11.mzML"
+    ).all()
 
 
 def test_map_mod_translation():

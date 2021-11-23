@@ -92,7 +92,7 @@ class FlashLFQ_1_2_0_Parser(QuantBaseParser):
         self.process_unify_style()
         return self.df
 
-    def extract_mods(self, full_sequence):
+    def translate_mods(self, full_sequence):
         """Extract modifications from full_sequence and format as {mod_1}:{pos_1};{mod_n}:{pos_n}
 
         Args:
@@ -106,9 +106,6 @@ class FlashLFQ_1_2_0_Parser(QuantBaseParser):
         regex = re.compile("\[(.*?)\]")
         mods = []
         for match in regex.finditer(full_sequence):
-            print(match.group())
             mods.append(f"{match.group(1)}:{match.start() - cumulative_match_length}")
             cumulative_match_length += len(match.group())
-        print()
-
         return ";".join(mods)

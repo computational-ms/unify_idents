@@ -12,9 +12,7 @@ def test_engine_parsers_msfragger_init():
         / "test_Creinhardtii_QE_pH11_mzml2mgf_0_0_1_msfragger_3.tsv"
     )
     rt_lookup_path = pytest._test_path / "data" / "_ursgal_lookup.csv.bz2"
-    db_path = (
-        pytest._test_path / "data" / "test_Creinhardtii_target_decoy.fasta"
-    )
+    db_path = pytest._test_path / "data" / "test_Creinhardtii_target_decoy.fasta"
 
     parser = MSFragger_3_Parser(
         input_file,
@@ -63,9 +61,7 @@ def test_engine_parsers_msfragger_check_dataframe_integrity():
         / "test_Creinhardtii_QE_pH11_mzml2mgf_0_0_1_msfragger_3.tsv"
     )
     rt_lookup_path = pytest._test_path / "data" / "_ursgal_lookup.csv.bz2"
-    db_path = (
-        pytest._test_path / "data" / "test_Creinhardtii_target_decoy.fasta"
-    )
+    db_path = pytest._test_path / "data" / "test_Creinhardtii_target_decoy.fasta"
 
     parser = MSFragger_3_Parser(
         input_file,
@@ -100,14 +96,16 @@ def test_engine_parsers_msfragger_check_dataframe_integrity():
     df = parser.unify()
     assert len(df) == 62
     assert pytest.approx(df["uCalc m/z"].mean()) == 743.15216
+    assert (
+        df["Raw data location"]
+        == "/Users/cellzome/Dev/Gits/Ursgal/ursgal2_dev/tests/data/test_Creinhardtii_QE_pH11.mzML"
+    ).all()
 
 
 def test_engine_parsers_msfragger_merge_mods():
     input_file = pytest._test_path / "data" / "msfragger_merged_mods.tsv"
     rt_lookup_path = pytest._test_path / "data" / "_ursgal_lookup.csv.bz2"
-    db_path = (
-        pytest._test_path / "data" / "test_Creinhardtii_target_decoy.fasta"
-    )
+    db_path = pytest._test_path / "data" / "test_Creinhardtii_target_decoy.fasta"
 
     parser = MSFragger_3_Parser(
         input_file,
@@ -152,9 +150,7 @@ def test_engine_parsers_msfragger_merge_mods():
 def test_engine_parsers_msfragger_single_mods():
     input_file = pytest._test_path / "data" / "msfragger_no_mods.tsv"
     rt_lookup_path = pytest._test_path / "data" / "_ursgal_lookup.csv.bz2"
-    db_path = (
-        pytest._test_path / "data" / "test_Creinhardtii_target_decoy.fasta"
-    )
+    db_path = pytest._test_path / "data" / "test_Creinhardtii_target_decoy.fasta"
 
     parser = MSFragger_3_Parser(
         input_file,
