@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <?xml-stylesheet type="text/xsl" href="tandem-style.xsl"?>
-<bioml xmlns:GAML="http://www.bioml.com/gaml/" label="models from '/Users/cellzome/Dev/Gits/Ursgal/ursgal2_dev/tests/data/BSA1.mgf'">
+<bioml label="models from '/Users/cellzome/Dev/Gits/Ursgal/ursgal2_dev/tests/data/BSA1.mgf'">
 <group label="input parameters" type="parameters">
 	<note type="input" label="list path, default parameters">/Users/cellzome/Dev/Gits/Ursgal/ursgal2_dev/tests/data/xtandem_alanine/default_input.xml</note>
 	<note type="input" label="list path, taxonomy information">/Users/cellzome/Dev/Gits/Ursgal/ursgal2_dev/tests/data/xtandem_alanine/taxonomy.xml</note>

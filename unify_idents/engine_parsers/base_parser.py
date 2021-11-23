@@ -73,7 +73,6 @@ class BaseParser:
         Returns:
             rt_lookup (pd.DataFrame): loaded rt_pickle_file indexable by Spectrum ID
         """
-
         rt_lookup = pd.read_csv(self.params["rt_pickle_name"], compression="bz2")
         rt_lookup.set_index("Spectrum ID", inplace=True)
         rt_lookup["Unit"] = rt_lookup["Unit"].replace({"second": 1, "minute": 60})
@@ -146,9 +145,9 @@ class IdentBaseParser(BaseParser):
         Returns:
             (pd.Series): m/z
         """
-        return (mass.astype(float) + (charge.astype(int) * self.PROTON)) / charge.astype(
-            int
-        )
+        return (
+            mass.astype(float) + (charge.astype(int) * self.PROTON)
+        ) / charge.astype(int)
 
     def _create_mod_dicts(self):
         """
@@ -323,9 +322,9 @@ class IdentBaseParser(BaseParser):
         Operations are performed inplace on self.df
         """
         eng_name = self.df["Search Engine"].unique()[0]
-        score_col = self.translated_params["validation_score_field"]["translated_value"][
-            eng_name
-        ]
+        score_col = self.translated_params["validation_score_field"][
+            "translated_value"
+        ][eng_name]
         top_is_highest = self.translated_params["bigger_scores_better"][
             "translated_value"
         ][eng_name]

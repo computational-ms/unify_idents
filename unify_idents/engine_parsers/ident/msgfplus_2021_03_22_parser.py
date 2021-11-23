@@ -123,10 +123,7 @@ class MSGFPlus_2021_03_22_Parser(IdentBaseParser):
             except StopIteration:
                 head = ""
         contains_engine = "MS-GF+" in head
-        contains_correct_version = (
-            "Release (v2021.03.22)" in head or "Release (v2019.07.03)" in head
-        )
-        return is_mzid and contains_engine and contains_correct_version
+        return is_mzid and contains_engine
 
     def _get_peptide_lookup(self):
         """Replace internal tags to retrieve sequences and formatted modification strings.
