@@ -1,27 +1,20 @@
 #!/usr/bin/env python
 from pathlib import Path
-from unify_idents.unify import UnifiedDataFrame, UnifiedRow
-from unify_idents.engine_parsers.ident.omssa_parser import OmssaParser
-import uparma
 
-from collections.abc import Iterable
 import pytest
+
+from unify_idents.engine_parsers.ident.omssa_2_1_9_parser import Omssa_Parser
 
 
 def test_engine_parsers_omssa_init():
-    input_file = (
-        Path(__file__).parent.parent
-        / "data"
-        / "test_Creinhardtii_QE_pH11_omssa_2_1_9.csv"
-    )
-    rt_lookup_path = Path(__file__).parent.parent / "data" / "_ursgal_lookup.csv.bz2"
-    db_path = (
-        Path(__file__).parent.parent / "data" / "test_Creinhardtii_target_decoy.fasta"
-    )
+    input_file = pytest._test_path / "data" / "test_Creinhardtii_QE_pH11_omssa_2_1_9.csv"
+    rt_lookup_path = pytest._test_path / "data" / "_ursgal_lookup.csv.bz2"
+    db_path = pytest._test_path / "data" / "test_Creinhardtii_target_decoy.fasta"
 
-    parser = OmssaParser(
+    parser = Omssa_Parser(
         input_file,
         params={
+            "cpus": 2,
             "rt_pickle_name": rt_lookup_path,
             "database": db_path,
             "modifications": [
@@ -44,39 +37,25 @@ def test_engine_parsers_omssa_init():
                     "name": "Acetyl",
                 },
             ],
-            "omssa_mod_dir": Path(__file__).parent.parent / "data",
+            "omssa_mod_dir": pytest._test_path / "data",
         },
     )
 
 
-def test_engine_parsers_omssa_file_matches_parser():
-    input_file = (
-        Path(__file__).parent.parent
-        / "data"
-        / "test_Creinhardtii_QE_pH11_omssa_2_1_9.csv"
-    )
-    rt_lookup_path = Path(__file__).parent.parent / "data" / "_ursgal_lookup.csv.bz2"
-    db_path = (
-        Path(__file__).parent.parent / "data" / "test_Creinhardtii_target_decoy.fasta"
-    )
-
-    assert OmssaParser.file_matches_parser(input_file) is True
+def test_engine_parsers_omssa_check_parser_compatibility():
+    input_file = pytest._test_path / "data" / "test_Creinhardtii_QE_pH11_omssa_2_1_9.csv"
+    assert Omssa_Parser.check_parser_compatibility(input_file) is True
 
 
-def test_engine_parsers_omssa_unify_row():
-    input_file = (
-        Path(__file__).parent.parent
-        / "data"
-        / "test_Creinhardtii_QE_pH11_omssa_2_1_9.csv"
-    )
-    rt_lookup_path = Path(__file__).parent.parent / "data" / "_ursgal_lookup.csv.bz2"
-    db_path = (
-        Path(__file__).parent.parent / "data" / "test_Creinhardtii_target_decoy.fasta"
-    )
+def test_engine_parsers_omssa_check_dataframe_integrity():
+    input_file = pytest._test_path / "data" / "test_Creinhardtii_QE_pH11_omssa_2_1_9.csv"
+    rt_lookup_path = pytest._test_path / "data" / "_ursgal_lookup.csv.bz2"
+    db_path = pytest._test_path / "data" / "test_Creinhardtii_target_decoy.fasta"
 
-    parser = OmssaParser(
+    parser = Omssa_Parser(
         input_file,
         params={
+            "cpus": 2,
             "rt_pickle_name": rt_lookup_path,
             "database": db_path,
             "modifications": [
@@ -99,106 +78,76 @@ def test_engine_parsers_omssa_unify_row():
                     "name": "Acetyl",
                 },
             ],
-            "omssa_mod_dir": Path(__file__).parent.parent / "data",
+            "omssa_mod_dir": pytest._test_path / "data",
+            "Raw data location": "path/for/glory.mzML",
         },
     )
-    for row in parser:
-        print(row)
+    df = parser.unify()
+    assert pytest.approx(df["uCalc m/z"].mean()) == 826.67596
+    assert (df["Raw data location"] == "path/for/glory.mzML").all()
+    assert pytest.approx(df["Exp m/z"].mean()) == 826.7788
 
-
-def test_engine_parsers_omssa_is_iterable():
-    input_file = (
-        Path(__file__).parent.parent
-        / "data"
-        / "test_Creinhardtii_QE_pH11_omssa_2_1_9.csv"
-    )
-    rt_lookup_path = Path(__file__).parent.parent / "data" / "BSA1_ursgal_lookup.csv.bz2"
-    db_path = (
-        Path(__file__).parent.parent / "data" / "test_Creinhardtii_target_decoy.fasta"
-    )
-
-    parser = OmssaParser(
-        input_file,
-        params={
-            "rt_pickle_name": rt_lookup_path,
-            "database": db_path,
-            "modifications": [
-                {
-                    "aa": "M",
-                    "type": "opt",
-                    "position": "any",
-                    "name": "Oxidation",
-                },
-                {
-                    "aa": "C",
-                    "type": "fix",
-                    "position": "any",
-                    "name": "Carbamidomethyl",
-                },
-                {
-                    "aa": "*",
-                    "type": "opt",
-                    "position": "Prot-N-term",
-                    "name": "Acetyl",
-                },
-            ],
-            "omssa_mod_dir": Path(__file__).parent.parent / "data",
-            "Raw data location": "/Users/cellzome/Dev/Gits/Ursgal/ursgal_master/example_data/test_Creinhardtii_QE_pH11.mgf",
-        },
-    )
-    assert isinstance(parser, Iterable)
-
-
-def test_engine_parsers_omssa_next():
-    input_file = (
-        Path(__file__).parent.parent
-        / "data"
-        / "test_Creinhardtii_QE_pH11_omssa_2_1_9.csv"
-    )
-    rt_lookup_path = Path(__file__).parent.parent / "data" / "_ursgal_lookup.csv.bz2"
-    db_path = (
-        Path(__file__).parent.parent / "data" / "test_Creinhardtii_target_decoy.fasta"
-    )
-
-    parser = OmssaParser(
-        input_file,
-        params={
-            "rt_pickle_name": rt_lookup_path,
-            "database": db_path,
-            "modifications": [
-                {
-                    "aa": "M",
-                    "type": "opt",
-                    "position": "any",
-                    "name": "Oxidation",
-                },
-                {
-                    "aa": "C",
-                    "type": "fix",
-                    "position": "any",
-                    "name": "Carbamidomethyl",
-                },
-                {
-                    "aa": "*",
-                    "type": "opt",
-                    "position": "Prot-N-term",
-                    "name": "Acetyl",
-                },
-            ],
-            "omssa_mod_dir": Path(__file__).parent.parent / "data",
-            "Raw data location": "/Users/cellzome/Dev/Gits/Ursgal/ursgal_master/example_data/test_Creinhardtii_QE_pH11.mgf",
-        },
-    )
-    row = next(parser)
-    assert isinstance(row, UnifiedRow)
-    print(row.data.keys())
-    assert row["Sequence"] == "ALAMEWGPFPRLMVVACNDAINVCRK"
-    assert row["Modifications"] == "Oxidation:4;Carbamidomethyl:17;Carbamidomethyl:24"
+    assert df["Modifications"].str.contains("Acetyl:0").sum() == 0
+    assert df["Modifications"].str.contains("Oxidation:").sum() == 93
     assert (
-        row["Raw data location"]
-        == "/Users/cellzome/Dev/Gits/Ursgal/ursgal_master/example_data/test_Creinhardtii_QE_pH11.mgf"
+        df["Modifications"].str.count("Carbamidomethyl:")
+        == df["Sequence"].str.count("C")
+    ).all()
+    assert df["Modifications"].str.count(":").sum() == 204
+
+
+def test_replace_mod_strings():
+    input_file = pytest._test_path / "data" / "test_Creinhardtii_QE_pH11_omssa_2_1_9.csv"
+    rt_lookup_path = pytest._test_path / "data" / "_ursgal_lookup.csv.bz2"
+    db_path = pytest._test_path / "data" / "test_Creinhardtii_target_decoy.fasta"
+
+    parser = Omssa_Parser(
+        input_file,
+        params={
+            "cpus": 2,
+            "rt_pickle_name": rt_lookup_path,
+            "database": db_path,
+            "modifications": [
+                {
+                    "aa": "M",
+                    "type": "opt",
+                    "position": "any",
+                    "name": "Oxidation",
+                },
+                {
+                    "aa": "C",
+                    "type": "fix",
+                    "position": "any",
+                    "name": "Carbamidomethyl",
+                },
+                {
+                    "aa": "*",
+                    "type": "opt",
+                    "position": "Prot-N-term",
+                    "name": "Acetyl",
+                },
+            ],
+            "omssa_mod_dir": pytest._test_path / "data",
+        },
     )
-    assert row["Charge"] == "4"
-    assert float(row["OMSSA:pvalue"]) == pytest.approx(0.000166970504409832)
-    assert float(row["Calc mass"]) == pytest.approx(3033.491)
-    assert float(row["Calc m/z"]) == pytest.approx(759.38002646677)
+    raw_mod = "oxidation of M:4"
+    converted = parser._replace_mod_strings(
+        raw_mod,
+        {
+            "acetylation of protein n-term": {
+                "unimod_id": None,
+                "omssa_unimod_id": "1",
+                "unimod_name": "Acetyl",
+                "omssa_name": "acetylation of protein n-term",
+                "aa_targets": [],
+            },
+            "oxidation of M": {
+                "unimod_id": None,
+                "omssa_unimod_id": "35",
+                "unimod_name": "Oxidation",
+                "omssa_name": "oxidation of M",
+                "aa_targets": ["M"],
+            },
+        },
+    )
+    assert converted == "Oxidation:4"

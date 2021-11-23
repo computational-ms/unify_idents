@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <?xml-stylesheet type="text/xsl" href="tandem-style.xsl"?>
-<bioml xmlns:GAML="http://www.bioml.com/gaml/" label="models from '/Users/cellzome/Dev/Gits/Ursgal/ursgal2_dev/tests/data/test_Creinhardtii_QE_pH11.mgf'">
+<bioml xmlns:GAML="http://www.bioml.com/gaml/" label="models from 'path/for/glory.mzML'">
 <group id="2" mh="1315.575688" z="3" rt="1943.05878" expect="8.4e-02" label="decoy_Cre03.g202950.t1.1 pacid=30787946 transcript=Cre03.g202950.t1.1 locus=Cre03.g202950..." type="model" sumI="6.69" maxI="325079" fI="3250.79" act="0" >
 <protein expect="-1.1" id="2.1" uid="127" label="decoy_Cre03.g202950.t1.1 pacid=30787946 transcript=Cre03.g202950.t1.1 locus=Cre03.g202950..." sumI="6.69" >
 <note label="description">decoy_Cre03.g202950.t1.1 pacid=30787946 transcript=Cre03.g202950.t1.1 locus=Cre03.g202950 ID=Cre03.g202950.t1.1.v5.5 annot-version=v5.5</note>

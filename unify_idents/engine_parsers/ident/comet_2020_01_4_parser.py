@@ -4,6 +4,7 @@ import sys
 import xml.etree.ElementTree as ETree
 from itertools import repeat
 
+import numpy as np
 import pandas as pd
 import regex as re
 from loguru import logger
@@ -26,21 +27,11 @@ def _get_single_spec_df(reference_dict, mapping_dict, spectrum):
     """
     spec_records = []
     spec_level_dict = reference_dict.copy()
-    spec_level_info = {
-        c.attrib["name"]: c.attrib["value"] for c in spectrum.findall(".//{*}cvParam")
-    }
-    spec_level_dict.update(
-        {
-            mapping_dict[k]: spec_level_info[k]
-            for k in mapping_dict
-            if k in spec_level_info
-        }
-    )
+    spec_level_dict["Spectrum ID"] = spectrum.attrib["spectrumID"].split("scan=")[-1]
 
     # Iterate children
     for psm in spectrum.findall(".//{*}SpectrumIdentificationItem"):
         psm_level_dict = spec_level_dict.copy()
-
         psm_level_dict.update(
             {mapping_dict[k]: psm.attrib[k] for k in mapping_dict if k in psm.attrib}
         )
@@ -54,23 +45,13 @@ def _get_single_spec_df(reference_dict, mapping_dict, spectrum):
                 if k in cv_param_info
             }
         )
-        user_param_info = {
-            c.attrib["name"]: c.attrib["value"] for c in psm.findall(".//{*}userParam")
-        }
-        psm_level_dict.update(
-            {
-                mapping_dict[k]: user_param_info[k]
-                for k in mapping_dict
-                if k in user_param_info
-            }
-        )
 
         spec_records.append(psm_level_dict)
     return pd.DataFrame(spec_records)
 
 
-class MSGFPlus_2021_03_22_Parser(IdentBaseParser):
-    """File parser for MSGF+."""
+class Comet_2020_01_4_Parser(IdentBaseParser):
+    """File parser for Comet."""
 
     def __init__(self, *args, **kwargs):
         """Initialize parser.
@@ -78,16 +59,16 @@ class MSGFPlus_2021_03_22_Parser(IdentBaseParser):
         Reads in data file and provides mappings.
         """
         super().__init__(*args, **kwargs)
-        self.style = "msgfplus_style_1"
+        self.style = "comet_style_1"
 
         tree = ETree.parse(self.input_file)
         self.root = tree.getroot()
         self.reference_dict.update(
             {
-                "Raw data location": self.root.find(".//{*}SpectraData").attrib[
-                    "location"
-                ],
-                "Search Engine": "msgfplus_"
+                "Raw data location": self.root.find(
+                    ".//{*}DataCollection/{*}Inputs/{*}SpectraData"
+                ).attrib["location"],
+                "Search Engine": "comet_"
                 + "_".join(
                     re.findall(
                         r"([/d]*\d+)",
@@ -119,29 +100,74 @@ class MSGFPlus_2021_03_22_Parser(IdentBaseParser):
 
         with open(file.as_posix()) as f:
             try:
-                head = "".join([next(f) for _ in range(20)])
+                head = "".join([next(f) for _ in range(10)])
             except StopIteration:
                 head = ""
-        contains_engine = "MS-GF+" in head
+        contains_engine = "Comet" in head
         return is_mzid and contains_engine
 
-    def _get_peptide_lookup(self):
+    def _map_mods_and_sequences(self):
         """Replace internal tags to retrieve sequences and formatted modification strings.
 
         Operations are performed inplace.
         """
+        # Register fixed mods
+        modifications = self.root.findall(
+            ".//{*}AnalysisProtocolCollection/{*}SpectrumIdentificationProtocol/{*}ModificationParams/{*}SearchModification"
+        )
+        fixed_mods = {
+            sm.attrib["residues"]: sm.find(".//{*}cvParam[@cvRef='UNIMOD']").attrib[
+                "name"
+            ]
+            for sm in modifications
+            if sm.attrib["fixedMod"] == "true"
+        }
+        if len(fixed_mods) > 0:
+            fixed_mod_strings = []
+            for fm_res, fm_name in fixed_mods.items():
+                fixed_mod_strings.append(
+                    self.df["Sequence"]
+                    .str.split(fm_res)
+                    .apply(
+                        lambda l: ";".join(
+                            [
+                                fm_name + ":" + ind
+                                for ind in (
+                                    np.cumsum(list(map(len, l[:-1]))) + range(1, len(l))
+                                ).astype(str)
+                            ]
+                        )
+                    )
+                )
+
+            fixed_mod_strings = (
+                pd.concat(fixed_mod_strings, axis=1)
+                .agg(";".join, axis=1)
+                .str.rstrip(";")
+            )
+
+        modification_mass_map = {
+            sm.attrib["massDelta"]: sm.find(".//{*}cvParam[@cvRef='UNIMOD']").attrib[
+                "name"
+            ]
+            for sm in modifications
+        }
         lookup = {}
         for pep in self.root.findall(".//{*}Peptide"):
             id = pep.attrib.get("id", "")
             lookup[id] = {"Modifications": []}
-            for child in pep.findall(".//{*}PeptideSequence"):
-                lookup[id]["Sequence"] = child.text
+            lookup[id]["Sequence"] = pep.find(".//{*}PeptideSequence").text
             for child in pep.findall(".//{*}Modification"):
                 lookup[id]["Modifications"].append(
-                    f"{child.find('.//{*}cvParam').attrib['name']}:{child.attrib['location']}"
+                    f"{modification_mass_map[child.attrib['monoisotopicMassDelta']]}:{child.attrib['location']}"
                 )
             lookup[id]["Modifications"] = ";".join(lookup[id]["Modifications"])
-        return lookup
+
+        seq_mods = pd.DataFrame(self.df["Sequence"].map(lookup).to_list())
+        self.df.loc[:, "Modifications"] = (
+            seq_mods["Modifications"].str.cat(fixed_mod_strings, sep=";").str.strip(";")
+        )
+        self.df.loc[:, "Sequence"] = seq_mods["Sequence"]
 
     def unify(self):
         """
@@ -150,8 +176,9 @@ class MSGFPlus_2021_03_22_Parser(IdentBaseParser):
         Returns:
             self.df (pd.DataFrame): unified dataframe
         """
-        peptide_lookup = self._get_peptide_lookup()
-        spec_idents = self.root.findall(".//{*}SpectrumIdentificationResult")
+        spec_idents = self.root.findall(
+            ".//{*}SpectrumIdentificationList/{*}SpectrumIdentificationResult"
+        )
         logger.remove()
         logger.add(lambda msg: tqdm.write(msg, end=""))
         pbar_iterator = tqdm(
@@ -166,13 +193,20 @@ class MSGFPlus_2021_03_22_Parser(IdentBaseParser):
             chunk_dfs = pool.starmap(
                 _get_single_spec_df,
                 pbar_iterator,
-                chunksize=1,
             )
         logger.remove()
         logger.add(sys.stdout)
         self.df = pd.concat(chunk_dfs, axis=0, ignore_index=True)
-        seq_mods = pd.DataFrame(self.df["Sequence"].map(peptide_lookup).to_list())
-        self.df.loc[:, seq_mods.columns] = seq_mods
+        self._map_mods_and_sequences()
+        self.df.loc[:, "Spectrum Title"] = (
+            self.df["Raw data location"].str.extract(f"(?<=/)([\w_]+)(?=\.)")[0]
+            + "."
+            + self.df["Spectrum ID"]
+            + "."
+            + self.df["Spectrum ID"]
+            + "."
+            + self.df["Charge"]
+        )
         self.process_unify_style()
 
         return self.df

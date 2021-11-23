@@ -1,21 +1,19 @@
-from unify_idents.engine_parsers.ident.msfragger3_parser import MSFragger3Parser
 from pathlib import Path
+
+import pytest
+
+from unify_idents.engine_parsers.ident.msfragger_3_parser import MSFragger_3_Parser
 
 
 def test_engine_parsers_msfragger_init():
-    input_file = (
-        Path(__file__).parent.parent
-        / "data"
-        / "test_Creinhardtii_QE_pH11_mzml2mgf_0_0_1_msfragger_3.tsv"
-    )
-    rt_lookup_path = Path(__file__).parent.parent / "data" / "_ursgal_lookup.csv.bz2"
-    db_path = (
-        Path(__file__).parent.parent / "data" / "test_Creinhardtii_target_decoy.fasta"
-    )
+    input_file = pytest._test_path / "data" / "test_Creinhardtii_QE_pH11_msfragger_3.tsv"
+    rt_lookup_path = pytest._test_path / "data" / "_ursgal_lookup.csv.bz2"
+    db_path = pytest._test_path / "data" / "test_Creinhardtii_target_decoy.fasta"
 
-    parser = MSFragger3Parser(
+    parser = MSFragger_3_Parser(
         input_file,
         params={
+            "cpus": 2,
             "rt_pickle_name": rt_lookup_path,
             "database": db_path,
             "modifications": [
@@ -38,38 +36,25 @@ def test_engine_parsers_msfragger_init():
                     "name": "Acetyl",
                 },
             ],
-            # "omssa_mod_dir": Path(__file__).parent.parent / "data",
+            # "omssa_mod_dir": pytest._test_path / "data",
         },
     )
 
 
-def test_engine_parsers_msfragger_file_matches_parser():
-    input_file = (
-        Path(__file__).parent.parent
-        / "data"
-        / "test_Creinhardtii_QE_pH11_mzml2mgf_0_0_1_msfragger_3.tsv"
-    )
-    rt_lookup_path = Path(__file__).parent.parent / "data" / "_ursgal_lookup.csv.bz2"
-    db_path = (
-        Path(__file__).parent.parent / "data" / "test_Creinhardtii_target_decoy.fasta"
-    )
-    assert MSFragger3Parser.file_matches_parser(input_file) is True
+def test_engine_parsers_msfragger_check_parser_compatibility():
+    input_file = pytest._test_path / "data" / "test_Creinhardtii_QE_pH11_msfragger_3.tsv"
+    assert MSFragger_3_Parser.check_parser_compatibility(input_file) is True
 
 
-def test_engine_parsers_msfragger_iterable():
-    input_file = (
-        Path(__file__).parent.parent
-        / "data"
-        / "test_Creinhardtii_QE_pH11_mzml2mgf_0_0_1_msfragger_3.tsv"
-    )
-    rt_lookup_path = Path(__file__).parent.parent / "data" / "_ursgal_lookup.csv.bz2"
-    db_path = (
-        Path(__file__).parent.parent / "data" / "test_Creinhardtii_target_decoy.fasta"
-    )
+def test_engine_parsers_msfragger_check_dataframe_integrity():
+    input_file = pytest._test_path / "data" / "test_Creinhardtii_QE_pH11_msfragger_3.tsv"
+    rt_lookup_path = pytest._test_path / "data" / "_ursgal_lookup.csv.bz2"
+    db_path = pytest._test_path / "data" / "test_Creinhardtii_target_decoy.fasta"
 
-    parser = MSFragger3Parser(
+    parser = MSFragger_3_Parser(
         input_file,
         params={
+            "cpus": 2,
             "rt_pickle_name": rt_lookup_path,
             "database": db_path,
             "modifications": [
@@ -92,70 +77,34 @@ def test_engine_parsers_msfragger_iterable():
                     "name": "Acetyl",
                 },
             ],
-            "Raw data location": "/Users/cellzome/Dev/Gits/Ursgal/ursgal_master/example_data/test_Creinhardtii_QE_pH11.mzML",
+            "Raw data location": "path/for/glory.mzML",
             "15N": False,
         },
     )
-    for row in parser:
-        print(row)
+    df = parser.unify()
+    assert len(df) == 70
+    assert pytest.approx(df["uCalc m/z"].mean()) == 781.60675
+    assert pytest.approx(df["Exp m/z"].mean()) == 781.7692
 
-
-def test_engine_parsers_msfragger_unify_row():
-    input_file = (
-        Path(__file__).parent.parent
-        / "data"
-        / "test_Creinhardtii_QE_pH11_mzml2mgf_0_0_1_msfragger_3.tsv"
-    )
-    rt_lookup_path = Path(__file__).parent.parent / "data" / "_ursgal_lookup.csv.bz2"
-    db_path = (
-        Path(__file__).parent.parent / "data" / "test_Creinhardtii_target_decoy.fasta"
-    )
-
-    parser = MSFragger3Parser(
-        input_file,
-        params={
-            "rt_pickle_name": rt_lookup_path,
-            "database": db_path,
-            "modifications": [
-                {
-                    "aa": "M",
-                    "type": "opt",
-                    "position": "any",
-                    "name": "Oxidation",
-                },
-                {
-                    "aa": "C",
-                    "type": "fix",
-                    "position": "any",
-                    "name": "Carbamidomethyl",
-                },
-                {
-                    "aa": "*",
-                    "type": "opt",
-                    "position": "Prot-N-term",
-                    "name": "Acetyl",
-                },
-            ],
-            "Raw data location": "/Users/cellzome/Dev/Gits/Ursgal/ursgal_master/example_data/test_Creinhardtii_QE_pH11.mzML",
-            "15N": False,
-        },
-    )
-    for row in parser:
-        assert row["Sequence"] == "ATTALTDDTLDGAGR"
-        assert row["Search Engine"] == "msfragger_3_0"
-        break
+    assert df["Modifications"].str.contains("Acetyl:0").sum() == 0
+    assert df["Modifications"].str.contains("Oxidation:").sum() == 23
+    assert (
+        df["Modifications"].str.count("Carbamidomethyl:")
+        == df["Sequence"].str.count("C")
+    ).all()
+    assert df["Modifications"].str.count(":").sum() == 43
+    assert (df["Raw data location"] == "path/for/glory.mzML").all()
 
 
 def test_engine_parsers_msfragger_merge_mods():
-    input_file = Path(__file__).parent.parent / "data" / "msfragger_merged_mods.tsv"
-    rt_lookup_path = Path(__file__).parent.parent / "data" / "_ursgal_lookup.csv.bz2"
-    db_path = (
-        Path(__file__).parent.parent / "data" / "test_Creinhardtii_target_decoy.fasta"
-    )
+    input_file = pytest._test_path / "data" / "msfragger_merged_mods.tsv"
+    rt_lookup_path = pytest._test_path / "data" / "_ursgal_lookup.csv.bz2"
+    db_path = pytest._test_path / "data" / "test_Creinhardtii_target_decoy.fasta"
 
-    parser = MSFragger3Parser(
+    parser = MSFragger_3_Parser(
         input_file,
         params={
+            "cpus": 2,
             "rt_pickle_name": rt_lookup_path,
             "database": db_path,
             "modifications": [
@@ -182,26 +131,25 @@ def test_engine_parsers_msfragger_merge_mods():
             "15N": False,
         },
     )
-    for line in parser:
-        assert line["Modifications"] == "Acetyl:0;Carbamidomethyl:1"
-        assert line["Sequence"] == "CGFSTVGSGFGSR"
-        assert (
-            line["Raw data location"]
-            == "/Users/cellzome/Dev/Gits/Ursgal/ursgal_master/example_data/test_Creinhardtii_QE_pH11.mzML"
-        )
-        # assert float(line["uCalc m/z"]) == 631.2851
+    df = parser.unify()
+    row = df.iloc[0]
+    assert row["Modifications"] == "Acetyl:0;Carbamidomethyl:1"
+    assert row["Sequence"] == "CGFSTVGSGFGSR"
+    assert (
+        row["Raw data location"]
+        == "/Users/cellzome/Dev/Gits/Ursgal/ursgal_master/example_data/test_Creinhardtii_QE_pH11.mzML"
+    )
 
 
 def test_engine_parsers_msfragger_single_mods():
-    input_file = Path(__file__).parent.parent / "data" / "msfragger_single_mod.tsv"
-    rt_lookup_path = Path(__file__).parent.parent / "data" / "_ursgal_lookup.csv.bz2"
-    db_path = (
-        Path(__file__).parent.parent / "data" / "test_Creinhardtii_target_decoy.fasta"
-    )
+    input_file = pytest._test_path / "data" / "msfragger_no_mods.tsv"
+    rt_lookup_path = pytest._test_path / "data" / "_ursgal_lookup.csv.bz2"
+    db_path = pytest._test_path / "data" / "test_Creinhardtii_target_decoy.fasta"
 
-    parser = MSFragger3Parser(
+    parser = MSFragger_3_Parser(
         input_file,
         params={
+            "cpus": 2,
             "rt_pickle_name": rt_lookup_path,
             "database": db_path,
             "modifications": [
@@ -228,20 +176,19 @@ def test_engine_parsers_msfragger_single_mods():
             "15N": False,
         },
     )
-    for line in parser:
-        assert "Carbamidomethyl:1" == line["Modifications"]
+    df = parser.unify()
+    assert all(df["Modifications"] == "")
 
 
-def test_engine_parsers_msfragger_single_mods():
-    input_file = Path(__file__).parent.parent / "data" / "msfragger_no_mods.tsv"
-    rt_lookup_path = Path(__file__).parent.parent / "data" / "_ursgal_lookup.csv.bz2"
-    db_path = (
-        Path(__file__).parent.parent / "data" / "test_Creinhardtii_target_decoy.fasta"
-    )
+def test_map_mod_translation():
+    input_file = pytest._test_path / "data" / "test_Creinhardtii_QE_pH11_msfragger_3.tsv"
+    rt_lookup_path = pytest._test_path / "data" / "_ursgal_lookup.csv.bz2"
+    db_path = pytest._test_path / "data" / "test_Creinhardtii_target_decoy.fasta"
 
-    parser = MSFragger3Parser(
+    parser = MSFragger_3_Parser(
         input_file,
         params={
+            "cpus": 2,
             "rt_pickle_name": rt_lookup_path,
             "database": db_path,
             "modifications": [
@@ -264,9 +211,12 @@ def test_engine_parsers_msfragger_single_mods():
                     "name": "Acetyl",
                 },
             ],
-            "Raw data location": "/Users/cellzome/Dev/Gits/Ursgal/ursgal_master/example_data/test_Creinhardtii_QE_pH11.mzML",
+            "Raw data location": "path/for/glory.mzML",
             "15N": False,
         },
     )
-    for line in parser:
-        assert "" == line["Modifications"]
+    map_dict = {"15.994915": ["Oxidation"], "57.021465": ["Carbamidomethyl"]}
+    converted = parser._map_mod_translation(
+        row=["3M(15.994915)", "15M(15.994915)", "18C(57.021465)"], map_dict=map_dict
+    )
+    assert converted == "Oxidation:3;Oxidation:15;Carbamidomethyl:18;"
