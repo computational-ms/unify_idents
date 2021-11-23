@@ -5,8 +5,8 @@ import os
 version_path = os.path.join(os.path.dirname(__file__), "unify_idents", "version.txt")
 with open(version_path, "r") as version_file:
     unify_idents_version = version_file.read().strip()
-    
-with open('requirements.txt') as req_file:
+
+with open("requirements.txt") as req_file:
     reqs = req_file.readlines()
 
 setup(
