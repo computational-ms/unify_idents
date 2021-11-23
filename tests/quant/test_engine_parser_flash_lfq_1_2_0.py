@@ -43,6 +43,8 @@ def test_engine_parsers_flashLFQ_unify_row():
     )
     df = parser.unify()
     assert len(df) == 10
+    assert pytest.approx(df["FlashLFQ:MS2 Retention Time"].mean()) == 117402.71191
+    assert pytest.approx(df["FlashLFQ:Peak intensity"].mean()) == 337335.28125
 
 
 def test_engine_parsers_flashLFQ_extract_mods():
