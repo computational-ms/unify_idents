@@ -93,7 +93,7 @@ class FlashLFQ_1_2_0_Parser(QuantBaseParser):
         return self.df
 
     def translate_mods(self, full_sequence):
-        """Extract modifications from full_sequence and format as {mod_1}:{pos_1};{mod_n}:{pos_n}
+        """Extract modifications from full_sequence and format as {mod_1}:{pos_1};{mod_n}:{pos_n}.
 
         Args:
             full_sequence (str): sequence including mod (e.g. ELVISC[Carbamidomethyl]M[Oxidation])
