@@ -72,7 +72,6 @@ def test_engine_parsers_IdentBase_Parser_sanitize():
     obj.df["Spectrum Title"] = "spec_title.this_should_go"
     obj.df.loc[3, "Raw data location"] = None
     obj.df["Modifications"] = "ZZ:1;AA:8"
-    obj.df.drop(columns="Mass Difference", inplace=True)
     obj.sanitize()
     assert not obj.df["Raw data location"].str.contains(".mgf").any()
     assert obj.df.loc[3, "Raw data location"] == "spec_title"

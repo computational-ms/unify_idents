@@ -122,7 +122,6 @@ class IdentBaseParser(BaseParser):
             "uCalc m/z": "float32",
             "uCalc Mass": "float32",
             "Accuracy (ppm)": "float32",
-            "Mass Difference": "float32",
             "Chemical Composition": "str",
             "Sequence Start": "str",
             "Sequence Stop": "str",
