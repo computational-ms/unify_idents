@@ -53,7 +53,10 @@ class Omssa_Parser(IdentBaseParser):
         """
         is_csv = file.as_posix().endswith(".csv")
         with open(file.as_posix()) as f:
-            head = "".join([next(f) for _ in range(1)])
+            try:
+                head = "".join([next(f) for _ in range(1)])
+            except StopIteration:
+                head = ""
         head = set(head.rstrip("\n").split(","))
         ref_columns = {
             "Spectrum number",
