@@ -213,10 +213,13 @@ class IdentBaseParser(BaseParser):
             "id": "Protein ID",
             "pre": "Sequence Pre AA",
         }
-        new_columns = pd.DataFrame(peptide_mappings).fillna("")
+        new_columns = pd.DataFrame(peptide_mappings)
         new_columns.rename(columns=columns_translations, inplace=True)
 
         self.df.loc[:, new_columns.columns] = new_columns.values
+        self.df = self.df.iloc[
+            new_columns.dropna(axis=0, how="all").index, :
+        ].reset_index(drop=True)
 
     def check_enzyme_specificity(self):
         """Check consistency of N/C-terminal cleavage sites.
