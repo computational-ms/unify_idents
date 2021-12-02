@@ -332,6 +332,7 @@ class IdentBaseParser(BaseParser):
         ][eng_name]
         ranking_needs_to_be_ascending = False if top_is_highest is True else True
 
+        self.df.loc[:, score_col] = self.df[score_col].astype(float)
         self.df.loc[:, "Rank"] = (
             self.df.groupby("Spectrum ID")[score_col]
             .rank(ascending=ranking_needs_to_be_ascending, method="min")
@@ -396,6 +397,13 @@ class IdentBaseParser(BaseParser):
                 f"Some engine level columns ({unmapped_add_cols}) were not properly mapped and removed."
             )
             self.df.drop(columns=unmapped_add_cols, inplace=True, errors="ignore")
+
+        # Drop unwanted duplicated rows
+        init_len = len(self.df)
+        self.df.drop_duplicates(inplace=True)
+        rows_dropped = init_len - len(self.df)
+        if rows_dropped != 0:
+            logger.warning(f"{rows_dropped} duplicated rows were dropped in output csv.")
 
     def process_unify_style(self):
         """Combine all additional operations that are needed to calculate new columns and sanitize the dataframe.

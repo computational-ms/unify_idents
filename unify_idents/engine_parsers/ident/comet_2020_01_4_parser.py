@@ -163,6 +163,7 @@ class Comet_2020_01_4_Parser(IdentBaseParser):
                 )
             lookup[id]["Modifications"] = ";".join(lookup[id]["Modifications"])
 
+        # TODO: check mod left strip
         seq_mods = pd.DataFrame(self.df["Sequence"].map(lookup).to_list())
         self.df.loc[:, "Modifications"] = (
             seq_mods["Modifications"].str.cat(fixed_mod_strings, sep=";").str.strip(";")

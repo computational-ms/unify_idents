@@ -250,8 +250,8 @@ class Mascot_2_6_2_Parser(IdentBaseParser):
         logger.remove()
         logger.add(sys.stdout)
         self.df = pd.concat(chunk_dfs, axis=0, ignore_index=True)
-        self.df.loc[:, "Spectrum Title"] = self.df["Spectrum Title"].str.replace(
-            "%2e", "."
+        self.df.loc[:, "Spectrum Title"] = (
+            self.df["Spectrum Title"].str.replace("%2e", ".").str.replace(".mzML", "")
         )
         self.df.loc[:, "Calc m/z"] = self._calc_mz(
             mass=self.df["Exp m/z"], charge=self.df["Charge"]
