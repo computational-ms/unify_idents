@@ -53,9 +53,7 @@ def test_engine_parsers_xtandem_file_matches_xtandem_parser():
 
 
 def test_engine_parsers_msfragger_file_not_matches_xtandem_parser():
-    input_file = (
-        pytest._test_path / "data" / "test_Creinhardtii_QE_pH11_msfragger_3.tsv"
-    )
+    input_file = pytest._test_path / "data" / "test_Creinhardtii_QE_pH11_msfragger_3.tsv"
 
     assert XTandemAlanine_Parser.check_parser_compatibility(input_file) is False
 
