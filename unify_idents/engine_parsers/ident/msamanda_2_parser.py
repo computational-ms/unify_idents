@@ -56,7 +56,10 @@ class MSAmanda_2_Parser(IdentBaseParser):
         # It is a csv file even though it is technically tab-delimited
         is_csv = file.as_posix().endswith(".csv")
         with open(file.as_posix()) as f:
-            head = "".join([next(f) for _ in range(1)])
+            try:
+                head = "".join([next(f) for _ in range(1)])
+            except StopIteration:
+                head = ""
         matches_version = "#version: 2." in head
         return is_csv and matches_version
 

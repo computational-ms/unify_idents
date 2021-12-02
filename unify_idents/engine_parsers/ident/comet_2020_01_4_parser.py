@@ -163,6 +163,7 @@ class Comet_2020_01_4_Parser(IdentBaseParser):
                 )
             lookup[id]["Modifications"] = ";".join(lookup[id]["Modifications"])
 
+        # TODO: check mod left strip
         seq_mods = pd.DataFrame(self.df["Sequence"].map(lookup).to_list())
         self.df.loc[:, "Modifications"] = (
             seq_mods["Modifications"].str.cat(fixed_mod_strings, sep=";").str.strip(";")
@@ -199,7 +200,7 @@ class Comet_2020_01_4_Parser(IdentBaseParser):
         self.df = pd.concat(chunk_dfs, axis=0, ignore_index=True)
         self._map_mods_and_sequences()
         self.df.loc[:, "Spectrum Title"] = (
-            self.df["Raw data location"].str.extract(f"(?<=/)([\w_]+)(?=\.)")[0]
+            self.df["Raw data location"].str.extract(r"(?<=/)([\w_]+)(?=\.)")[0]
             + "."
             + self.df["Spectrum ID"]
             + "."
