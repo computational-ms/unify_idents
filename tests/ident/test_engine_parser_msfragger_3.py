@@ -43,7 +43,7 @@ def test_engine_parsers_msfragger_check_parser_compatibility():
 
 def test_engine_parsers_msfragger_check_dataframe_integrity():
     input_file = pytest._test_path / "data" / "BSA1_msfragger_3.tsv"
-    rt_lookup_path = pytest._test_path / "data" / "_ursgal_lookup.csv.bz2"
+    rt_lookup_path = pytest._test_path / "data" / "BSA1_ursgal_lookup.csv.bz2"
     db_path = pytest._test_path / "data" / "BSA.fasta"
 
     parser = MSFragger_3_Parser(
@@ -77,17 +77,17 @@ def test_engine_parsers_msfragger_check_dataframe_integrity():
         },
     )
     df = parser.unify()
-    assert len(df) == 70
-    assert pytest.approx(df["uCalc m/z"].mean()) == 781.60675
-    assert pytest.approx(df["Exp m/z"].mean()) == 781.7692
+    assert len(df) == 3417
+    assert pytest.approx(df["uCalc m/z"].mean()) == 477.8585
+    assert pytest.approx(df["Exp m/z"].mean()) == 478.12137
 
-    assert df["Modifications"].str.contains("Acetyl:0").sum() == 0
-    assert df["Modifications"].str.contains("Oxidation:").sum() == 23
+    assert df["Modifications"].str.contains("Acetyl:0").sum() == 2
+    assert df["Modifications"].str.contains("Oxidation:").sum() == 221
     assert (
         df["Modifications"].str.count("Carbamidomethyl:")
         == df["Sequence"].str.count("C")
     ).all()
-    assert df["Modifications"].str.count(":").sum() == 43
+    assert df["Modifications"].str.count(":").sum() == 2242
     assert (df["Raw data location"] == "path/for/glory.mzML").all()
 
 
