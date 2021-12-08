@@ -15,15 +15,11 @@ def test_engine_parsers_xtandem_init():
     input_file = (
         pytest._test_path / "data" / "test_Creinhardtii_QE_pH11_xtandem_alanine.xml"
     )
-    rt_lookup_path = pytest._test_path / "data" / "_ursgal_lookup.csv.bz2"
-    db_path = pytest._test_path / "data" / "test_Creinhardtii_target_decoy.fasta"
 
     parser = XTandemAlanine_Parser(
         input_file,
         params={
             "cpus": 2,
-            "rt_pickle_name": rt_lookup_path,
-            "database": db_path,
             "modifications": [
                 {
                     "aa": "M",
@@ -280,15 +276,11 @@ def test_engine_parsers_xtandem_map_mod_names():
     input_file = (
         pytest._test_path / "data" / "test_Creinhardtii_QE_pH11_xtandem_alanine.xml"
     )
-    rt_lookup_path = pytest._test_path / "data" / "_ursgal_lookup.csv.bz2"
-    db_path = pytest._test_path / "data" / "test_Creinhardtii_target_decoy.fasta"
 
     parser = XTandemAlanine_Parser(
         input_file,
         params={
             "cpus": 2,
-            "rt_pickle_name": rt_lookup_path,
-            "database": db_path,
             "modifications": [
                 {
                     "aa": "M",
@@ -319,15 +311,11 @@ def test_engine_parsers_xtandem_map_mod_names_nterm():
     input_file = (
         pytest._test_path / "data" / "test_Creinhardtii_QE_pH11_xtandem_alanine.xml"
     )
-    rt_lookup_path = pytest._test_path / "data" / "_ursgal_lookup.csv.bz2"
-    db_path = pytest._test_path / "data" / "test_Creinhardtii_target_decoy.fasta"
 
     parser = XTandemAlanine_Parser(
         input_file,
         params={
             "cpus": 2,
-            "rt_pickle_name": rt_lookup_path,
-            "database": db_path,
             "modifications": [
                 {
                     "aa": "M",

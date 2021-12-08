@@ -13,15 +13,10 @@ from unify_idents.engine_parsers.ident.msgfplus_2021_03_22_parser import (
 
 def test_engine_parsers_msgfplus_init():
     input_file = pytest._test_path / "data" / "BSA1_msgfplus_2021_03_22.mzid"
-    rt_lookup_path = pytest._test_path / "data" / "BSA1_ursgal_lookup.csv.bz2"
-    db_path = pytest._test_path / "data" / "test_Creinhardtii_target_decoy.fasta"
-
     parser = MSGFPlus_2021_03_22_Parser(
         input_file,
         params={
             "cpus": 2,
-            "rt_pickle_name": rt_lookup_path,
-            "database": db_path,
             "modifications": [
                 {
                     "aa": "M",
@@ -109,15 +104,11 @@ def test_engine_parsers_msgfplus_check_dataframe_integrity():
 
 def test_engine_parsers_msgfplus_get_peptide_lookup():
     input_file = pytest._test_path / "data" / "BSA1_msgfplus_2021_03_22.mzid"
-    rt_lookup_path = pytest._test_path / "data" / "BSA1_ursgal_lookup.csv.bz2"
-    db_path = pytest._test_path / "data" / "test_Creinhardtii_target_decoy.fasta"
 
     parser = MSGFPlus_2021_03_22_Parser(
         input_file,
         params={
             "cpus": 2,
-            "rt_pickle_name": rt_lookup_path,
-            "database": db_path,
             "modifications": [
                 {
                     "aa": "M",

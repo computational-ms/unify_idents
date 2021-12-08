@@ -12,15 +12,11 @@ from unify_idents.engine_parsers.ident.mascot_2_6_2_parser import (
 
 def test_engine_parsers_comet_init():
     input_file = pytest._test_path / "data" / "BSA1_mascot_2_6_2.dat"
-    rt_lookup_path = pytest._test_path / "data" / "BSA1_ursgal_lookup.csv.bz2"
-    db_path = pytest._test_path / "data" / "test_Creinhardtii_target_decoy.fasta"
 
     parser = Mascot_2_6_2_Parser(
         input_file,
         params={
             "cpus": 2,
-            "rt_pickle_name": rt_lookup_path,
-            "database": db_path,
             "modifications": [
                 {
                     "aa": "M",

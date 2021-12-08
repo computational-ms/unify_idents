@@ -103,7 +103,7 @@ class FlashLFQ_1_2_0_Parser(QuantBaseParser):
         """
         # TODO extract C-terminal mods, position should be seq_len + 1
         cumulative_match_length = 0
-        regex = re.compile("\[(.*?)\]")
+        regex = re.compile(r"\[(.*?)\]")
         mods = []
         for match in regex.finditer(full_sequence):
             mods.append(f"{match.group(1)}:{match.start() - cumulative_match_length}")

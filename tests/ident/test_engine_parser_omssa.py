@@ -8,15 +8,11 @@ from unify_idents.engine_parsers.ident.omssa_2_1_9_parser import Omssa_Parser
 
 def test_engine_parsers_omssa_init():
     input_file = pytest._test_path / "data" / "test_Creinhardtii_QE_pH11_omssa_2_1_9.csv"
-    rt_lookup_path = pytest._test_path / "data" / "_ursgal_lookup.csv.bz2"
-    db_path = pytest._test_path / "data" / "test_Creinhardtii_target_decoy.fasta"
 
     parser = Omssa_Parser(
         input_file,
         params={
             "cpus": 2,
-            "rt_pickle_name": rt_lookup_path,
-            "database": db_path,
             "modifications": [
                 {
                     "aa": "M",
@@ -98,15 +94,11 @@ def test_engine_parsers_omssa_check_dataframe_integrity():
 
 def test_replace_mod_strings():
     input_file = pytest._test_path / "data" / "test_Creinhardtii_QE_pH11_omssa_2_1_9.csv"
-    rt_lookup_path = pytest._test_path / "data" / "_ursgal_lookup.csv.bz2"
-    db_path = pytest._test_path / "data" / "test_Creinhardtii_target_decoy.fasta"
 
     parser = Omssa_Parser(
         input_file,
         params={
             "cpus": 2,
-            "rt_pickle_name": rt_lookup_path,
-            "database": db_path,
             "modifications": [
                 {
                     "aa": "M",

@@ -50,7 +50,10 @@ class MSFragger_3_Parser(IdentBaseParser):
         """
         is_tsv = file.as_posix().endswith(".tsv")
         with open(file.as_posix()) as f:
-            head = "".join([next(f) for _ in range(1)])
+            try:
+                head = "".join([next(f) for _ in range(1)])
+            except StopIteration:
+                head = ""
         head = set(head.rstrip("\n").split("\t"))
         ref_columns = {
             "scannum",
