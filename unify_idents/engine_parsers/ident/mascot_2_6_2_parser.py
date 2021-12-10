@@ -245,7 +245,6 @@ class Mascot_2_6_2_Parser(IdentBaseParser):
             chunk_dfs = pool.starmap(
                 _get_single_spec_df,
                 pbar_iterator,
-                chunksize=1,
             )
         logger.remove()
         logger.add(sys.stdout)
