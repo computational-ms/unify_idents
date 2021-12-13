@@ -1,15 +1,16 @@
 #!/usr/bin/env python
 from pathlib import Path
+import pytest
 
 from unify_idents.engine_parsers.base_parser import QuantBaseParser
 
 
 def test_engine_parsers_QuantBaseParser_init():
     input_file = (
-        Path(__file__).parent / "data" / "test_Creinhardtii_QE_pH11_xtandem_alanine.xml"
+        pytest._test_path / "data" / "test_Creinhardtii_QE_pH11_xtandem_alanine.xml"
     )
-    rt_lookup_path = Path(__file__).parent / "data" / "_ursgal_lookup.csv.bz2"
-    db_path = Path(__file__).parent / "data" / "test_Creinhardtii_target_decoy.fasta"
+    rt_lookup_path = pytest._test_path / "data" / "_ursgal_lookup.csv.bz2"
+    db_path = pytest._test_path / "data" / "test_Creinhardtii_target_decoy.fasta"
 
     parser = QuantBaseParser(
         input_file,
@@ -35,9 +36,7 @@ def test_engine_parsers_QuantBaseParser_check_parser_compatibility_existing():
     # should always return False
     assert (
         QuantBaseParser.check_parser_compatibility(
-            Path(__file__).parent
-            / "data"
-            / "test_Creinhardtii_QE_pH11_xtandem_alanine.xml"
+            pytest._test_path / "data" / "test_Creinhardtii_QE_pH11_xtandem_alanine.xml"
         )
         is False
     )

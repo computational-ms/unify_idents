@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 from pathlib import Path
 
+import numpy as np
 import pandas as pd
 import pytest
 
@@ -150,25 +151,28 @@ def test_get_single_spec_df():
     assert isinstance(result, pd.DataFrame)
     assert (
         result.values
-        == [
-            None,
-            "1315.5700",
-            "test_Creinhardtii_QE_pH11.10381.10381.3",
-            "path/for/glory.mgf",
-            "xtandem_alanine",
-            "10381",
-            list(["15.99492:5"]),
-            None,
-            "0.0057",
-            "8.0",
-            "9.9",
-            "5",
-            "0.0",
-            "0",
-            "DDVHNMGADGIR",
-            "3",
-            "14.2",
-        ]
+        == np.array(
+            [
+                None,
+                "1315.5700",
+                "test_Creinhardtii_QE_pH11.10381.10381.3",
+                "path/for/glory.mgf",
+                "xtandem_alanine",
+                "10381",
+                list(["15.99492:5"]),
+                None,
+                "0.0057",
+                "8.0",
+                "9.9",
+                "5",
+                "0.0",
+                "0",
+                "DDVHNMGADGIR",
+                "3",
+                "14.2",
+            ],
+            dtype=object,
+        )
     ).all()
 
 
