@@ -67,17 +67,6 @@ class BaseParser:
         """
         return False
 
-    def _read_rt_lookup_file(self):
-        """Read retention time lookup file.
-
-        Returns:
-            rt_lookup (pd.DataFrame): loaded rt_pickle_file indexable by Spectrum ID
-        """
-        rt_lookup = pd.read_csv(self.params["rt_pickle_name"], compression="bz2")
-        rt_lookup.set_index("Spectrum ID", inplace=True)
-        rt_lookup["Unit"] = rt_lookup["Unit"].replace({"second": 1, "minute": 60})
-        return rt_lookup
-
 
 class IdentBaseParser(BaseParser):
     """Base class of all ident parsers."""
@@ -306,6 +295,17 @@ class IdentBaseParser(BaseParser):
             * 1e6
         )
 
+    def _read_rt_lookup_file(self):
+        """Read retention time lookup file.
+
+        Returns:
+            rt_lookup (pd.DataFrame): loaded rt_pickle_file indexable by Spectrum ID
+        """
+        rt_lookup = pd.read_csv(self.params["rt_pickle_name"], compression="bz2")
+        rt_lookup.set_index("Spectrum ID", inplace=True)
+        rt_lookup["Unit"] = rt_lookup["Unit"].replace({"second": 1, "minute": 60})
+        return rt_lookup
+
     def get_exp_rt_and_mz(self):
         """Experimental mass-to-charge ratios and retention times are added.
 
@@ -431,7 +431,6 @@ class QuantBaseParser(BaseParser):
         """
         super().__init__(*args, **kwargs)
         self.cc = ChemicalComposition()
-        self.scan_rt_lookup = self._read_rt_lookup_file()
         self.required_headers = {
             "file_name",
             "spectrum_id",
