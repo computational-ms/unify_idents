@@ -80,7 +80,7 @@ def test_engine_parsers_IdentBase_Parser_sanitize():
     obj = IdentBaseParser(input_file=None, params=None)
     obj.mapping_dict = {"Engine:C": None, "Engine:B": None, "Engine:A": None}
     obj.df = pd.DataFrame(
-        np.ones((5, len(obj.col_order) + 4)),
+        np.random.random((5, len(obj.col_order) + 4)),
         columns=obj.col_order.to_list()
         + ["Engine:C", "Engine:B", "Engine:A", "This should not exist"],
     )

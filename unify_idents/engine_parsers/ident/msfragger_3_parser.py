@@ -182,12 +182,13 @@ class MSFragger_3_Parser(IdentBaseParser):
             self.df (pd.DataFrame): unified dataframe
         """
         self.df["Search Engine"] = "msfragger_3_0"
-        self.df["Raw data location"] = str(self.params["Raw data location"])
-        spec_title = (
-            self.df["Raw data location"].str.split(".").str[0].str.split("/").str[-1]
-        )
+        spec_title = re.search(
+            r"(?<=/)([\w_]+)(?=\.)", self.params["Raw data location"]
+        ).group(0)
         self.df["Spectrum Title"] = (
             spec_title
+            + "."
+            + self.df["Spectrum ID"].astype(str)
             + "."
             + self.df["Spectrum ID"].astype(str)
             + "."

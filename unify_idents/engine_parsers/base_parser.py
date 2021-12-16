@@ -89,7 +89,6 @@ class IdentBaseParser(BaseParser):
             "Exp m/z": None,
             "Calc m/z": None,
             "Spectrum Title": None,
-            "Raw data location": None,
             "Search Engine": None,
             "Spectrum ID": None,
             "Modifications": None,
@@ -357,6 +356,7 @@ class IdentBaseParser(BaseParser):
         - Columns in the dataframe which could not be properly mapped are removed (warning is raised)
         Operations are performed inplace on self.df
         """
+        self.df["Raw data location"] = self.params.get("Raw data location", "")
         missing_data_locs = ~(self.df["Raw data location"].str.len() > 0)
         self.df.loc[missing_data_locs, "Raw data location"] = (
             self.df.loc[missing_data_locs, "Spectrum Title"].str.split(".").str[0]

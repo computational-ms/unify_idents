@@ -71,14 +71,7 @@ class XTandemAlanine_Parser(IdentBaseParser):
         self.style = "xtandem_style_1"
         tree = ETree.parse(self.input_file)
         self.root = tree.getroot()
-        self.reference_dict.update(
-            {
-                "Raw data location": self.root.attrib["label"]
-                .split("models from ")[1]
-                .replace("'", ""),
-                "Search Engine": "xtandem_alanine",
-            }
-        )
+        self.reference_dict["Search Engine"] = "xtandem_alanine"
         self.mapping_dict = {
             v: k
             for k, v in self.param_mapper.get_default_params(style=self.style)[
