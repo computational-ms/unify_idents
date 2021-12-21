@@ -255,9 +255,6 @@ class Omssa_Parser(IdentBaseParser):
         self.df["Spectrum ID"] = (
             self.df["Spectrum Title"].str.split(".").str[1].astype(int)
         )
-        self.df["Raw data location"] = self.params.get(
-            "Raw data location", self.df["Spectrum Title"].str.split(".").str[0]
-        )
         self.df["Search Engine"] = "omssa_2_1_9"
         self.df["Modifications"] = self.translate_mods()
         self.process_unify_style()

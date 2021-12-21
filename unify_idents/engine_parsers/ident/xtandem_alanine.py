@@ -5,6 +5,7 @@ import xml.etree.ElementTree as ETree
 from itertools import repeat
 
 import pandas as pd
+import regex as re
 from loguru import logger
 from tqdm import tqdm
 
@@ -71,13 +72,16 @@ class XTandemAlanine_Parser(IdentBaseParser):
         self.style = "xtandem_style_1"
         tree = ETree.parse(self.input_file)
         self.root = tree.getroot()
-        self.reference_dict.update(
-            {
-                "Raw data location": self.root.attrib["label"]
-                .split("models from ")[1]
-                .replace("'", ""),
-                "Search Engine": "xtandem_alanine",
-            }
+        self.reference_dict["Search Engine"] = (
+            "xtandem_"
+            + re.search(
+                r"(?<=Tandem )\w+",
+                self.root.find(
+                    './/*[@label="performance parameters"]/*[@label="process, version"]'
+                ).text,
+            )
+            .group()
+            .lower()
         )
         self.mapping_dict = {
             v: k

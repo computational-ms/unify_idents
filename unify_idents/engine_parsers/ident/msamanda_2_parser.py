@@ -105,7 +105,6 @@ class MSAmanda_2_Parser(IdentBaseParser):
             self.df (pd.DataFrame): unified dataframe
         """
         self.df["Search Engine"] = "msamanda_2_0_0_17442"
-        self.df["Raw data location"] = self.params["Raw data location"]
         self.df["Spectrum ID"] = self.df["Spectrum Title"].str.split(".").str[1]
         self.df["Modifications"] = self.translate_mods()
         self.process_unify_style()

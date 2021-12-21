@@ -82,19 +82,11 @@ class MSGFPlus_2021_03_22_Parser(IdentBaseParser):
 
         tree = ETree.parse(self.input_file)
         self.root = tree.getroot()
-        self.reference_dict.update(
-            {
-                "Raw data location": self.root.find(".//{*}SpectraData").attrib[
-                    "location"
-                ],
-                "Search Engine": "msgfplus_"
-                + "_".join(
-                    re.findall(
-                        r"([/d]*\d+)",
-                        self.root.find(".//{*}AnalysisSoftware").attrib["version"],
-                    )
-                ),
-            }
+        self.reference_dict["Search Engine"] = "msgfplus_" + "_".join(
+            re.findall(
+                r"([/d]*\d+)",
+                self.root.find(".//{*}AnalysisSoftware").attrib["version"],
+            )
         )
         self.mapping_dict = {
             v: k

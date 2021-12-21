@@ -63,19 +63,11 @@ class Comet_2020_01_4_Parser(IdentBaseParser):
 
         tree = ETree.parse(self.input_file)
         self.root = tree.getroot()
-        self.reference_dict.update(
-            {
-                "Raw data location": self.root.find(
-                    ".//{*}DataCollection/{*}Inputs/{*}SpectraData"
-                ).attrib["location"],
-                "Search Engine": "comet_"
-                + "_".join(
-                    re.findall(
-                        r"([/d]*\d+)",
-                        self.root.find(".//{*}AnalysisSoftware").attrib["version"],
-                    )
-                ),
-            }
+        self.reference_dict["Search Engine"] = "comet_" + "_".join(
+            re.findall(
+                r"([/d]*\d+)",
+                self.root.find(".//{*}AnalysisSoftware").attrib["version"],
+            )
         )
         self.mapping_dict = {
             v: k
@@ -199,8 +191,11 @@ class Comet_2020_01_4_Parser(IdentBaseParser):
         logger.add(sys.stdout)
         self.df = pd.concat(chunk_dfs, axis=0, ignore_index=True)
         self._map_mods_and_sequences()
+        spec_title = re.search(
+            r"(?<=/)([\w_]+)(?=\.)", self.params["Raw data location"]
+        ).group(0)
         self.df.loc[:, "Spectrum Title"] = (
-            self.df["Raw data location"].str.extract(r"(?<=/)([\w_]+)(?=\.)")[0]
+            spec_title
             + "."
             + self.df["Spectrum ID"]
             + "."

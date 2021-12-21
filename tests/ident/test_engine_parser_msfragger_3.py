@@ -52,6 +52,7 @@ def test_engine_parsers_msfragger_check_dataframe_integrity():
             "cpus": 2,
             "rt_pickle_name": rt_lookup_path,
             "database": db_path,
+            "Raw data location": "path/for/glory.mzML",
             "modifications": [
                 {
                     "aa": "M",

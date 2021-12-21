@@ -79,17 +79,9 @@ class Mascot_2_6_2_Parser(IdentBaseParser):
             ),
         }
 
-        self.reference_dict.update(
-            {
-                "Raw data location": re.search(
-                    r"(?<=FILE=).*", self.section_data["parameters"]
-                ).group(),
-                "Search Engine": "mascot_"
-                + re.search(r"(?<=version=).*", self.section_data["header"])
-                .group()
-                .replace(".", "_"),
-            }
-        )
+        self.reference_dict["Search Engine"] = "mascot_" + re.search(
+            r"(?<=version=).*", self.section_data["header"]
+        ).group().replace(".", "_")
         self.reference_dict["Mascot:Score"] = None
 
     @classmethod
