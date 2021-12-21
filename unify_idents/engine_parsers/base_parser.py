@@ -377,10 +377,10 @@ class IdentBaseParser(BaseParser):
 
         # Remove any trailing or leading delimiters
         self.df.loc[:, "Modifications"] = self.df.loc[:, "Modifications"].str.replace(
-            "^;+(?=\w)", "", regex=True
+            r"^;+(?=\w)", "", regex=True
         )
         self.df.loc[:, "Modifications"] = self.df.loc[:, "Modifications"].str.replace(
-            "(?<=\w);+$", "", regex=True
+            r"(?<=\w);+$", "", regex=True
         )
 
         # Ensure same order of modifications
