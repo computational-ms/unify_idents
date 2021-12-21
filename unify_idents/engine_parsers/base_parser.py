@@ -375,20 +375,20 @@ class IdentBaseParser(BaseParser):
         ]
         self.df = self.df.astype(self.dtype_mapping)
 
-        # Remove any trailing or leading delimiters
-        self.df.loc[:, "Modifications"] = self.df.loc[:, "Modifications"].str.replace(
-            r"^;+(?=\w)", "", regex=True
-        )
-        self.df.loc[:, "Modifications"] = self.df.loc[:, "Modifications"].str.replace(
-            r"(?<=\w);+$", "", regex=True
-        )
-
         # Ensure same order of modifications
         self.df.loc[:, "Modifications"] = (
             self.df["Modifications"]
             .str.split(";")
             .apply(sorted, key=lambda x: x.split(":")[::-1])
             .str.join(";")
+        )
+
+        # Remove any trailing or leading delimiters
+        self.df.loc[:, "Modifications"] = self.df.loc[:, "Modifications"].str.replace(
+            r"^;+(?=\w)", "", regex=True
+        )
+        self.df.loc[:, "Modifications"] = self.df.loc[:, "Modifications"].str.replace(
+            r"(?<=\w);+$", "", regex=True
         )
 
         # Ensure there arent any column that should not be
