@@ -352,7 +352,7 @@ class IdentBaseParser(BaseParser):
         - Missing raw data locations are replaced by their respective spectrum title identifiers
         - .mgf file extensions are renamed to point to the .mzML files
         - Columns that were not filled in but should exist in the unified format are added and set to None
-        - Modifications are sorted alphabetically
+        - Modifications are sorted alphabetically and trailing/leading delimiters are removed
         - Columns in the dataframe which could not be properly mapped are removed (warning is raised)
         Operations are performed inplace on self.df
         """
@@ -374,6 +374,14 @@ class IdentBaseParser(BaseParser):
             + sorted(self.df.columns[~self.df.columns.isin(self.col_order)].tolist()),
         ]
         self.df = self.df.astype(self.dtype_mapping)
+
+        # Remove any trailing or leading delimiters
+        self.df.loc[:, "Modifications"] = self.df.loc[:, "Modifications"].str.replace(
+            r"^;+(?=\w)", "", regex=True
+        )
+        self.df.loc[:, "Modifications"] = self.df.loc[:, "Modifications"].str.replace(
+            r"(?<=\w);+$", "", regex=True
+        )
 
         # Ensure same order of modifications
         self.df.loc[:, "Modifications"] = (
