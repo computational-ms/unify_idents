@@ -1,4 +1,4 @@
-unimod-mapper>=0.6.2
+unimod-mapper>=0.6.4
 peptide-mapper~=0.4.3
 chemical-composition>=1.0.5
 pyahocorasick~=1.4.2
@@ -8,6 +8,6 @@ numpy~=1.21.4
 loguru~=0.5.3
 tqdm~=4.62.3
 regex~=2021.11.10
-uparma~=0.7.0
+uparma~=0.7.1
 tox~=3.24.4
 coverage~=6.1.2
