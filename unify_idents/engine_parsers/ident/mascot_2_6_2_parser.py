@@ -195,15 +195,16 @@ class Mascot_2_6_2_Parser(IdentBaseParser):
             if fix_mods is None:
                 fix_mods = fm_strings
             else:
-                fix_mods = fix_mods + ";" + fm_strings
+                fix_mods = fix_mods + ";" + fm_strings + ";"
 
         # Add substitutions
         subst_df = pd.DataFrame(self.df["subst"].str.findall(r"(\d+,\w,\w)").tolist())
         subst_df = (
-            subst_df.apply(lambda col: "Subst(" + col.str[2] + "):" + col.str[0] + ";")
-            .fillna("")
-            .sum(axis=1)
-        ).replace(0.0, "")
+            "Subst("
+            + subst_df[0].str.split(",").str[1]
+            + "):"
+            + subst_df[0].str.split(",").str[0]
+        ).fillna("")
 
         self.df.loc[:, "Modifications"] = (
             self.df["Modifications"].apply(self._translate_opt_mods).to_list()
