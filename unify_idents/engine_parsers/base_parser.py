@@ -176,12 +176,15 @@ class IdentBaseParser(BaseParser):
             .str.join(";")
         )
 
-        # Remove any trailing or leading delimiters
+        # Remove any trailing or leading delimiters or only-delimiter modstrings
         self.df.loc[:, "Modifications"] = self.df.loc[:, "Modifications"].str.replace(
             r"^;+(?=\w)", "", regex=True
         )
         self.df.loc[:, "Modifications"] = self.df.loc[:, "Modifications"].str.replace(
             r"(?<=\w);+$", "", regex=True
+        )
+        self.df.loc[:, "Modifications"] = self.df.loc[:, "Modifications"].str.replace(
+            r"^;+$", "", regex=True
         )
 
     def assert_only_iupac_and_missing_aas(self):
