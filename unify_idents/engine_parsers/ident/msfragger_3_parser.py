@@ -183,7 +183,7 @@ class MSFragger_3_Parser(IdentBaseParser):
         """
         self.df["Search Engine"] = "msfragger_3_0"
         spec_title = re.search(
-            r"(?<=/)([\w_]+)(?=\.)", self.params["Raw data location"]
+            r"(?<=/)([\d\w_-]+)(?=\.)", self.params["Raw data location"]
         ).group(0)
         self.df["Spectrum Title"] = (
             spec_title
