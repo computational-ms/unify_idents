@@ -1,13 +1,9 @@
 """Engine parser."""
-import multiprocessing as mp
-import sys
 import xml.etree.ElementTree as ETree
-from itertools import repeat
 
+import dask.dataframe as dd
 import pandas as pd
 import regex as re
-from loguru import logger
-from tqdm import tqdm
 
 from unify_idents.engine_parsers.base_parser import IdentBaseParser
 
@@ -144,26 +140,29 @@ class MSGFPlus_2021_03_22_Parser(IdentBaseParser):
         """
         peptide_lookup = self._get_peptide_lookup()
         spec_idents = self.root.findall(".//{*}SpectrumIdentificationResult")
-        logger.remove()
-        logger.add(lambda msg: tqdm.write(msg, end=""))
-        pbar_iterator = tqdm(
-            zip(
-                repeat(self.reference_dict),
-                repeat(self.mapping_dict),
-                spec_idents,
-            ),
-            total=len(spec_idents),
-        )
-        with mp.Pool(self.params.get("cpus", mp.cpu_count() - 1)) as pool:
-            chunk_dfs = pool.starmap(
+        data_structure = {
+            ("df", i): (
                 _get_single_spec_df,
-                pbar_iterator,
+                self.reference_dict,
+                self.mapping_dict,
+                spec,
             )
-        logger.remove()
-        logger.add(sys.stdout)
-        self.df = pd.concat(chunk_dfs, axis=0, ignore_index=True)
-        seq_mods = pd.DataFrame(self.df["Sequence"].map(peptide_lookup).to_list())
-        self.df.loc[:, seq_mods.columns] = seq_mods
+            for i, spec in enumerate(spec_idents)
+        }
+        df_type_mapping = [
+            (k, self.dtype_mapping[k]) if k in self.dtype_mapping else (k, str)
+            for k in self.reference_dict.keys()
+        ]
+        self.df = dd.DataFrame(
+            data_structure, "df", df_type_mapping, (len(spec_idents) + 1) * [None]
+        )
+        self.df = self.df.repartition(partition_size="100MB")
+        seq_mods = (
+            self.df["Sequence"]
+            .map(peptide_lookup)
+            .apply(pd.Series, meta=[("Modifications", str), ("Sequence", str)])
+        )
+        self.df[seq_mods.columns.to_list()] = seq_mods
         self.process_unify_style()
 
         return self.df

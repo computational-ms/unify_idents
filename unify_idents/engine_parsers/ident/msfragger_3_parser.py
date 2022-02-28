@@ -1,6 +1,7 @@
 """Engine parser."""
 import itertools
 
+import dask.dataframe as dd
 import pandas as pd
 import regex as re
 from loguru import logger
@@ -22,8 +23,8 @@ class MSFragger_3_Parser(IdentBaseParser):
         if self.params.get("label", "") == "15N":
             raise NotImplementedError
 
-        self.df = pd.read_csv(self.input_file, delimiter="\t")
-        self.df.dropna(axis=1, how="all", inplace=True)
+        self.df = dd.read_csv(self.input_file, delimiter="\t")
+        self.df = self.df.dropna(how="all")
 
         self.mapping_dict = {
             v: k
@@ -31,11 +32,12 @@ class MSFragger_3_Parser(IdentBaseParser):
                 "header_translations"
             ]["translated_value"].items()
         }
-        self.df.rename(columns=self.mapping_dict, inplace=True)
+        self.df = self.df.rename(columns=self.mapping_dict)
         self.df.columns = self.df.columns.str.lstrip(" ")
         if not "Modifications" in self.df.columns:
             self.df["Modifications"] = ""
         self.reference_dict.update({k: None for k in self.mapping_dict.values()})
+        self.reference_dict["Search Engine"] = "msfragger_3_0"
 
     @classmethod
     def check_parser_compatibility(cls, file):
@@ -125,7 +127,9 @@ class MSFragger_3_Parser(IdentBaseParser):
         potential_names = {
             m: [
                 name
-                for name in self.mod_mapper.mass_to_names(round(float(m), 4), decimals=4)
+                for name in self.mod_mapper.mass_to_names(
+                    round(float(m), 4), decimals=4
+                )
                 if name in self.mod_dict
             ]
             for m in unique_mod_masses
@@ -169,10 +173,10 @@ class MSFragger_3_Parser(IdentBaseParser):
                 "Some modifications found in less than 0.1% of PSMs cannot be mapped and were removed."
             )
         mods_translated = mod_split_col.apply(
-            self._map_mod_translation, map_dict=potential_names
+            self._map_mod_translation, map_dict=potential_names, meta=str
         )
 
-        return mods_translated.str.rstrip(";")
+        self.df["Modifications"] = mods_translated.str.rstrip(";")
 
     def unify(self):
         """
@@ -181,9 +185,9 @@ class MSFragger_3_Parser(IdentBaseParser):
         Returns:
             self.df (pd.DataFrame): unified dataframe
         """
-        self.df["Search Engine"] = "msfragger_3_0"
+        self.df["Search Engine"] = self.reference_dict["Search Engine"]
         spec_title = re.search(
-            r"(?<=/)([\w_]+)(?=\.)", self.params["Raw data location"]
+            r"(?<=/)([\d\w_-]+)(?=\.)", self.params["Raw data location"]
         ).group(0)
         self.df["Spectrum Title"] = (
             spec_title
@@ -194,6 +198,7 @@ class MSFragger_3_Parser(IdentBaseParser):
             + "."
             + self.df["Charge"].astype(str)
         )
+        self.df = self.df.repartition(partition_size="100MB")
         self.df["Exp m/z"] = self._calc_mz(
             mass=self.df["MSFragger:Precursor neutral mass (Da)"],
             charge=self.df["Charge"],
@@ -202,7 +207,7 @@ class MSFragger_3_Parser(IdentBaseParser):
             mass=self.df["MSFragger:Neutral mass of peptide"],
             charge=self.df["Charge"],
         )
-        self.df["Modifications"] = self.translate_mods()
+        self.translate_mods()
         self.df = self.df.loc[
             ~self.df["Modifications"].str.contains("NON_MAPPABLE", regex=False), :
         ]

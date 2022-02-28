@@ -1,13 +1,9 @@
 """Engine parser."""
-import multiprocessing as mp
-import sys
-from itertools import repeat
 
+import dask.dataframe as dd
 import numpy as np
 import pandas as pd
 import regex as re
-from loguru import logger
-from tqdm import tqdm
 
 from unify_idents.engine_parsers.base_parser import IdentBaseParser
 from unify_idents.utils import merge_and_join_dicts
@@ -83,6 +79,11 @@ class Mascot_2_6_2_Parser(IdentBaseParser):
             r"(?<=version=).*", self.section_data["header"]
         ).group().replace(".", "_")
         self.reference_dict["Mascot:Score"] = None
+        self.reference_dict["Charge"] = None
+        self.reference_dict["Exp m/z"] = None
+        self.reference_dict["Mascot:Num Matched Ions"] = None
+        self.reference_dict["Sequence"] = None
+        self.reference_dict["subst"] = None
 
     @classmethod
     def check_parser_compatibility(cls, file):
@@ -197,13 +198,13 @@ class Mascot_2_6_2_Parser(IdentBaseParser):
             else:
                 fix_mods = fix_mods + ";" + fm_strings + ";"
 
-        self.df.loc[:, "Modifications"] = (
-            self.df["Modifications"].apply(self._translate_opt_mods).to_list()
+        self.df["Modifications"] = self.df["Modifications"].apply(
+            self._translate_opt_mods
         )
-        self.df.loc[:, "Modifications"] += fix_mods
+        self.df["Modifications"] += fix_mods
 
         # Add substitutions
-        if self.df["subst"].str.match(r"(\d+,\w,\w)").any():
+        if self.df["subst"].str.match(r"(\d+,\w,\w)").compute().any():
             subst_df = pd.DataFrame(
                 self.df["subst"].str.findall(r"(\d+,\w,\w)").tolist()
             )
@@ -213,9 +214,9 @@ class Mascot_2_6_2_Parser(IdentBaseParser):
                 + "):"
                 + subst_df[0].str.split(",").str[0]
             ).fillna("")
-            self.df.loc[:, "Modifications"] += subst_df
+            self.df["Modifications"] += subst_df
 
-        self.df.drop(columns="subst", inplace=True)
+        self.df = self.df.drop(columns="subst")
 
     def unify(self):
         """
@@ -224,29 +225,31 @@ class Mascot_2_6_2_Parser(IdentBaseParser):
         Returns:
             self.df (pd.DataFrame): unified dataframe
         """
-        logger.remove()
-        logger.add(lambda msg: tqdm.write(msg, end=""))
-        pbar_iterator = tqdm(
-            zip(
-                repeat(self.reference_dict),
-                self.spectrum_data,
-            ),
-            total=len(self.spectrum_data),
-        )
-        with mp.Pool(self.params.get("cpus", mp.cpu_count() - 1)) as pool:
-            chunk_dfs = pool.starmap(
+        data_structure = {
+            ("df", i): (
                 _get_single_spec_df,
-                pbar_iterator,
+                self.reference_dict,
+                spec_data,
             )
-        logger.remove()
-        logger.add(sys.stdout)
-        self.df = pd.concat(chunk_dfs, axis=0, ignore_index=True)
-        self.df.loc[:, "Spectrum Title"] = (
+            for i, spec_data in enumerate(self.spectrum_data)
+        }
+        df_type_mapping = [
+            (k, self.dtype_mapping[k]) if k in self.dtype_mapping else (k, str)
+            for k in self.reference_dict.keys()
+        ]
+        self.df = dd.DataFrame(
+            data_structure,
+            "df",
+            df_type_mapping,
+            (len(self.spectrum_data) + 1) * [None],
+        )
+        self.df = self.df.repartition(partition_size="100MB")
+        self.df["Spectrum Title"] = (
             self.df["Spectrum Title"]
             .str.replace("%2e", ".", regex=False)
             .str.replace(".mzML", "", regex=False)
         )
-        self.df.loc[:, "Calc m/z"] = self._calc_mz(
+        self.df["Calc m/z"] = self._calc_mz(
             mass=self.df["Exp m/z"], charge=self.df["Charge"]
         )
         self._format_mods()

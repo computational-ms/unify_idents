@@ -1,9 +1,9 @@
 #!/usr/bin/env python
-from pathlib import Path
+
+import xml.etree.ElementTree as ETree
 
 import pandas as pd
 import pytest
-import xml.etree.ElementTree as ETree
 
 from unify_idents.engine_parsers.ident.comet_2020_01_4_parser import (
     Comet_2020_01_4_Parser,
@@ -50,7 +50,9 @@ def test_engine_parsers_comet_check_parser_compatibility():
 
 def test_engine_parsers_comet_check_parser_compatibility_fail_with_omssa_file():
     msgf_parser_class = Comet_2020_01_4_Parser
-    input_file = pytest._test_path / "data" / "test_Creinhardtii_QE_pH11_omssa_2_1_9.csv"
+    input_file = (
+        pytest._test_path / "data" / "test_Creinhardtii_QE_pH11_omssa_2_1_9.csv"
+    )
     assert msgf_parser_class.check_parser_compatibility(input_file) is False
 
 
@@ -97,7 +99,7 @@ def test_engine_parsers_comet_check_dataframe_integrity():
     assert (
         df["Modifications"].str.count("Carbamidomethyl:")
         == df["Sequence"].str.count("C")
-    ).all()
+    ).all() == True
     assert df["Modifications"].str.count(":").sum() == 38
     assert (df["Raw data location"] == "path/for/glory.mzML").all()
 

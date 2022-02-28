@@ -1,8 +1,8 @@
 """Engine parser."""
 import xml.etree.ElementTree as ETree
 
+import dask.dataframe as dd
 import numpy as np
-import pandas as pd
 
 from unify_idents.engine_parsers.base_parser import IdentBaseParser
 
@@ -18,7 +18,7 @@ class Omssa_Parser(IdentBaseParser):
         super().__init__(*args, **kwargs)
         self.style = "omssa_style_1"
 
-        self.df = pd.read_csv(self.input_file)
+        self.df = dd.read_csv(self.input_file)
 
         self.mapping_dict = {
             v: k
@@ -26,19 +26,19 @@ class Omssa_Parser(IdentBaseParser):
                 "header_translations"
             ]["translated_value"].items()
         }
-        self.df.rename(columns=self.mapping_dict, inplace=True)
+        self.df = self.df.rename(columns=self.mapping_dict)
         self.df.columns = self.df.columns.str.lstrip(" ")
-        self.df.drop(
+        self.df = self.df.drop(
             columns=[
                 c
                 for c in self.df.columns
                 if c
                 not in set(self.mapping_dict.values()) | set(self.reference_dict.keys())
             ],
-            inplace=True,
             errors="ignore",
         )
         self.reference_dict.update({k: None for k in self.mapping_dict.values()})
+        self.reference_dict["Search Engine"] = "omssa_2_1_9"
 
     @classmethod
     def check_parser_compatibility(cls, file):
@@ -106,16 +106,13 @@ class Omssa_Parser(IdentBaseParser):
         return new_modstring.rstrip(";")
 
     def translate_mods(self):
-        """
-        Replace internal modification nomenclature with formatted modification strings.
-
-        Returns:
-            (pd.Series): column with formatted mod strings
-        """
+        """Replace internal nomenclature with formatted modification strings."""
         self.df["Sequence"] = self.df["Sequence"].str.upper()
         fix_mods = None
         # Map fixed mods
-        fixed_mod_types = [d for d in self.params["modifications"] if d["type"] == "fix"]
+        fixed_mod_types = [
+            d for d in self.params["modifications"] if d["type"] == "fix"
+        ]
         for fm in fixed_mod_types:
             fm_strings = (
                 self.df["Sequence"]
@@ -228,19 +225,14 @@ class Omssa_Parser(IdentBaseParser):
         opt_mods = (
             self.df["Modifications"]
             .fillna("")
-            .apply(lambda r: self._replace_mod_strings(r, mod_translations))
+            .apply(lambda r: self._replace_mod_strings(r, mod_translations), meta=str)
         )
         if len(fix_mods) > 0:
-            comb = pd.concat([opt_mods, fix_mods], axis=1)
-            comb = (
-                comb["Modifications"]
-                .str.cat(comb["Sequence"], sep=";")
-                .str.rstrip(";")
-                .to_list()
-            )
+            comb = fix_mods + ";" + opt_mods
         else:
-            comb = opt_mods.to_list()
-        return comb
+            comb = opt_mods
+
+        self.df["Modifications"] = comb
 
     def unify(self):
         """
@@ -255,8 +247,9 @@ class Omssa_Parser(IdentBaseParser):
         self.df["Spectrum ID"] = (
             self.df["Spectrum Title"].str.split(".").str[1].astype(int)
         )
-        self.df["Search Engine"] = "omssa_2_1_9"
-        self.df["Modifications"] = self.translate_mods()
+        self.df["Search Engine"] = self.reference_dict["Search Engine"]
+        self.df = self.df.repartition(partition_size="100MB")
+        self.translate_mods()
         self.process_unify_style()
 
         return self.df

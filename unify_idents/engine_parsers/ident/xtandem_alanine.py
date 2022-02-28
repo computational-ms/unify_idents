@@ -1,13 +1,9 @@
 """Engine parser."""
-import multiprocessing as mp
-import sys
 import xml.etree.ElementTree as ETree
-from itertools import repeat
 
+import dask.dataframe as dd
 import pandas as pd
 import regex as re
-from loguru import logger
-from tqdm import tqdm
 
 from unify_idents.engine_parsers.base_parser import IdentBaseParser
 
@@ -57,6 +53,7 @@ def _get_single_spec_df(reference_dict, mapping_dict, spectrum):
         psm_level_dict["Modifications"] = mods
 
         spec_records.append(psm_level_dict)
+
     return pd.DataFrame(spec_records)
 
 
@@ -112,28 +109,31 @@ class XTandemAlanine_Parser(IdentBaseParser):
 
         return is_xml and contains_ref
 
-    def map_mod_names(self, df):
+    def map_mod_names(self):
         """Map modification names in unify style.
 
         Args:
             df (pd.DataFrame): input dataframe
-
-        Returns:
-            df (pd.DataFrame): dataframe with processed modification column
-
         """
-        unique_mods = set().union(*df["Modifications"].apply(set).values)
+        unique_mods = set().union(
+            *self.df["Modifications"]
+            .apply(set, meta=("Modifications", str))
+            .compute()
+            .values
+        )
         unique_mod_masses = {m.split(":")[0] for m in unique_mods}
         potential_names = {
             m: [
                 name
-                for name in self.mod_mapper.mass_to_names(round(float(m), 4), decimals=4)
+                for name in self.mod_mapper.mass_to_names(
+                    round(float(m), 4), decimals=4
+                )
                 if name in self.mod_dict
             ]
             for m in unique_mod_masses
         }
         mod_translation = {}
-        new_mods = pd.Series("", index=df.index)
+        remap_dict = {}
         for m in unique_mods:
             mass, pos = m.split(":")
             potential_mods = potential_names[mass]
@@ -141,21 +141,19 @@ class XTandemAlanine_Parser(IdentBaseParser):
                 mod_translation[m] = None
             else:
                 for name in potential_mods:
-                    # TODO: Is position 'any' respected here
-                    in_seq = df["Sequence"].str[int(pos)].isin(
-                        self.mod_dict[name]["aa"]
-                    ) & df["Modifications"].str.join("|").str.contains(m)
-                    if in_seq.sum() != 0:
-                        new_mods.loc[in_seq] += f"{name}:{int(pos)+1};"
-                    n_term = (~in_seq) & (
-                        ("Prot-N-term" in self.mod_dict[name]["position"])
-                        & df["Modifications"].str.join("|").str.contains(m)
-                    )
-                    if n_term.sum() != 0:
-                        new_mods.loc[n_term] += f"{name}:0;"
-        df["Modifications"] = new_mods.str.rstrip(";")
-
-        return df
+                    if ("Prot-N-term" in self.mod_dict[name]["position"]) and (
+                        int(pos) == 0
+                    ):
+                        remap_dict[m] = f"{name}:0"
+                    else:
+                        remap_dict[m] = f"{name}:{int(pos)+1}"
+        self.df["Modifications"] = self.df["Modifications"].apply(
+            lambda x: ";".join(x), meta=("Modifications", str)
+        )
+        for old, new in remap_dict.items():
+            self.df["Modifications"] = self.df["Modifications"].str.replace(
+                old, new, regex=False
+            )
 
     def unify(self):
         """
@@ -164,27 +162,30 @@ class XTandemAlanine_Parser(IdentBaseParser):
         Returns:
             self.df (pd.DataFrame): unified dataframe
         """
-        logger.remove()
-        logger.add(lambda msg: tqdm.write(msg, end=""))
-        pbar_iterator = tqdm(
-            zip(
-                repeat(self.reference_dict),
-                repeat(self.mapping_dict),
-                self.root,
-            ),
-            total=len(self.root),
+        self.root = [element for element in self.root if "id" in element.keys()]
+        data_structure = {
+            ("df", i): (
+                _get_single_spec_df,
+                self.reference_dict,
+                self.mapping_dict,
+                spec,
+            )
+            for i, spec in enumerate(self.root)
+        }
+        df_type_mapping = [
+            (k, self.dtype_mapping[k]) if k in self.dtype_mapping else (k, str)
+            for k in self.reference_dict.keys()
+        ]
+        self.df = dd.DataFrame(
+            data_structure, "df", df_type_mapping, (len(self.root) + 1) * [None]
         )
-        with mp.Pool(self.params.get("cpus", mp.cpu_count() - 1)) as pool:
-            chunk_dfs = pool.starmap(_get_single_spec_df, pbar_iterator)
-        logger.remove()
-        logger.add(sys.stdout)
-        chunk_dfs = [df for df in chunk_dfs if not df is None]
-        self.df = pd.concat(chunk_dfs, axis=0, ignore_index=True)
+        self.df = self.df.repartition(partition_size="100MB")
         self.df["Calc m/z"] = (
             (self.df["Calc m/z"].astype(float) - self.PROTON)
             / self.df["Charge"].astype(int)
         ) + self.PROTON
-        self.df = self.map_mod_names(self.df)
+        self.df = self.df.persist()
+        self.map_mod_names()
         self.process_unify_style()
 
         return self.df

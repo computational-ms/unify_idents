@@ -1,5 +1,5 @@
 """Engine parser."""
-import pandas as pd
+import dask.dataframe as dd
 import regex as re
 
 from unify_idents.engine_parsers.base_parser import IdentBaseParser
@@ -16,8 +16,8 @@ class MSAmanda_2_Parser(IdentBaseParser):
         super().__init__(*args, **kwargs)
         self.style = "msamanda_style_1"
 
-        self.df = pd.read_csv(self.input_file, delimiter="\t", skiprows=1)
-        self.df.dropna(axis=1, how="all", inplace=True)
+        self.df = dd.read_csv(self.input_file, delimiter="\t", skiprows=1)
+        self.df = self.df.dropna(how="all")
 
         self.mapping_dict = {
             v: k
@@ -25,22 +25,22 @@ class MSAmanda_2_Parser(IdentBaseParser):
                 "header_translations"
             ]["translated_value"].items()
         }
-        self.df.rename(columns=self.mapping_dict, inplace=True)
+        self.df = self.df.rename(columns=self.mapping_dict)
         self.df.columns = self.df.columns.str.lstrip(" ")
         if not "Modifications" in self.df.columns:
             self.df["Modifications"] = ""
 
-        self.df.drop(
+        self.df = self.df.drop(
             columns=[
                 c
                 for c in self.df.columns
                 if c
                 not in set(self.mapping_dict.values()) | set(self.reference_dict.keys())
             ],
-            inplace=True,
             errors="ignore",
         )
         self.reference_dict.update({k: None for k in self.mapping_dict.values()})
+        self.reference_dict["Search Engine"] = "msamanda_2_0_0_17442"
 
     @classmethod
     def check_parser_compatibility(cls, file):
@@ -86,16 +86,11 @@ class MSAmanda_2_Parser(IdentBaseParser):
         return mod_str
 
     def translate_mods(self):
-        """
-        Replace internal modification nomenclature with formatted modification strings.
-
-        Returns:
-            (pd.Series): column with formatted mod strings
-        """
+        """Replace internal nomenclature with formatted modification strings."""
         mod_split_col = self.df["Modifications"].fillna("").str.split(";")
-        mods_translated = mod_split_col.apply(self._map_mod_translation)
+        mods_translated = mod_split_col.apply(self._map_mod_translation, meta=str)
 
-        return mods_translated.str.rstrip(";")
+        self.df["Modifications"] = mods_translated.str.rstrip(";")
 
     def unify(self):
         """
@@ -104,9 +99,10 @@ class MSAmanda_2_Parser(IdentBaseParser):
         Returns:
             self.df (pd.DataFrame): unified dataframe
         """
-        self.df["Search Engine"] = "msamanda_2_0_0_17442"
+        self.df["Search Engine"] = self.reference_dict["Search Engine"]
         self.df["Spectrum ID"] = self.df["Spectrum Title"].str.split(".").str[1]
-        self.df["Modifications"] = self.translate_mods()
+        self.df = self.df.repartition(partition_size="100MB")
+        self.translate_mods()
         self.process_unify_style()
 
         return self.df

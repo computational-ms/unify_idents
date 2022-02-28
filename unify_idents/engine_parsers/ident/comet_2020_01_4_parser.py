@@ -1,14 +1,10 @@
 """Engine parser."""
-import multiprocessing as mp
-import sys
 import xml.etree.ElementTree as ETree
-from itertools import repeat
 
+import dask.dataframe as dd
 import numpy as np
 import pandas as pd
 import regex as re
-from loguru import logger
-from tqdm import tqdm
 
 from unify_idents.engine_parsers.base_parser import IdentBaseParser
 
@@ -128,15 +124,17 @@ class Comet_2020_01_4_Parser(IdentBaseParser):
                                     np.cumsum(list(map(len, l[:-1]))) + range(1, len(l))
                                 ).astype(str)
                             ]
-                        )
+                        ),
+                        meta=("Sequence", str),
                     )
                 )
 
-            fixed_mod_strings = (
-                pd.concat(fixed_mod_strings, axis=1)
-                .agg(";".join, axis=1)
-                .str.rstrip(";")
-            )
+            fixed_mod_strings = dd.multi.concat(fixed_mod_strings, axis=1)
+            fixed_mod_strings["fixed"] = ""
+            for col in fixed_mod_strings.columns:
+                if col == "fixed":
+                    continue
+                fixed_mod_strings["fixed"] += fixed_mod_strings[col] + ";"
 
         modification_mass_map = {
             sm.attrib["massDelta"]: sm.find(".//{*}cvParam[@cvRef='UNIMOD']").attrib[
@@ -155,12 +153,17 @@ class Comet_2020_01_4_Parser(IdentBaseParser):
                 )
             lookup[id]["Modifications"] = ";".join(lookup[id]["Modifications"])
 
-        # TODO: check mod left strip
-        seq_mods = pd.DataFrame(self.df["Sequence"].map(lookup).to_list())
-        self.df.loc[:, "Modifications"] = (
-            seq_mods["Modifications"].str.cat(fixed_mod_strings, sep=";").str.strip(";")
+        seq_mods = (
+            self.df["Sequence"]
+            .map(lookup)
+            .apply(pd.Series, meta=[("Modifications", str), ("Sequence", str)])
         )
-        self.df.loc[:, "Sequence"] = seq_mods["Sequence"]
+        self.df["Modifications"] = (
+            seq_mods["Modifications"]
+            .str.cat(fixed_mod_strings["fixed"], sep=";")
+            .str.strip(";")
+        )
+        self.df["Sequence"] = seq_mods["Sequence"]
 
     def unify(self):
         """
@@ -172,36 +175,35 @@ class Comet_2020_01_4_Parser(IdentBaseParser):
         spec_idents = self.root.findall(
             ".//{*}SpectrumIdentificationList/{*}SpectrumIdentificationResult"
         )
-        logger.remove()
-        logger.add(lambda msg: tqdm.write(msg, end=""))
-        pbar_iterator = tqdm(
-            zip(
-                repeat(self.reference_dict),
-                repeat(self.mapping_dict),
-                spec_idents,
-            ),
-            total=len(spec_idents),
-        )
-        with mp.Pool(self.params.get("cpus", mp.cpu_count() - 1)) as pool:
-            chunk_dfs = pool.starmap(
+        data_structure = {
+            ("df", i): (
                 _get_single_spec_df,
-                pbar_iterator,
+                self.reference_dict,
+                self.mapping_dict,
+                spec,
             )
-        logger.remove()
-        logger.add(sys.stdout)
-        self.df = pd.concat(chunk_dfs, axis=0, ignore_index=True)
+            for i, spec in enumerate(spec_idents)
+        }
+        df_type_mapping = [
+            (k, self.dtype_mapping[k]) if k in self.dtype_mapping else (k, str)
+            for k in self.reference_dict.keys()
+        ]
+        self.df = dd.DataFrame(
+            data_structure, "df", df_type_mapping, (len(spec_idents) + 1) * [None]
+        )
+        self.df = self.df.repartition(partition_size="100MB")
         self._map_mods_and_sequences()
         spec_title = re.search(
             r"(?<=/)([\w_]+)(?=\.)", self.params["Raw data location"]
         ).group(0)
-        self.df.loc[:, "Spectrum Title"] = (
+        self.df["Spectrum Title"] = (
             spec_title
             + "."
-            + self.df["Spectrum ID"]
+            + self.df["Spectrum ID"].astype(str)
             + "."
-            + self.df["Spectrum ID"]
+            + self.df["Spectrum ID"].astype(str)
             + "."
-            + self.df["Charge"]
+            + self.df["Charge"].astype(str)
         )
         self.process_unify_style()
 

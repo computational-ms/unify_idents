@@ -1,5 +1,4 @@
-from pathlib import Path
-
+import dask.dataframe as dd
 import numpy as np
 import pandas as pd
 import pytest
@@ -18,13 +17,12 @@ def test_base_parser_read_rt_lookup_file():
     )
 
     bp = IdentBaseParser(input_file, params={"rt_pickle_name": rt_lookup_path})
-    rt_lookup = bp._read_rt_lookup_file()
-    assert (rt_lookup["Unit"] == 1).all()
+    rt, expmz = bp._read_meta_lookup_file()
     assert pytest.approx(
-        rt_lookup["Precursor mz"].mean(), 550.8444810049874
+        np.mean(list(expmz.values())), 550.8444810049874
     )  # check consistency
-    assert pytest.approx(rt_lookup.loc[2450, "Precursor mz"], 618.2697)
-    assert pytest.approx(rt_lookup.loc[2450, "RT"], 92067.714)
+    assert pytest.approx(expmz[2450], 618.2697)
+    assert pytest.approx(rt[2450], 92067.714)
 
 
 def test_engine_parsers_IdentBaseParser_init():
@@ -106,7 +104,7 @@ def test_add_ranks_increasing_engine_scores_better():
         columns=obj.col_order.to_list() + ["MSFragger:Hyperscore"],
     )
     obj.df["MSFragger:Hyperscore"] = [5, 2, 1, 3, 3]
-    obj.df["Search Engine"] = "msfragger_3_0"
+    obj.reference_dict["Search Engine"] = "msfragger_3_0"
     obj.add_ranks()
     assert obj.df["Rank"].to_list() == [1, 4, 5, 2, 2]
 
@@ -118,7 +116,7 @@ def test_add_ranks_decreasing_engine_scores_better():
         columns=obj.col_order.to_list() + ["MSFragger:Hyperscore"],
     )
     obj.df["MS-GF:SpecEValue"] = [5, 2, 1, 3, 3]
-    obj.df["Search Engine"] = "msgfplus_2021_03_22"
+    obj.reference_dict["Search Engine"] = "msgfplus_2021_03_22"
     obj.add_ranks()
     assert obj.df["Rank"].to_list() == [5, 2, 1, 3, 3]
 
@@ -136,8 +134,10 @@ def test_add_protein_ids():
         columns=["MSFragger:Hyperscore"],
     )
     obj.df.loc[0, "Sequence"] = "SAVVGTFFR"
+    obj.df = dd.from_pandas(obj.df, npartitions=1)
     obj.add_protein_ids()
 
+    obj.df = obj.df.compute()
     assert set(obj.df.columns) == {
         "Sequence Stop",
         "Sequence",
@@ -177,7 +177,9 @@ def test_calc_masses_offsets_and_composition():
         "Carbamidomethyl:5",
         "Acetyl:0;Carbamidomethyl:5",
     ]
+    obj.df = dd.from_pandas(obj.df, npartitions=1)
     obj.calc_masses_offsets_and_composition()
+    obj.df = obj.df.compute()
     ref_masses = np.array(
         [902.3691, 902.3691 + 57.021464, 902.3691 + 57.021464 + 42.010565]
     )
@@ -358,7 +360,9 @@ def test_check_enzyme_specificity_trypsin_all():
     obj.df["Sequence"] = ["PEPRTIDEK", "EPTIDEK", "EPTIDEK", "EPRPTRIRDEK"]
     obj.df["Sequence Pre AA"] = ["K", "K", "A", "K"]
     obj.df["Sequence Post AA"] = ["A", "P", "A<|>P", "A<|>V"]
+    obj.df = dd.from_pandas(obj.df, npartitions=1)
     obj.check_enzyme_specificity()
+    obj.df = obj.df.compute()
 
     assert all(obj.df["enzN"] == [False, True, False, True])
     assert all(obj.df["enzC"] == [True, False, False, True])
@@ -382,7 +386,9 @@ def test_check_enzyme_specificity_trypsin_any():
     obj.df["Sequence"] = ["PEPRTIDEK", "EPTIDEK", "EPTIDEK", "EPTIDEK"]
     obj.df["Sequence Pre AA"] = ["K", "K", "A", "K"]
     obj.df["Sequence Post AA"] = ["A", "P", "A<|>P", "A<|>V"]
+    obj.df = dd.from_pandas(obj.df, npartitions=1)
     obj.check_enzyme_specificity()
+    obj.df = obj.df.compute()
 
     assert all(obj.df["enzN"] == [False, True, False, True])
     assert all(obj.df["enzC"] == [True, False, True, True])

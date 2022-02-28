@@ -12,7 +12,11 @@ def merge_and_join_dicts(list_of_dicts, delimiter):
         dict: preserved original keys with all values merged as strings with delimiter
 
     """
-    return {
-        key: delimiter.join([str(d.get(key)) for d in list_of_dicts])
-        for key in set().union(*list_of_dicts)
-    }
+    return dict(
+        sorted(
+            {
+                key: delimiter.join([str(d.get(key)) for d in list_of_dicts])
+                for key in set().union(*list_of_dicts)
+            }.items()
+        )
+    )
