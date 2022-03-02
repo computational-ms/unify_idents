@@ -1,3 +1,5 @@
-# from unify_idents.engine_parsers.omssa_parser import OmssaParser
+"""Init file."""
 import unify_idents.engine_parsers
-from unify_idents.unify import UnifiedRow, Unify
+import unify_idents.engine_parsers.ident
+import unify_idents.engine_parsers.quant
+from unify_idents.unify import Unify

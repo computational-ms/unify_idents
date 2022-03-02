@@ -1,107 +1,13 @@
-from unify_idents.engine_parsers.msfragger3_parser import __BaseParser
 from pathlib import Path
 
+import pytest
 
-def test_engine_parsers_BaseParser_init():
+from unify_idents.engine_parsers.base_parser import BaseParser
+
+
+def test_uninitialized_parser_compatiblity_is_false():
     input_file = (
-        Path(__file__).parent / "data" / "test_Creinhardtii_QE_pH11_xtandem_alanine.xml"
+        pytest._test_path / "data" / "test_Creinhardtii_QE_pH11_xtandem_alanine.xml"
     )
-    rt_lookup_path = Path(__file__).parent / "data" / "_ursgal_lookup.csv.bz2"
-    db_path = Path(__file__).parent / "data" / "test_Creinhardtii_target_decoy.fasta"
-
-    parser = __BaseParser(
-        input_file,
-        params={
-            "rt_pickle_name": rt_lookup_path,
-            "database": db_path,
-            "modifications": [
-                "C,fix,any,Carbamidomethyl",
-                "M,opt,any,Oxidation",
-                "*,opt,Prot-N-term,Acetyl",
-            ],
-        },
-    )
-
-
-def test_engine_parsers_BaseParser_file_matches_parser():
-    # should always return False
-    __BaseParser.file_matches_parser("whatever") is False
-
-
-def test_engine_parsers_BaseParser_map_mod_names():
-    input_file = (
-        Path(__file__).parent / "data" / "test_Creinhardtii_QE_pH11_xtandem_alanine.xml"
-    )
-    rt_lookup_path = Path(__file__).parent / "data" / "_ursgal_lookup.csv.bz2"
-    db_path = Path(__file__).parent / "data" / "test_Creinhardtii_target_decoy.fasta"
-
-    parser = __BaseParser(
-        input_file,
-        params={
-            "rt_pickle_name": rt_lookup_path,
-            "database": db_path,
-            "modifications": [
-                "C,fix,any,Carbamidomethyl",
-                "M,opt,any,Oxidation",
-                "*,opt,Prot-N-term,Acetyl",
-            ],
-        },
-    )
-
-    row = {"Modifications": ["57.021464:0"], "Sequence": "CERK"}
-    assert parser.map_mod_names(row) == "Carbamidomethyl:1"
-
-
-def test_engine_parsers_BaseParser_map_mod_names_nterm():
-    input_file = (
-        Path(__file__).parent / "data" / "test_Creinhardtii_QE_pH11_xtandem_alanine.xml"
-    )
-    rt_lookup_path = Path(__file__).parent / "data" / "_ursgal_lookup.csv.bz2"
-    db_path = Path(__file__).parent / "data" / "test_Creinhardtii_target_decoy.fasta"
-
-    parser = __BaseParser(
-        input_file,
-        params={
-            "rt_pickle_name": rt_lookup_path,
-            "database": db_path,
-            "modifications": [
-                "C,fix,any,Carbamidomethyl",
-                "M,opt,any,Oxidation",
-                "*,opt,Prot-N-term,Acetyl",
-            ],
-        },
-    )
-
-    row = {"Modifications": ["57.021464:0", "42.010565:0"], "Sequence": "CERK"}
-    assert parser.map_mod_names(row) == "Carbamidomethyl:1;Acetyl:0"
-
-
-def test_engine_parsers_BaseParser_read_rt_lookup_file():
-    input_file = (
-        Path(__file__).parent / "data" / "test_Creinhardtii_QE_pH11_xtandem_alanine.xml"
-    )
-    rt_lookup_path = Path(__file__).parent / "data" / "_ursgal_lookup.csv.bz2"
-    db_path = Path(__file__).parent / "data" / "test_Creinhardtii_target_decoy.fasta"
-
-    parser = __BaseParser(
-        input_file,
-        params={
-            "rt_pickle_name": rt_lookup_path,
-            "database": db_path,
-            "modifications": [
-                "C,fix,any,Carbamidomethyl",
-                "M,opt,any,Oxidation",
-                "*,opt,Prot-N-term,Acetyl",
-            ],
-        },
-    )
-    fname = "test_Creinhardtii_QE_pH11"
-    lookup = parser.read_rt_lookup_file(rt_lookup_path)
-    assert "test_Creinhardtii_QE_pH11" in lookup
-    assert "scan2rt" in lookup[fname]
-    assert "rt2scan" in lookup[fname]
-    assert "scan2mz" in lookup[fname]
-
-    assert len(lookup[fname]["scan2rt"]) == 162
-    assert len(lookup[fname]["rt2scan"]) == 162
-    assert len(lookup[fname]["scan2mz"]) == 162
+    compat = BaseParser.check_parser_compatibility(input_file)
+    assert compat is False

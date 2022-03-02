@@ -6,23 +6,31 @@ version_path = os.path.join(os.path.dirname(__file__), "unify_idents", "version.
 with open(version_path, "r") as version_file:
     unify_idents_version = version_file.read().strip()
 
+with open("requirements.txt") as req_file:
+    reqs = req_file.readlines()
+
 setup(
     name="unify_idents",
     version=unify_idents_version,
     packages=[
         "unify_idents",
         "unify_idents.engine_parsers",
+        "unify_idents.engine_parsers.ident",
+        "unify_idents.engine_parsers.quant",
     ],
     package_dir={"unify_idents": "unify_idents"},
-    package_data={"unify_idents": ["version.txt"]},
-    python_requires=">=3.7.0",
-    install_requires=["pytest", "uparma"],
+    #    package_data={
+    #        "unify_idents": ["version.txt", "engine_parsers"],
+    #        "": ["tests", "example_scripts"],
+    #    },
+    python_requires=">=3.8.0",
+    install_requires=reqs,
     description="Unify PSM idents",
     long_description="Unifying PSM identifications of different peptide search engines",
-    author="M. Koesters",
+    author="M. Koesters, T. Ranff, A. Vlasov, C. Fufezan",
     url="http://computational-ms.github.com",
     license="The MIT license",
-    platforms="any that supports python 3.7",
+    platforms="any that supports python 3.8",
     classifiers=[
         "Development Status :: 4 - Beta",
         "Environment :: Console",
@@ -35,7 +43,9 @@ setup(
         "Operating System :: POSIX",
         "Operating System :: POSIX :: SunOS/Solaris",
         "Operating System :: Unix",
-        "Programming Language :: Python :: 3.5",
+        "Programming Language :: Python :: 3.8",
+        "Programming Language :: Python :: 3.9",
+        "Programming Language :: Python :: 3.10",
         "Topic :: Scientific/Engineering :: Bio-Informatics",
         "Topic :: Scientific/Engineering :: Chemistry",
         "Topic :: Scientific/Engineering :: Medical Science Apps.",
