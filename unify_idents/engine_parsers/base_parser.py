@@ -322,7 +322,7 @@ class IdentBaseParser(BaseParser):
         Returns:
             rt_lookup (pd.DataFrame): loaded rt_pickle_file indexable by Spectrum ID
         """
-        rt_lookup = pd.read_csv(self.params["rt_pickle_name"], compression="bz2")
+        rt_lookup = pd.read_csv(self.params["rt_pickle_name"], compression="infer")
         rt_lookup.set_index("Spectrum ID", inplace=True)
         rt_lookup["Unit"] = rt_lookup["Unit"].replace({"second": 1, "minute": 60})
         return rt_lookup
