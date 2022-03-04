@@ -115,7 +115,9 @@ class Omssa_Parser(IdentBaseParser):
         self.df["Sequence"] = self.df["Sequence"].str.upper()
         fix_mods = None
         # Map fixed mods
-        fixed_mod_types = [d for d in self.params["modifications"] if d["type"] == "fix"]
+        fixed_mod_types = [
+            d for d in self.params["modifications"] if d["type"] == "fix"
+        ]
         for fm in fixed_mod_types:
             fm_strings = (
                 self.df["Sequence"]

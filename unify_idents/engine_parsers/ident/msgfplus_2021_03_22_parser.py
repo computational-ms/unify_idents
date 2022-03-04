@@ -147,18 +147,11 @@ class MSGFPlus_2021_03_22_Parser(IdentBaseParser):
         logger.remove()
         logger.add(lambda msg: tqdm.write(msg, end=""))
         pbar_iterator = tqdm(
-            zip(
-                repeat(self.reference_dict),
-                repeat(self.mapping_dict),
-                spec_idents,
-            ),
+            zip(repeat(self.reference_dict), repeat(self.mapping_dict), spec_idents,),
             total=len(spec_idents),
         )
         with mp.Pool(self.params.get("cpus", mp.cpu_count() - 1)) as pool:
-            chunk_dfs = pool.starmap(
-                _get_single_spec_df,
-                pbar_iterator,
-            )
+            chunk_dfs = pool.starmap(_get_single_spec_df, pbar_iterator,)
         logger.remove()
         logger.add(sys.stdout)
         self.df = pd.concat(chunk_dfs, axis=0, ignore_index=True)
