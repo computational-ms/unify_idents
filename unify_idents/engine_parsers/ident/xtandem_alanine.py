@@ -127,7 +127,9 @@ class XTandemAlanine_Parser(IdentBaseParser):
         potential_names = {
             m: [
                 name
-                for name in self.mod_mapper.mass_to_names(round(float(m), 4), decimals=4)
+                for name in self.mod_mapper.mass_to_names(
+                    round(float(m), 4), decimals=4
+                )
                 if name in self.mod_dict
             ]
             for m in unique_mod_masses
@@ -167,11 +169,7 @@ class XTandemAlanine_Parser(IdentBaseParser):
         logger.remove()
         logger.add(lambda msg: tqdm.write(msg, end=""))
         pbar_iterator = tqdm(
-            zip(
-                repeat(self.reference_dict),
-                repeat(self.mapping_dict),
-                self.root,
-            ),
+            zip(repeat(self.reference_dict), repeat(self.mapping_dict), self.root,),
             total=len(self.root),
         )
         with mp.Pool(self.params.get("cpus", mp.cpu_count() - 1)) as pool:
