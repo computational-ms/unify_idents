@@ -201,7 +201,8 @@ class MSFragger_3_Parser(IdentBaseParser):
             charge=self.df["Charge"],
         )
         self.df["Calc m/z"] = self._calc_mz(
-            mass=self.df["MSFragger:Neutral mass of peptide"], charge=self.df["Charge"],
+            mass=self.df["MSFragger:Neutral mass of peptide"],
+            charge=self.df["Charge"],
         )
         self.df["Modifications"] = self.translate_mods()
         self.df = self.df.loc[
