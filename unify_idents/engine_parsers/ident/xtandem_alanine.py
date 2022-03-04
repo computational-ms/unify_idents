@@ -169,7 +169,11 @@ class XTandemAlanine_Parser(IdentBaseParser):
         logger.remove()
         logger.add(lambda msg: tqdm.write(msg, end=""))
         pbar_iterator = tqdm(
-            zip(repeat(self.reference_dict), repeat(self.mapping_dict), self.root,),
+            zip(
+                repeat(self.reference_dict),
+                repeat(self.mapping_dict),
+                self.root,
+            ),
             total=len(self.root),
         )
         with mp.Pool(self.params.get("cpus", mp.cpu_count() - 1)) as pool:

@@ -261,7 +261,7 @@ class IdentBaseParser(BaseParser):
             .sum(axis=1)
         )
         self.df.loc[:, "enzN"] = (
-            pren_seq.str.split(fr"{enzyme_pattern}").str[0].str.len() == 1
+            pren_seq.str.split(rf"{enzyme_pattern}").str[0].str.len() == 1
         ).groupby(pren_seq.index).agg(integrity_strictness) | (
             pren_seq.str[0] == "-"
         ).groupby(
@@ -281,7 +281,7 @@ class IdentBaseParser(BaseParser):
             .sum(axis=1)
         )
         self.df.loc[:, "enzC"] = (
-            postc_seq.str.split(fr"{enzyme_pattern}").str[0].str.len() == 1
+            postc_seq.str.split(rf"{enzyme_pattern}").str[0].str.len() == 1
         ).groupby(postc_seq.index).agg(integrity_strictness) | (
             postc_seq.str[-1] == "-"
         ).groupby(
@@ -290,7 +290,7 @@ class IdentBaseParser(BaseParser):
             integrity_strictness
         )
 
-        internal_cuts = self.df["Sequence"].str.split(fr"{enzyme_pattern}")
+        internal_cuts = self.df["Sequence"].str.split(rf"{enzyme_pattern}")
         self.df.loc[:, "Missed Cleavages"] = (
             internal_cuts.apply(len)
             - internal_cuts.apply(lambda row: "" in row).astype(int)
