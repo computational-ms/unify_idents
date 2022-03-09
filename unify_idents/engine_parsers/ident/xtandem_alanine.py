@@ -35,7 +35,7 @@ def _get_single_spec_df(reference_dict, mapping_dict, spectrum):
         return None
     spec_title = spectrum.findall('.//**[@label="Description"]')[0].text.split()[0]
     spec_level_dict["Spectrum Title"] = spec_title
-    spec_level_dict["Spectrum ID"] = spec_title.split(".")[1]
+    spec_level_dict["Spectrum ID"] = spec_title.split(".")[-3]
 
     # Iterate children
     for psm in spectrum.findall(".//protein/*/domain"):
