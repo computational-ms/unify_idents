@@ -255,7 +255,7 @@ class Omssa_Parser(IdentBaseParser):
             mass=self.df["Calc m/z"], charge=self.df["Charge"]
         )
         self.df["Spectrum ID"] = (
-            self.df["Spectrum Title"].str.split(".").str[1].astype(int)
+            self.df["Spectrum Title"].str.split(".").str[-3].astype(int)
         )
         self.df["Search Engine"] = "omssa_2_1_9"
         self.df["Modifications"] = self.translate_mods()
