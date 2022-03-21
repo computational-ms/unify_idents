@@ -18,7 +18,7 @@ import unify_idents
 
 
 def test_unify_get_parser_classes():
-    rt_lookup_path = pytest._test_path / "data" / "_ursgal_lookup.csv.bz2"
+    rt_lookup_path = pytest._test_path / "data" / "_ursgal_lookup.csv"
     p = pytest._test_path / "data" / "test_Creinhardtii_QE_pH11_omssa_2_1_9.csv"
     db_path = pytest._test_path / "data" / "BSA.fasta"
     u = Unify(
@@ -46,8 +46,11 @@ def test_unify_get_parser_classes():
                     "name": "Acetyl",
                 },
             ],
-            "omssa_mod_dir": pytest._test_path / "data",
         },
+        xml_file_list=[
+            pytest._test_path / "data" / "mods.xml",
+            pytest._test_path / "data" / "usermods.xml",
+        ],
     )
     # Get files and subtract __init__.py
     ident_files = (
@@ -75,7 +78,7 @@ def test_unify_get_parser_classes():
 
 
 def test_unify_get_omssa_parser():
-    rt_lookup_path = pytest._test_path / "data" / "_ursgal_lookup.csv.bz2"
+    rt_lookup_path = pytest._test_path / "data" / "_ursgal_lookup.csv"
     p = pytest._test_path / "data" / "test_Creinhardtii_QE_pH11_omssa_2_1_9.csv"
     db_path = pytest._test_path / "data" / "BSA.fasta"
     u = Unify(
@@ -103,14 +106,17 @@ def test_unify_get_omssa_parser():
                     "name": "Acetyl",
                 },
             ],
-            "omssa_mod_dir": pytest._test_path / "data",
         },
+        xml_file_list=[
+            pytest._test_path / "data" / "mods.xml",
+            pytest._test_path / "data" / "usermods.xml",
+        ],
     )
     assert isinstance(u.parser, Omssa_Parser)
 
 
 def test_unify_get_msgfplus_parser():
-    rt_lookup_path = pytest._test_path / "data" / "_ursgal_lookup.csv.bz2"
+    rt_lookup_path = pytest._test_path / "data" / "_ursgal_lookup.csv"
     p = pytest._test_path / "data" / "BSA1_msgfplus_2021_03_22.mzid"
     db_path = pytest._test_path / "data" / "BSA.fasta"
     u = Unify(
@@ -144,7 +150,7 @@ def test_unify_get_msgfplus_parser():
 
 
 def test_unify_get_msamanda_parser():
-    rt_lookup_path = pytest._test_path / "data" / "BSA1_ursgal_lookup.csv.bz2"
+    rt_lookup_path = pytest._test_path / "data" / "BSA1_ursgal_lookup.csv"
     p = pytest._test_path / "data" / "BSA_msamanda_2_0_0_17442.csv"
     db_path = pytest._test_path / "data" / "BSA.fasta"
     u = Unify(
@@ -178,7 +184,7 @@ def test_unify_get_msamanda_parser():
 
 
 def test_unify_get_xtandem_parser():
-    rt_lookup_path = pytest._test_path / "data" / "_ursgal_lookup.csv.bz2"
+    rt_lookup_path = pytest._test_path / "data" / "_ursgal_lookup.csv"
     p = pytest._test_path / "data" / "BSA1_xtandem_alanine.xml"
     db_path = pytest._test_path / "data" / "BSA.fasta"
     u = Unify(
@@ -212,7 +218,7 @@ def test_unify_get_xtandem_parser():
 
 
 def test_unify_get_msfragger_parser():
-    rt_lookup_path = pytest._test_path / "data" / "_ursgal_lookup.csv.bz2"
+    rt_lookup_path = pytest._test_path / "data" / "_ursgal_lookup.csv"
     p = pytest._test_path / "data" / "test_Creinhardtii_QE_pH11_msfragger_3.tsv"
     db_path = pytest._test_path / "data" / "BSA.fasta"
     u = Unify(
@@ -246,7 +252,7 @@ def test_unify_get_msfragger_parser():
 
 
 def test_unify_get_comet_parser():
-    rt_lookup_path = pytest._test_path / "data" / "_ursgal_lookup.csv.bz2"
+    rt_lookup_path = pytest._test_path / "data" / "_ursgal_lookup.csv"
     p = pytest._test_path / "data" / "BSA1_comet_2020_01_4.mzid"
     db_path = pytest._test_path / "data" / "BSA.fasta"
     u = Unify(
@@ -280,7 +286,7 @@ def test_unify_get_comet_parser():
 
 
 def test_unify_get_mascot_parser():
-    rt_lookup_path = pytest._test_path / "data" / "_ursgal_lookup.csv.bz2"
+    rt_lookup_path = pytest._test_path / "data" / "_ursgal_lookup.csv"
     p = pytest._test_path / "data" / "BSA1_mascot_2_6_2.dat"
     db_path = pytest._test_path / "data" / "BSA.fasta"
     u = Unify(

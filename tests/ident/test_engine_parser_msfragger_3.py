@@ -33,7 +33,6 @@ def test_engine_parsers_msfragger_init():
                     "name": "Acetyl",
                 },
             ],
-            # "omssa_mod_dir": pytest._test_path / "data",
         },
     )
 
@@ -47,7 +46,7 @@ def test_engine_parsers_msfragger_check_parser_compatibility():
 
 def test_engine_parsers_msfragger_check_dataframe_integrity():
     input_file = pytest._test_path / "data" / "BSA1_msfragger_3.tsv"
-    rt_lookup_path = pytest._test_path / "data" / "BSA1_ursgal_lookup.csv.bz2"
+    rt_lookup_path = pytest._test_path / "data" / "BSA1_ursgal_lookup.csv"
     db_path = pytest._test_path / "data" / "BSA.fasta"
 
     parser = MSFragger_3_Parser(
@@ -56,7 +55,6 @@ def test_engine_parsers_msfragger_check_dataframe_integrity():
             "cpus": 2,
             "rt_pickle_name": rt_lookup_path,
             "database": db_path,
-            "Raw data location": "path/for/glory.mzML",
             "modifications": [
                 {
                     "aa": "M",
@@ -77,7 +75,6 @@ def test_engine_parsers_msfragger_check_dataframe_integrity():
                     "name": "Acetyl",
                 },
             ],
-            "Raw data location": "path/for/glory.mzML",
             "15N": False,
         },
     )
@@ -125,7 +122,6 @@ def test_map_mod_translation():
                     "name": "Acetyl",
                 },
             ],
-            "Raw data location": "path/for/glory.mzML",
             "15N": False,
         },
     )

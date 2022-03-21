@@ -35,8 +35,11 @@ def test_engine_parsers_omssa_init():
                     "name": "Acetyl",
                 },
             ],
-            "omssa_mod_dir": pytest._test_path / "data",
         },
+        xml_file_list=[
+            pytest._test_path / "data" / "mods.xml",
+            pytest._test_path / "data" / "usermods.xml",
+        ],
     )
 
 
@@ -51,7 +54,7 @@ def test_engine_parsers_omssa_check_dataframe_integrity():
     input_file = (
         pytest._test_path / "data" / "test_Creinhardtii_QE_pH11_omssa_2_1_9.csv"
     )
-    rt_lookup_path = pytest._test_path / "data" / "_ursgal_lookup.csv.bz2"
+    rt_lookup_path = pytest._test_path / "data" / "_ursgal_lookup.csv"
     db_path = pytest._test_path / "data" / "test_Creinhardtii_target_decoy.fasta"
 
     parser = Omssa_Parser(
@@ -80,9 +83,11 @@ def test_engine_parsers_omssa_check_dataframe_integrity():
                     "name": "Acetyl",
                 },
             ],
-            "omssa_mod_dir": pytest._test_path / "data",
-            "Raw data location": "path/for/glory.mzML",
         },
+        xml_file_list=[
+            pytest._test_path / "data" / "mods.xml",
+            pytest._test_path / "data" / "usermods.xml",
+        ],
     )
     df = parser.unify()
     assert pytest.approx(df["uCalc m/z"].mean()) == 826.67596
@@ -127,8 +132,11 @@ def test_replace_mod_strings():
                     "name": "Acetyl",
                 },
             ],
-            "omssa_mod_dir": pytest._test_path / "data",
         },
+        xml_file_list=[
+            pytest._test_path / "data" / "mods.xml",
+            pytest._test_path / "data" / "usermods.xml",
+        ],
     )
     raw_mod = "oxidation of M:4"
     converted = parser._replace_mod_strings(
