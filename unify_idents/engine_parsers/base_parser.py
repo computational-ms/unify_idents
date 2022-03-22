@@ -333,9 +333,10 @@ class IdentBaseParser(BaseParser):
         return rt_lookup
 
     def get_meta_info(self):
-        """Experimental mass-to-charge ratios, retention times, file names,
-         and spectrum titles are added.
+        """Extract meta information.
 
+        Experimental mass-to-charge ratios, retention times, file names,
+        and spectrum titles are added.
         Operations are performed inplace on self.df
         """
         rt_lookup = self._read_meta_info_lookup_file()
