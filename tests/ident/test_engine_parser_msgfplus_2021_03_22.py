@@ -37,7 +37,6 @@ def test_engine_parsers_msgfplus_init():
                     "name": "Acetyl",
                 },
             ],
-            "omssa_mod_dir": pytest._test_path / "data",
         },
     )
 
@@ -58,7 +57,7 @@ def test_engine_parsers_msgfplus_check_parser_compatibility_fail_with_omssa_file
 
 def test_engine_parsers_msgfplus_check_dataframe_integrity():
     input_file = pytest._test_path / "data" / "BSA1_msgfplus_2021_03_22.mzid"
-    rt_lookup_path = pytest._test_path / "data" / "BSA1_ursgal_lookup.csv.bz2"
+    rt_lookup_path = pytest._test_path / "data" / "BSA1_ursgal_lookup.csv"
     db_path = pytest._test_path / "data" / "BSA.fasta"
 
     parser = MSGFPlus_2021_03_22_Parser(
@@ -67,7 +66,6 @@ def test_engine_parsers_msgfplus_check_dataframe_integrity():
             "cpus": 2,
             "rt_pickle_name": rt_lookup_path,
             "database": db_path,
-            "Raw data location": "path/for/glory.mzML",
             "modifications": [
                 {
                     "aa": "M",
@@ -88,7 +86,6 @@ def test_engine_parsers_msgfplus_check_dataframe_integrity():
                     "name": "Acetyl",
                 },
             ],
-            "omssa_mod_dir": pytest._test_path / "data",
         },
     )
     df = parser.unify()
@@ -132,7 +129,6 @@ def test_engine_parsers_msgfplus_get_peptide_lookup():
                     "name": "Acetyl",
                 },
             ],
-            "omssa_mod_dir": pytest._test_path / "data",
         },
     )
     lookup = parser._get_peptide_lookup()
@@ -151,7 +147,6 @@ def test_get_single_spec_df():
         "Exp m/z": None,
         "Calc m/z": None,
         "Spectrum Title": None,
-        "Raw data location": "path/for/glory.mzML",
         "Search Engine": "msgfplus_2021_03_22",
         "Spectrum ID": None,
         "Modifications": None,
@@ -188,7 +183,6 @@ def test_get_single_spec_df():
                 "722.3272094726562",
                 "722.3246459960938",
                 "glory.2791.2791.2",
-                "path/for/glory.mzML",
                 "msgfplus_2021_03_22",
                 "2791",
                 None,

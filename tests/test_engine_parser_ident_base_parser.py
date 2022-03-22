@@ -12,13 +12,13 @@ from unify_idents.engine_parsers.base_parser import (
 
 
 def test_base_parser_read_rt_lookup_file():
-    rt_lookup_path = pytest._test_path / "data" / "BSA1_ursgal_lookup.csv.bz2"
+    rt_lookup_path = pytest._test_path / "data" / "BSA1_ursgal_lookup.csv"
     input_file = (
         pytest._test_path / "data" / "test_Creinhardtii_QE_pH11_xtandem_alanine.xml"
     )
 
     bp = IdentBaseParser(input_file, params={"rt_pickle_name": rt_lookup_path})
-    rt_lookup = bp._read_rt_lookup_file()
+    rt_lookup = bp._read_meta_info_lookup_file()
     assert (rt_lookup["Unit"] == 1).all()
     assert pytest.approx(
         rt_lookup["Precursor mz"].mean(), 550.8444810049874
@@ -31,7 +31,7 @@ def test_engine_parsers_IdentBaseParser_init():
     input_file = (
         pytest._test_path / "data" / "test_Creinhardtii_QE_pH11_xtandem_alanine.xml"
     )
-    rt_lookup_path = pytest._test_path / "data" / "_ursgal_lookup.csv.bz2"
+    rt_lookup_path = pytest._test_path / "data" / "_ursgal_lookup.csv"
     db_path = pytest._test_path / "data" / "test_Creinhardtii_target_decoy.fasta"
 
     parser = IdentBaseParser(
@@ -89,8 +89,7 @@ def test_engine_parsers_IdentBase_Parser_sanitize():
     obj.df.loc[3, "Raw data location"] = None
     obj.df["Modifications"] = "ZZ:1;AA:8"
     obj.sanitize()
-    assert not obj.df["Raw data location"].str.contains(".mgf").any()
-    assert obj.df.loc[3, "Raw data location"] == "spec_title"
+    assert obj.df.loc[3, "Raw data location"] == ""
     assert (obj.df["Modifications"] == "ZZ:1;AA:8").all()
     assert obj.df.columns.to_list() == obj.col_order.to_list() + [
         "Engine:A",
@@ -162,7 +161,7 @@ def test_calc_masses_offsets_and_composition():
         input_file=None,
         params={
             "cpus": 2,
-            "rt_pickle_name": pytest._test_path / "data/_ursgal_lookup.csv.bz2",
+            "rt_pickle_name": pytest._test_path / "data/_ursgal_lookup.csv",
         },
     )
     obj.df = pd.DataFrame(
@@ -170,7 +169,7 @@ def test_calc_masses_offsets_and_composition():
         columns=obj.col_order.to_list() + ["MSFragger:Hyperscore"],
     )
     obj.df["Spectrum ID"] = 3 * [10152]
-    obj.get_exp_rt_and_mz()
+    obj.get_meta_info()
     obj.df.loc[:, "Sequence"] = 3 * ["PEPTCIDE"]
     obj.df.loc[:, "Modifications"] = [
         "",
@@ -194,7 +193,7 @@ def test_get_exp_rt_and_mz():
         input_file=None,
         params={
             "cpus": 2,
-            "rt_pickle_name": pytest._test_path / "data/_ursgal_lookup.csv.bz2",
+            "rt_pickle_name": pytest._test_path / "data/_ursgal_lookup.csv",
         },
     )
     obj.df = pd.DataFrame(
@@ -202,7 +201,7 @@ def test_get_exp_rt_and_mz():
         columns=obj.col_order.to_list() + ["MSFragger:Hyperscore"],
     )
     obj.df["Spectrum ID"] = [10152, 10381, 10414, 10581, 11535]
-    obj.get_exp_rt_and_mz()
+    obj.get_meta_info()
     assert np.allclose(
         obj.df["Exp m/z"], [759.379, 439.196, 739.358, 664.286, 496.264], atol=1e-3
     )
@@ -284,7 +283,7 @@ def test_assert_only_iupac_and_missing_aas():
         input_file=None,
         params={
             "cpus": 2,
-            "rt_pickle_name": pytest._test_path / "data/_ursgal_lookup.csv.bz2",
+            "rt_pickle_name": pytest._test_path / "data/_ursgal_lookup.csv",
         },
     )
     obj.df = pd.DataFrame(
@@ -302,7 +301,7 @@ def test_add_decoy_identity():
         input_file=None,
         params={
             "cpus": 2,
-            "rt_pickle_name": pytest._test_path / "data/_ursgal_lookup.csv.bz2",
+            "rt_pickle_name": pytest._test_path / "data/_ursgal_lookup.csv",
         },
     )
     obj.df = pd.DataFrame(
@@ -321,7 +320,7 @@ def test_add_decoy_identity_non_default_prefix():
         input_file=None,
         params={
             "cpus": 2,
-            "rt_pickle_name": pytest._test_path / "data/_ursgal_lookup.csv.bz2",
+            "rt_pickle_name": pytest._test_path / "data/_ursgal_lookup.csv",
             "decoy_tag": "non_default_tag_",
         },
     )
@@ -346,7 +345,7 @@ def test_check_enzyme_specificity_trypsin_all():
         input_file=None,
         params={
             "cpus": 2,
-            "rt_pickle_name": pytest._test_path / "data/_ursgal_lookup.csv.bz2",
+            "rt_pickle_name": pytest._test_path / "data/_ursgal_lookup.csv",
             "enzyme": "trypsin",
             "terminal_cleavage_site_integrity": "all",
         },
@@ -370,7 +369,7 @@ def test_check_enzyme_specificity_trypsin_any():
         input_file=None,
         params={
             "cpus": 2,
-            "rt_pickle_name": pytest._test_path / "data/_ursgal_lookup.csv.bz2",
+            "rt_pickle_name": pytest._test_path / "data/_ursgal_lookup.csv",
             "enzyme": "trypsin",
             "terminal_cleavage_site_integrity": "any",
         },
@@ -394,7 +393,7 @@ def test_check_enzyme_specificity_nonspecific():
         input_file=None,
         params={
             "cpus": 2,
-            "rt_pickle_name": pytest._test_path / "data/_ursgal_lookup.csv.bz2",
+            "rt_pickle_name": pytest._test_path / "data/_ursgal_lookup.csv",
             "enzyme": "nonspecific",
             "terminal_cleavage_site_integrity": "all",
         },

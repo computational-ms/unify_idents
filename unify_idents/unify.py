@@ -60,7 +60,10 @@ class Unify:
 
         for parser in self._parser_classes:
             if parser.check_parser_compatibility(self.input_file) is True:
-                return parser(input_file=self.input_file, params=self.params)
+                return parser(
+                    input_file=self.input_file,
+                    params=self.params,
+                )
 
         raise IOError(f"No suitable parser found for {self.input_file}.")
 

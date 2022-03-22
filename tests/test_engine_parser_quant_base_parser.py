@@ -9,7 +9,7 @@ def test_engine_parsers_QuantBaseParser_init():
     input_file = (
         pytest._test_path / "data" / "test_Creinhardtii_QE_pH11_xtandem_alanine.xml"
     )
-    rt_lookup_path = pytest._test_path / "data" / "_ursgal_lookup.csv.bz2"
+    rt_lookup_path = pytest._test_path / "data" / "_ursgal_lookup.csv"
     db_path = pytest._test_path / "data" / "test_Creinhardtii_target_decoy.fasta"
 
     parser = QuantBaseParser(

@@ -44,7 +44,7 @@ def test_engine_parsers_msamanda_check_parser_compatibility():
 
 def test_engine_parsers_msamanda_check_dataframe_integrity():
     input_file = pytest._test_path / "data" / "BSA1_msamanda_2_0_0_17442.csv"
-    rt_lookup_path = pytest._test_path / "data" / "BSA1_ursgal_lookup.csv.bz2"
+    rt_lookup_path = pytest._test_path / "data" / "BSA1_ursgal_lookup.csv"
     db_path = pytest._test_path / "data" / "BSA.fasta"
 
     parser = MSAmanda_2_Parser(
@@ -73,7 +73,6 @@ def test_engine_parsers_msamanda_check_dataframe_integrity():
                     "name": "Acetyl",
                 },
             ],
-            "Raw data location": "path/for/glory.mzML",
         },
     )
     df = parser.unify()
@@ -117,7 +116,6 @@ def test_map_mod_translation():
                     "name": "Acetyl",
                 },
             ],
-            "Raw data location": "path/for/glory.mzML",
         },
     )
     converted = parser._map_mod_translation(row=["C3(Carbamidomethyl|57.021464|fixed)"])
