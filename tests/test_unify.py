@@ -46,11 +46,11 @@ def test_unify_get_parser_classes():
                     "name": "Acetyl",
                 },
             ],
+            "xml_file_list": [
+                pytest._test_path / "data" / "mods.xml",
+                pytest._test_path / "data" / "usermods.xml",
+            ],
         },
-        xml_file_list=[
-            pytest._test_path / "data" / "mods.xml",
-            pytest._test_path / "data" / "usermods.xml",
-        ],
     )
     # Get files and subtract __init__.py
     ident_files = (
@@ -106,11 +106,11 @@ def test_unify_get_omssa_parser():
                     "name": "Acetyl",
                 },
             ],
+            "xml_file_list": [
+                pytest._test_path / "data" / "mods.xml",
+                pytest._test_path / "data" / "usermods.xml",
+            ],
         },
-        xml_file_list=[
-            pytest._test_path / "data" / "mods.xml",
-            pytest._test_path / "data" / "usermods.xml",
-        ],
     )
     assert isinstance(u.parser, Omssa_Parser)
 

@@ -35,19 +35,18 @@ def get_mass_and_composition(seq, mods):
 class BaseParser:
     """Base class of all parser types."""
 
-    def __init__(self, input_file, params, xml_file_list=None):
+    def __init__(self, input_file, params):
         """Initialize parser.
 
         Args:
             input_file (str): path to input file
             params (dict): ursgal param dict
-            xml_file_list (list): list of xml usermod files to be used by unimod mapper
         """
         self.input_file = input_file
         if params is None:
             params = {}
         self.params = params
-        self.xml_file_list = xml_file_list
+        self.xml_file_list = self.params.get("xml_file_list", None)
         self.param_mapper = uparma.UParma()
         self.translated_params = self.param_mapper.get_default_params(
             "unify_csv_style_1"

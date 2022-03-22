@@ -35,11 +35,11 @@ def test_engine_parsers_omssa_init():
                     "name": "Acetyl",
                 },
             ],
+            "xml_file_list": [
+                pytest._test_path / "data" / "mods.xml",
+                pytest._test_path / "data" / "usermods.xml",
+            ],
         },
-        xml_file_list=[
-            pytest._test_path / "data" / "mods.xml",
-            pytest._test_path / "data" / "usermods.xml",
-        ],
     )
 
 
@@ -83,11 +83,11 @@ def test_engine_parsers_omssa_check_dataframe_integrity():
                     "name": "Acetyl",
                 },
             ],
+            "xml_file_list": [
+                pytest._test_path / "data" / "mods.xml",
+                pytest._test_path / "data" / "usermods.xml",
+            ],
         },
-        xml_file_list=[
-            pytest._test_path / "data" / "mods.xml",
-            pytest._test_path / "data" / "usermods.xml",
-        ],
     )
     df = parser.unify()
     assert pytest.approx(df["uCalc m/z"].mean()) == 826.67596
@@ -132,11 +132,11 @@ def test_replace_mod_strings():
                     "name": "Acetyl",
                 },
             ],
+            "xml_file_list": [
+                pytest._test_path / "data" / "mods.xml",
+                pytest._test_path / "data" / "usermods.xml",
+            ],
         },
-        xml_file_list=[
-            pytest._test_path / "data" / "mods.xml",
-            pytest._test_path / "data" / "usermods.xml",
-        ],
     )
     raw_mod = "oxidation of M:4"
     converted = parser._replace_mod_strings(

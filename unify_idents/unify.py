@@ -17,20 +17,18 @@ class Unify:
 
     """
 
-    def __init__(self, input_file, params, xml_file_list=None):
+    def __init__(self, input_file, params):
         """Initialize unifier.
 
         Args:
             input_file (str): path to input file
             params (dict): ursgal param dict
-            xml_file_list (list): list of xml usermod files to be used by unimod mapper
         """
         if not isinstance(input_file, Path):
             self.input_file = Path(input_file)
         else:
             self.input_file = input_file
         self.params = params
-        self.xml_file_list = xml_file_list
 
         self._parser_classes = []
         self.parser = self._get_parser()
@@ -64,7 +62,6 @@ class Unify:
             if parser.check_parser_compatibility(self.input_file) is True:
                 return parser(
                     input_file=self.input_file,
-                    xml_file_list=self.xml_file_list,
                     params=self.params,
                 )
 
