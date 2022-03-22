@@ -57,7 +57,7 @@ def test_engine_parsers_comet_check_parser_compatibility_fail_with_omssa_file():
 
 def test_engine_parsers_comet_check_dataframe_integrity():
     input_file = pytest._test_path / "data" / "BSA1_mascot_2_6_2.dat"
-    rt_lookup_path = pytest._test_path / "data" / "BSA1_ursgal_lookup.csv.bz2"
+    rt_lookup_path = pytest._test_path / "data" / "BSA1_ursgal_lookup.csv"
     db_path = pytest._test_path / "data" / "BSA.fasta"
 
     parser = Mascot_2_6_2_Parser(
@@ -66,7 +66,6 @@ def test_engine_parsers_comet_check_dataframe_integrity():
             "cpus": 2,
             "rt_pickle_name": rt_lookup_path,
             "database": db_path,
-            "Raw data location": "path/for/glory.mzML",
             "modifications": [
                 {
                     "aa": "M",
@@ -116,7 +115,6 @@ def test_get_single_spec_df():
         "Exp m/z": None,
         "Calc m/z": None,
         "Spectrum Title": None,
-        "Raw data location": "/Users/av568207/dev/ursgal2/example_data/BSA1.mgf",
         "Search Engine": "mascot_2_6_2",
         "Spectrum ID": None,
         "Modifications": None,
@@ -133,7 +131,6 @@ def test_get_single_spec_df():
                 "757.415634",
                 None,
                 "BSA1%2e2941%2e2941%2e2",
-                "/Users/av568207/dev/ursgal2/example_data/BSA1.mgf",
                 "mascot_2_6_2",
                 "2941",
                 "000000000",
@@ -150,7 +147,7 @@ def test_get_single_spec_df():
 
 def test_translate_opt_mods():
     input_file = pytest._test_path / "data" / "BSA1_mascot_2_6_2.dat"
-    rt_lookup_path = pytest._test_path / "data" / "BSA1_ursgal_lookup.csv.bz2"
+    rt_lookup_path = pytest._test_path / "data" / "BSA1_ursgal_lookup.csv"
     db_path = pytest._test_path / "data" / "BSA.fasta"
 
     parser = Mascot_2_6_2_Parser(

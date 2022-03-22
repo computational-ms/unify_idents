@@ -65,7 +65,7 @@ def test_engine_parsers_xtandem_check_dataframe_integrity():
     input_file = (
         pytest._test_path / "data" / "test_Creinhardtii_QE_pH11_xtandem_alanine.xml"
     )
-    rt_lookup_path = pytest._test_path / "data" / "_ursgal_lookup.csv.bz2"
+    rt_lookup_path = pytest._test_path / "data" / "_ursgal_lookup.csv"
     db_path = pytest._test_path / "data" / "test_Creinhardtii_target_decoy.fasta"
 
     parser = XTandemAlanine_Parser(
@@ -74,7 +74,6 @@ def test_engine_parsers_xtandem_check_dataframe_integrity():
             "cpus": 2,
             "rt_pickle_name": rt_lookup_path,
             "database": db_path,
-            "Raw data location": "path/for/glory.mzML",
             "modifications": [
                 {
                     "aa": "M",
@@ -183,7 +182,7 @@ def test_engine_parsers_xtandem_nterminal_mod():
     input_file = (
         pytest._test_path / "data" / "test_Creinhardtii_QE_pH11_xtandem_alanine.xml"
     )
-    rt_lookup_path = pytest._test_path / "data" / "_ursgal_lookup.csv.bz2"
+    rt_lookup_path = pytest._test_path / "data" / "_ursgal_lookup.csv"
     db_path = pytest._test_path / "data" / "test_Creinhardtii_target_decoy.fasta"
 
     parser = XTandemAlanine_Parser(
@@ -223,7 +222,7 @@ def test_engine_parsers_xtandem_nterminal_mod():
 
 def test_engine_parsers_xtandem_multiple_psms():
     input_file = pytest._test_path / "data" / "multiple_psms_xtandem.xml"
-    rt_lookup_path = pytest._test_path / "data" / "_ursgal_lookup.csv.bz2"
+    rt_lookup_path = pytest._test_path / "data" / "_ursgal_lookup.csv"
     db_path = pytest._test_path / "data" / "human_ecoli_test_target_decoy.fasta"
 
     parser = XTandemAlanine_Parser(

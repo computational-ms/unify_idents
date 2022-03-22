@@ -191,18 +191,6 @@ class Comet_2020_01_4_Parser(IdentBaseParser):
         logger.add(sys.stdout)
         self.df = pd.concat(chunk_dfs, axis=0, ignore_index=True)
         self._map_mods_and_sequences()
-        spec_title = re.search(
-            r"(?<=/)([\w_]+)(?=\.)", self.params["Raw data location"]
-        ).group(0)
-        self.df.loc[:, "Spectrum Title"] = (
-            spec_title
-            + "."
-            + self.df["Spectrum ID"]
-            + "."
-            + self.df["Spectrum ID"]
-            + "."
-            + self.df["Charge"]
-        )
         self.process_unify_style()
 
         return self.df

@@ -46,6 +46,7 @@ class BaseParser:
         if params is None:
             params = {}
         self.params = params
+        self.xml_file_list = self.params.get("xml_file_list", None)
         self.param_mapper = uparma.UParma()
         self.translated_params = self.param_mapper.get_default_params(
             "unify_csv_style_1"
@@ -80,7 +81,7 @@ class IdentBaseParser(BaseParser):
         self.DELIMITER = self.params.get("delimiter", "<|>")
         self.PROTON = 1.00727646677
         self.df = None
-        self.mod_mapper = UnimodMapper()
+        self.mod_mapper = UnimodMapper(xml_file_list=self.xml_file_list)
         self.params["mapped_mods"] = self.mod_mapper.map_mods(
             mod_list=self.params.get("modifications", [])
         )
@@ -319,8 +320,8 @@ class IdentBaseParser(BaseParser):
             * 1e6
         )
 
-    def _read_rt_lookup_file(self):
-        """Read retention time lookup file.
+    def _read_meta_info_lookup_file(self):
+        """Read meta info lookup file.
 
         Returns:
             rt_lookup (pd.DataFrame): loaded rt_pickle_file indexable by Spectrum ID
@@ -330,17 +331,29 @@ class IdentBaseParser(BaseParser):
         rt_lookup["Unit"] = rt_lookup["Unit"].replace({"second": 1, "minute": 60})
         return rt_lookup
 
-    def get_exp_rt_and_mz(self):
-        """Experimental mass-to-charge ratios and retention times are added.
+    def get_meta_info(self):
+        """Extract meta information.
 
+        Experimental mass-to-charge ratios, retention times, file names,
+        and spectrum titles are added.
         Operations are performed inplace on self.df
         """
-        rt_lookup = self._read_rt_lookup_file()
+        rt_lookup = self._read_meta_info_lookup_file()
         spec_ids = self.df["Spectrum ID"].astype(int)
         self.df["Retention Time (s)"] = (
             rt_lookup.loc[spec_ids, ["RT", "Unit"]].product(axis=1).to_list()
         )
         self.df["Exp m/z"] = rt_lookup.loc[spec_ids, "Precursor mz"].to_list()
+        self.df["Raw data location"] = rt_lookup.loc[spec_ids, "File"].to_list()
+        self.df.loc[:, "Spectrum Title"] = (
+            self.df["Raw data location"]
+            + "."
+            + self.df["Spectrum ID"].astype(str)
+            + "."
+            + self.df["Spectrum ID"].astype(str)
+            + "."
+            + self.df["Charge"].astype(str)
+        )
 
     def add_ranks(self):
         """Ranks are calculated based on the engine scoring column at Spectrum ID level.
@@ -374,20 +387,13 @@ class IdentBaseParser(BaseParser):
     def sanitize(self):
         """Perform dataframe sanitation steps.
 
-        - Missing raw data locations are replaced by their respective spectrum title identifiers
-        - .mgf file extensions are renamed to point to the .mzML files
+        - Missing raw data locations are filled with empty strings
         - Columns that were not filled in but should exist in the unified format are added and set to None
         - Columns in the dataframe which could not be properly mapped are removed (warning is raised)
         Operations are performed inplace on self.df
         """
-        self.df["Raw data location"] = self.params.get("Raw data location", "")
         missing_data_locs = ~(self.df["Raw data location"].str.len() > 0)
-        self.df.loc[missing_data_locs, "Raw data location"] = (
-            self.df.loc[missing_data_locs, "Spectrum Title"].str.split(".").str[0]
-        )
-        self.df["Raw data location"] = self.df["Raw data location"].str.replace(
-            ".mgf", ".mzML", regex=False
-        )
+        self.df.loc[missing_data_locs, "Raw data location"] = ""
 
         # Set missing columns to None and reorder columns in standardized manner
         new_cols = self.col_order[~self.col_order.isin(self.df.columns)].to_list()
@@ -432,7 +438,7 @@ class IdentBaseParser(BaseParser):
         self.clean_up_modifications()
         self.assert_only_iupac_and_missing_aas()
         self.add_protein_ids()
-        self.get_exp_rt_and_mz()
+        self.get_meta_info()
         self.calc_masses_offsets_and_composition()
         self.check_enzyme_specificity()
         self.add_ranks()

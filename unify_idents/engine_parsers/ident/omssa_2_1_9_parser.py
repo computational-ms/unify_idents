@@ -160,8 +160,8 @@ class Omssa_Parser(IdentBaseParser):
             }
             for k in unique_mods
         }
-        for file in ["mods.xml", "usermods.xml"]:
-            tree = ETree.parse(self.params["omssa_mod_dir"] / file)
+        for file in self.xml_file_list:
+            tree = ETree.parse(file)
             root = tree.getroot()
             for mod in unique_mods:
                 # Get all parents of children where full text of a tag matches the modification str

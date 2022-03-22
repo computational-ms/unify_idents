@@ -184,18 +184,6 @@ class MSFragger_3_Parser(IdentBaseParser):
             self.df (pd.DataFrame): unified dataframe
         """
         self.df["Search Engine"] = "msfragger_3_0"
-        spec_title = re.search(
-            r"(?<=/)([\d\w_-]+)(?=\.)", self.params["Raw data location"]
-        ).group(0)
-        self.df["Spectrum Title"] = (
-            spec_title
-            + "."
-            + self.df["Spectrum ID"].astype(str)
-            + "."
-            + self.df["Spectrum ID"].astype(str)
-            + "."
-            + self.df["Charge"].astype(str)
-        )
         self.df["Exp m/z"] = self._calc_mz(
             mass=self.df["MSFragger:Precursor neutral mass (Da)"],
             charge=self.df["Charge"],
