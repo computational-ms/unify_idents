@@ -109,10 +109,10 @@ class Omssa_Parser(IdentBaseParser):
         """
         Replace internal modification nomenclature with formatted modification strings.
 
-        Returns:
-            (pd.Series): column with formatted mod strings
+        Operations are performed inplace.
         """
         self.df["Sequence"] = self.df["Sequence"].str.upper()
+        self.df["Modifications"] = self.df["Modifications"].str.replace(" ,", ";")
         fix_mods = None
         # Map fixed mods
         fixed_mod_types = [
@@ -138,111 +138,10 @@ class Omssa_Parser(IdentBaseParser):
             else:
                 fix_mods = fix_mods + ";" + fm_strings
 
-        unique_mods = (
-            set()
-            .union(
-                *self.df["Modifications"]
-                .fillna("")
-                .str.split(" ,")
-                .apply(lambda l: [x.split(":")[0] for x in l])
-                .map(set)
-            )
-            .difference({""})
-        )
-
-        mod_translations = {
-            k: {
-                "unimod_id": None,
-                "omssa_unimod_id": None,
-                "unimod_name": None,
-                "omssa_name": None,
-                "aa_targets": [],
-            }
-            for k in unique_mods
-        }
-        for file in self.xml_file_list:
-            tree = ETree.parse(file)
-            root = tree.getroot()
-            for mod in unique_mods:
-                # Get all parents of children where full text of a tag matches the modification str
-                for element in root.findall(f".//*[.='{mod}']/.."):
-                    for targ in element.findall(".//*"):
-                        # Find names, match unimod id, record target aa
-                        if "MSModSpec_unimod" in targ.tag:
-                            mod_translations[mod]["omssa_unimod_id"] = targ.text
-                        elif "MSModSpec_psi-ms" in targ.tag:
-                            mod_translations[mod]["unimod_name"] = targ.text
-                        elif "MSModSpec_residues" in targ.tag:
-                            mod_translations[mod]["aa_targets"].extend(
-                                [
-                                    aa.text
-                                    for aa in targ.findall(".//{*}MSModSpec_residues_E")
-                                ]
-                            )
-                        elif "MSModSpec_name" in targ.tag:
-                            mod_translations[mod]["omssa_name"] = targ.text
-                            terminal_mod = ""
-                            if "protein" in targ.tag:
-                                terminal_mod += "Prot-"
-                            if "n-term" in targ.tag:
-                                terminal_mod += "N-term"
-                            elif "c-term" in targ.tag:
-                                terminal_mod += "C-term"
-                            if len(terminal_mod) > 0:
-                                mod_translations[mod]["aa_targets"].extend(
-                                    [terminal_mod]
-                                )
-
-        # Apply fixes
-        omssa_mod_corrections = {
-            # this dict holds corrections of wrong OMSSA to unimod assignments
-            "TMT 6-plex on K": {
-                "unimod_id": "737",
-                "omssa_unimod_id": "738",  # this is TMT duplex in unimod
-                "unimod_name": "TMT6plex",
-            },
-            "TMT 6-plex on n-term peptide": {
-                "unimod_id": "737",
-                "omssa_unimod_id": "738",  # this is TMT duplex in unimod
-                "unimod_name": "TMT6plex",
-                "aa_targets": ["N-term"],  # override 'X' in OMSSA mods xml
-            },
-            "TMT duplex on K": {
-                "unimod_id": "738",
-                "omssa_unimod_id": "738",  # this is TMT duplex in unimod
-                "unimod_name": "TMT2plex",
-            },
-            "TMT duplex on n-term peptide": {
-                "unimod_id": "738",
-                "omssa_unimod_id": "738",  # this is TMT duplex in unimod
-                "unimod_name": "TMT2plex",
-                "aa_targets": ["N-term"],  # override 'X' in OMSSA mods xml
-            },
-        }
-        for k in mod_translations.keys():
-            if k in omssa_mod_corrections.keys():
-                mod_translations[k].update(omssa_mod_corrections[k])
-            if mod_translations[k]["unimod_id"] is not None:
-                mod_translations[k]["unimod_name"] = self.mod_mapper.id2name_list(
-                    mod_translations[k]["unimod_id"]
-                )[0]
-
-        opt_mods = (
-            self.df["Modifications"]
-            .fillna("")
-            .apply(lambda r: self._replace_mod_strings(r, mod_translations))
-        )
         if len(fix_mods) > 0:
-            comb = pd.concat([opt_mods, fix_mods], axis=1)
-            comb = (
-                comb["Modifications"]
-                .str.cat(comb["Sequence"], sep=";")
-                .str.rstrip(";")
-                .to_list()
+            self.df["Modifications"] = (
+                self.df["Modifications"].fillna("") + ";" + fix_mods
             )
-        else:
-            comb = opt_mods.to_list()
-        return comb
 
     def unify(self):
         """
@@ -258,7 +157,7 @@ class Omssa_Parser(IdentBaseParser):
             self.df["Spectrum Title"].str.split(".").str[-3].astype(int)
         )
         self.df["Search Engine"] = "omssa_2_1_9"
-        self.df["Modifications"] = self.translate_mods()
+        self.translate_mods()
         self.process_unify_style()
 
         return self.df

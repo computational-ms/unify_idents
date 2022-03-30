@@ -94,7 +94,7 @@ def test_engine_parsers_omssa_check_dataframe_integrity():
     assert (df["Raw data location"] == "path/for/glory.mzML").all()
     assert pytest.approx(df["Exp m/z"].mean()) == 826.7788
 
-    assert df["Modifications"].str.contains("Acetyl:0").sum() == 0
+    assert df["Modifications"].str.contains("Acetyl:0").sum() == 5
     assert df["Modifications"].str.contains("Oxidation:").sum() == 93
     assert (
         df["Modifications"].str.count("Carbamidomethyl:")
