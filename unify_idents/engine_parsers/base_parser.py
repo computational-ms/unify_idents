@@ -172,6 +172,7 @@ class IdentBaseParser(BaseParser):
         # Ensure same order of modifications
         self.df.loc[:, "Modifications"] = (
             self.df["Modifications"]
+            .fillna("")
             .str.split(";")
             .apply(sorted, key=lambda x: x.split(":")[::-1])
             .str.join(";")
