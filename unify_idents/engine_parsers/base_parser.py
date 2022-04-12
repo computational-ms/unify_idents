@@ -342,7 +342,10 @@ class IdentBaseParser(BaseParser):
         rt_lookup = self._read_meta_info_lookup_file()
         spec_ids = self.df["Spectrum ID"].astype(int)
         self.df["Retention Time (s)"] = (
-            rt_lookup.loc[spec_ids, ["RT", "Unit"]].product(axis=1).to_list()
+            rt_lookup.loc[spec_ids, ["RT", "Unit"]]
+            .astype(float)
+            .product(axis=1)
+            .to_list()
         )
         self.df["Exp m/z"] = rt_lookup.loc[spec_ids, "Precursor mz"].to_list()
         self.df["Raw data location"] = rt_lookup.loc[spec_ids, "File"].to_list()
