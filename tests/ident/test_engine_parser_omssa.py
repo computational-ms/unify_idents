@@ -90,17 +90,17 @@ def test_engine_parsers_omssa_check_dataframe_integrity():
         },
     )
     df = parser.unify()
-    assert pytest.approx(df["uCalc m/z"].mean()) == 826.67596
-    assert (df["Raw data location"] == "path/for/glory.mzML").all()
-    assert pytest.approx(df["Exp m/z"].mean()) == 826.7788
+    assert pytest.approx(df["ucalc_mz"].mean()) == 826.67596
+    assert (df["raw_data_location"] == "path/for/glory.mzML").all()
+    assert pytest.approx(df["exp_mz"].mean()) == 826.7788
 
-    assert df["Modifications"].str.contains("Acetyl:0").sum() == 5
-    assert df["Modifications"].str.contains("Oxidation:").sum() == 93
+    assert df["modifications"].str.contains("Acetyl:0").sum() == 5
+    assert df["modifications"].str.contains("Oxidation:").sum() == 93
     assert (
-        df["Modifications"].str.count("Carbamidomethyl:")
-        == df["Sequence"].str.count("C")
+        df["modifications"].str.count("Carbamidomethyl:")
+        == df["sequence"].str.count("C")
     ).all()
-    assert df["Modifications"].str.count(":").sum() == 204
+    assert df["modifications"].str.count(":").sum() == 204
 
 
 def test_replace_mod_strings():

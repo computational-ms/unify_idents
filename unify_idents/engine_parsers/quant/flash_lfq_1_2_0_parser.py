@@ -77,20 +77,20 @@ class FlashLFQ_1_2_0_Parser(QuantBaseParser):
         # raise NotImplementedError
         # do column conversion here
         # breakpoint()
-        self.df["Spectrum ID"] = -1
-        self.df["Linked Spectrum ID"] = -1
-        self.df["Raw Quant Value"] = -1
-        self.df["FWHM"] = ""
-        self.df["Label"] = "LabelFree"
-        self.df["Condition"] = self.df["Raw Filename"]
-        self.df["Raw Filename"] = self.df["Raw Filename"].map(
-            lambda x: Path(self.params.get("Raw data location", "")) / Path(x).stem
+        self.df["spectrum_id"] = -1
+        self.df["linked_spectrum_id"] = -1
+        self.df["raw_quant_value"] = -1
+        self.df["fwhm"] = ""
+        self.df["label"] = "LabelFree"
+        self.df["condition"] = self.df["raw_filename"]
+        self.df["raw_filename"] = self.df["raw_filename"].map(
+            lambda x: Path(self.params.get("raw_data_location", "")) / Path(x).stem
         )
-        self.df["Quant Group"] = ""
-        self.df["Score"] = ""
-        self.df["Processing Level"] = "ChromatographicPeak"
-        self.df["Quant Run ID"] = "FlashLFQ"
-        self.df["Coalescence"] = ""
+        self.df["quant_group"] = ""
+        self.df["score"] = ""
+        self.df["processing_level"] = "ChromatographicPeak"
+        self.df["quant_run_id"] = "FlashLFQ"
+        self.df["coalescence"] = ""
         self.process_unify_style()
         return self.df
 

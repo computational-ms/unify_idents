@@ -32,11 +32,11 @@ def _get_single_spec_df(reference_dict, spectrum):
     spec_level_dict = reference_dict.copy()
     query, spec_level_info = spectrum[:2]
 
-    spec_level_dict["Spectrum Title"] = re.search(
+    spec_level_dict["spectrum_title"] = re.search(
         r"(?<=title=)(.+)", spec_level_info
     ).group()
-    spec_level_dict["Charge"] = re.search(r"(?<=charge=)(\d+)", spec_level_info).group()
-    spec_level_dict["Spectrum ID"] = re.search(
+    spec_level_dict["charge"] = re.search(r"(?<=charge=)(\d+)", spec_level_info).group()
+    spec_level_dict["spectrum_id"] = re.search(
         r"(?<=scans=)(\d+)", spec_level_info
     ).group()
 
@@ -44,11 +44,11 @@ def _get_single_spec_df(reference_dict, spectrum):
     for psm in spectrum[2]:
         psm_level_dict = spec_level_dict.copy()
         psm_level_info = re.search(mascot_custom_psm_regex, psm).groupdict()
-        psm_level_dict["Exp m/z"] = psm_level_info["exp_mass"]
-        psm_level_dict["Mascot:Num Matched Ions"] = psm_level_info["n_matched_ions"]
-        psm_level_dict["Sequence"] = psm_level_info["seq"]
-        psm_level_dict["Modifications"] = psm_level_info["opt_mod_string"]
-        psm_level_dict["Mascot:Score"] = psm_level_info["score"]
+        psm_level_dict["exp_mz"] = psm_level_info["exp_mass"]
+        psm_level_dict["mascot:num_matched_ions"] = psm_level_info["n_matched_ions"]
+        psm_level_dict["sequence"] = psm_level_info["seq"]
+        psm_level_dict["modifications"] = psm_level_info["opt_mod_string"]
+        psm_level_dict["mascot:score"] = psm_level_info["score"]
         psm_level_dict["subst"] = psm_level_info["subst"]
 
         spec_records.append(psm_level_dict)
@@ -79,10 +79,10 @@ class Mascot_2_6_2_Parser(IdentBaseParser):
             ),
         }
 
-        self.reference_dict["Search Engine"] = "mascot_" + re.search(
+        self.reference_dict["search_engine"] = "mascot_" + re.search(
             r"(?<=version=).*", self.section_data["header"]
         ).group().replace(".", "_")
-        self.reference_dict["Mascot:Score"] = None
+        self.reference_dict["mascot:score"] = None
 
     @classmethod
     def check_parser_compatibility(cls, file):
@@ -179,7 +179,7 @@ class Mascot_2_6_2_Parser(IdentBaseParser):
         fix_mods = None
         for name, aa in self.mods["fix"].items():
             fm_strings = (
-                self.df["Sequence"]
+                self.df["sequence"]
                 .str.split(aa)
                 .apply(
                     lambda l: ";".join(
@@ -197,10 +197,10 @@ class Mascot_2_6_2_Parser(IdentBaseParser):
             else:
                 fix_mods = fix_mods + ";" + fm_strings + ";"
 
-        self.df.loc[:, "Modifications"] = (
-            self.df["Modifications"].apply(self._translate_opt_mods).to_list()
+        self.df.loc[:, "modifications"] = (
+            self.df["modifications"].apply(self._translate_opt_mods).to_list()
         )
-        self.df.loc[:, "Modifications"] += fix_mods
+        self.df.loc[:, "modifications"] += fix_mods
 
         # Add substitutions
         if self.df["subst"].str.match(r"(\d+,\w,\w)").any():
@@ -213,7 +213,7 @@ class Mascot_2_6_2_Parser(IdentBaseParser):
                 + "):"
                 + subst_df[0].str.split(",").str[0]
             ).fillna("")
-            self.df.loc[:, "Modifications"] += subst_df
+            self.df.loc[:, "modifications"] += subst_df
 
         self.df.drop(columns="subst", inplace=True)
 
@@ -241,13 +241,13 @@ class Mascot_2_6_2_Parser(IdentBaseParser):
         logger.remove()
         logger.add(sys.stdout)
         self.df = pd.concat(chunk_dfs, axis=0, ignore_index=True)
-        self.df.loc[:, "Spectrum Title"] = (
-            self.df["Spectrum Title"]
+        self.df.loc[:, "spectrum_title"] = (
+            self.df["spectrum_title"]
             .str.replace("%2e", ".", regex=False)
             .str.replace(".mzML", "", regex=False)
         )
-        self.df.loc[:, "Calc m/z"] = self._calc_mz(
-            mass=self.df["Exp m/z"], charge=self.df["Charge"]
+        self.df.loc[:, "calc_mz"] = self._calc_mz(
+            mass=self.df["exp_mz"], charge=self.df["charge"]
         )
         self._format_mods()
         self.process_unify_style()

@@ -27,7 +27,7 @@ def _get_single_spec_df(reference_dict, mapping_dict, spectrum):
     """
     spec_records = []
     spec_level_dict = reference_dict.copy()
-    spec_level_dict["Spectrum ID"] = spectrum.attrib["spectrumID"].split("scan=")[-1]
+    spec_level_dict["spectrum_id"] = spectrum.attrib["spectrumID"].split("scan=")[-1]
 
     # Iterate children
     for psm in spectrum.findall(".//{*}SpectrumIdentificationItem"):
@@ -63,7 +63,7 @@ class Comet_2020_01_4_Parser(IdentBaseParser):
 
         tree = ETree.parse(self.input_file)
         self.root = tree.getroot()
-        self.reference_dict["Search Engine"] = "comet_" + "_".join(
+        self.reference_dict["search_engine"] = "comet_" + "_".join(
             re.findall(
                 r"([/d]*\d+)",
                 self.root.find(".//{*}AnalysisSoftware").attrib["version"],
@@ -118,7 +118,7 @@ class Comet_2020_01_4_Parser(IdentBaseParser):
             fixed_mod_strings = []
             for fm_res, fm_name in fixed_mods.items():
                 fixed_mod_strings.append(
-                    self.df["Sequence"]
+                    self.df["sequence"]
                     .str.split(fm_res)
                     .apply(
                         lambda l: ";".join(
@@ -147,20 +147,20 @@ class Comet_2020_01_4_Parser(IdentBaseParser):
         lookup = {}
         for pep in self.root.findall(".//{*}Peptide"):
             id = pep.attrib.get("id", "")
-            lookup[id] = {"Modifications": []}
-            lookup[id]["Sequence"] = pep.find(".//{*}PeptideSequence").text
+            lookup[id] = {"modifications": []}
+            lookup[id]["sequence"] = pep.find(".//{*}PeptideSequence").text
             for child in pep.findall(".//{*}Modification"):
-                lookup[id]["Modifications"].append(
+                lookup[id]["modifications"].append(
                     f"{modification_mass_map[child.attrib['monoisotopicMassDelta']]}:{child.attrib['location']}"
                 )
-            lookup[id]["Modifications"] = ";".join(lookup[id]["Modifications"])
+            lookup[id]["modifications"] = ";".join(lookup[id]["modifications"])
 
         # TODO: check mod left strip
-        seq_mods = pd.DataFrame(self.df["Sequence"].map(lookup).to_list())
-        self.df.loc[:, "Modifications"] = (
-            seq_mods["Modifications"].str.cat(fixed_mod_strings, sep=";").str.strip(";")
+        seq_mods = pd.DataFrame(self.df["sequence"].map(lookup).to_list())
+        self.df.loc[:, "modifications"] = (
+            seq_mods["modifications"].str.cat(fixed_mod_strings, sep=";").str.strip(";")
         )
-        self.df.loc[:, "Sequence"] = seq_mods["Sequence"]
+        self.df.loc[:, "sequence"] = seq_mods["sequence"]
 
     def unify(self):
         """

@@ -98,18 +98,18 @@ def test_engine_parsers_xtandem_check_dataframe_integrity():
     )
     df = parser.unify()
     assert len(parser.root) == 79
-    assert pytest.approx(df["uCalc m/z"].mean(), 457.85944)
-    assert (df["Raw data location"] == "path/for/glory.mzML").all()
-    assert pytest.approx(df["uCalc m/z"].mean()) == 796.4324
-    assert pytest.approx(df["Exp m/z"].mean()) == 796.71967
+    assert pytest.approx(df["ucalc_mz"].mean(), 457.85944)
+    assert (df["raw_data_location"] == "path/for/glory.mzML").all()
+    assert pytest.approx(df["ucalc_mz"].mean()) == 796.4324
+    assert pytest.approx(df["exp_mz"].mean()) == 796.71967
 
-    assert df["Modifications"].str.contains("Acetyl:0").sum() == 1
-    assert df["Modifications"].str.contains("Oxidation:").sum() == 23
+    assert df["modifications"].str.contains("Acetyl:0").sum() == 1
+    assert df["modifications"].str.contains("Oxidation:").sum() == 23
     assert (
-        df["Modifications"].str.count("Carbamidomethyl:")
-        == df["Sequence"].str.count("C")
+        df["modifications"].str.count("Carbamidomethyl:")
+        == df["sequence"].str.count("C")
     ).all()
-    assert df["Modifications"].str.count(":").sum() == 50
+    assert df["modifications"].str.count(":").sum() == 50
 
 
 def test_get_single_spec_df():
@@ -118,34 +118,34 @@ def test_get_single_spec_df():
     )
     element = ETree.parse(input_file).getroot()[0]
     ref_dict = {
-        "Exp m/z": None,
-        "Calc m/z": None,
-        "Spectrum Title": None,
-        "Raw data location": "path/for/glory.mgf",
-        "Search Engine": "xtandem_alanine",
-        "Spectrum ID": None,
-        "Modifications": None,
-        "Retention Time (s)": None,
-        "X!Tandem:delta": None,
-        "X!Tandem:nextscore": None,
-        "X!Tandem:y_score": None,
-        "X!Tandem:y_ions": None,
-        "X!Tandem:b_score": None,
-        "X!Tandem:b_ions": None,
-        "Sequence": None,
-        "Charge": None,
-        "X!Tandem:Hyperscore": None,
+        "exp_mz": None,
+        "calc_mz": None,
+        "spectrum_title": None,
+        "raw_data_location": "path/for/glory.mgf",
+        "search_engine": "xtandem_alanine",
+        "spectrum_id": None,
+        "modifications": None,
+        "retention_time_seconds": None,
+        "x!tandem:delta": None,
+        "x!tandem:nextscore": None,
+        "x!tandem:y_score": None,
+        "x!tandem:y_ions": None,
+        "x!tandem:b_score": None,
+        "x!tandem:b_ions": None,
+        "sequence": None,
+        "charge": None,
+        "x!tandem:hyperscore": None,
     }
     mapping_dict = {
-        "delta": "X!Tandem:delta",
-        "nextscore": "X!Tandem:nextscore",
-        "y_score": "X!Tandem:y_score",
-        "y_ions": "X!Tandem:y_ions",
-        "b_score": "X!Tandem:b_score",
-        "b_ions": "X!Tandem:b_ions",
-        "seq": "Sequence",
-        "z": "Charge",
-        "hyperscore": "X!Tandem:Hyperscore",
+        "delta": "x!tandem:delta",
+        "nextscore": "x!tandem:nextscore",
+        "y_score": "x!tandem:y_score",
+        "y_ions": "x!tandem:y_ions",
+        "b_score": "x!tandem:b_score",
+        "b_ions": "x!tandem:b_ions",
+        "seq": "sequence",
+        "z": "charge",
+        "hyperscore": "x!tandem:hyperscore",
     }
 
     result = _get_single_spec_df(ref_dict, mapping_dict, element)
@@ -211,13 +211,13 @@ def test_engine_parsers_xtandem_nterminal_mod():
                     "name": "Acetyl",
                 },
             ],
-            "Raw file location": "test_Creinhardtii_QE_pH11.mzML",
+            "raw_file_location": "test_Creinhardtii_QE_pH11.mzML",
             "15N": False,
         },
     )
     df = parser.unify()
-    relevant_row = df[df["Sequence"] == "WGLVSSELQTSEAETPGLK"]
-    assert relevant_row["Modifications"].tolist() == ["Acetyl:0"]
+    relevant_row = df[df["sequence"] == "WGLVSSELQTSEAETPGLK"]
+    assert relevant_row["modifications"].tolist() == ["Acetyl:0"]
 
 
 def test_engine_parsers_xtandem_multiple_psms():
@@ -251,7 +251,7 @@ def test_engine_parsers_xtandem_multiple_psms():
                     "name": "Acetyl",
                 },
             ],
-            "Raw file location": "test_Creinhardtii_QE_pH11.mzML",
+            "raw_file_location": "test_Creinhardtii_QE_pH11.mzML",
             "15N": False,
         },
     )
@@ -263,14 +263,14 @@ def test_engine_parsers_xtandem_multiple_psms():
     df = parser.unify()
     assert len(df) == 4
 
-    assert set(df["Sequence"]) == {
+    assert set(df["sequence"]) == {
         "ITIPITLRMLIAK",
         "SMMNGGSSPESDVGTDNK",
         "SMMNGGSSPESDVGTDNK",
         "SMMNGGSSPESDVGTDNK",
     }
-    assert set(df["Spectrum ID"]) == {12833, 14525}
-    assert set(df["Modifications"]) == {
+    assert set(df["spectrum_id"]) == {12833, 14525}
+    assert set(df["modifications"]) == {
         "Acetyl:0",
         "",
         "Oxidation:2",
@@ -309,8 +309,8 @@ def test_engine_parsers_xtandem_map_mod_names():
             ],
         },
     )
-    test_df = pd.DataFrame({"Modifications": [["57.021464:0"]], "Sequence": ["CERK"]})
-    assert parser.map_mod_names(test_df)["Modifications"][0] == "Carbamidomethyl:1"
+    test_df = pd.DataFrame({"modifications": [["57.021464:0"]], "sequence": ["CERK"]})
+    assert parser.map_mod_names(test_df)["modifications"][0] == "Carbamidomethyl:1"
 
 
 def test_engine_parsers_xtandem_map_mod_names_nterm():
@@ -346,9 +346,9 @@ def test_engine_parsers_xtandem_map_mod_names_nterm():
     )
 
     row = pd.DataFrame(
-        {"Modifications": [["57.021464:0", "42.010565:0"]], "Sequence": ["CERK"]}
+        {"modifications": [["57.021464:0", "42.010565:0"]], "sequence": ["CERK"]}
     )
-    assert set(parser.map_mod_names(row)["Modifications"][0].split(";")) == {
+    assert set(parser.map_mod_names(row)["modifications"][0].split(";")) == {
         "Carbamidomethyl:1",
         "Acetyl:0",
     }

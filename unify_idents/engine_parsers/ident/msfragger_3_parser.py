@@ -33,8 +33,8 @@ class MSFragger_3_Parser(IdentBaseParser):
         }
         self.df.rename(columns=self.mapping_dict, inplace=True)
         self.df.columns = self.df.columns.str.lstrip(" ")
-        if not "Modifications" in self.df.columns:
-            self.df["Modifications"] = ""
+        if not "modifications" in self.df.columns:
+            self.df["modifications"] = ""
         self.reference_dict.update({k: None for k in self.mapping_dict.values()})
 
     @classmethod
@@ -118,7 +118,7 @@ class MSFragger_3_Parser(IdentBaseParser):
         Returns:
             (pd.Series): column with formatted mod strings
         """
-        mod_split_col = self.df["Modifications"].fillna("").str.split(", ")
+        mod_split_col = self.df["modifications"].fillna("").str.split(", ")
         unique_mods = set().union(*mod_split_col.apply(set)).difference({""})
         unique_mod_masses = {re.search(r"\(([^)]+)", m).group(1) for m in unique_mods}
         # Map single mods
@@ -181,18 +181,18 @@ class MSFragger_3_Parser(IdentBaseParser):
         Returns:
             self.df (pd.DataFrame): unified dataframe
         """
-        self.df["Search Engine"] = "msfragger_3_0"
-        self.df["Exp m/z"] = self._calc_mz(
-            mass=self.df["MSFragger:Precursor neutral mass (Da)"],
-            charge=self.df["Charge"],
+        self.df["search_engine"] = "msfragger_3_0"
+        self.df["exp_mz"] = self._calc_mz(
+            mass=self.df["msfragger:precursor_neutral_mass_da"],
+            charge=self.df["charge"],
         )
-        self.df["Calc m/z"] = self._calc_mz(
-            mass=self.df["MSFragger:Neutral mass of peptide"],
-            charge=self.df["Charge"],
+        self.df["calc_mz"] = self._calc_mz(
+            mass=self.df["msfragger:neutral_mass_of_peptide"],
+            charge=self.df["charge"],
         )
-        self.df["Modifications"] = self.translate_mods()
+        self.df["modifications"] = self.translate_mods()
         self.df = self.df.loc[
-            ~self.df["Modifications"].str.contains("NON_MAPPABLE", regex=False), :
+            ~self.df["modifications"].str.contains("NON_MAPPABLE", regex=False), :
         ]
         self.process_unify_style()
 
