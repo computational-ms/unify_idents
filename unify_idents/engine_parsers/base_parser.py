@@ -87,39 +87,39 @@ class IdentBaseParser(BaseParser):
         )
         self.mod_dict = self._create_mod_dicts()
         self.reference_dict = {
-            "Exp m/z": None,
-            "Calc m/z": None,
-            "Spectrum Title": None,
-            "Search Engine": None,
-            "Spectrum ID": None,
-            "Modifications": None,
-            "Retention Time (s)": None,
+            "exp_mz": None,
+            "calc_mz": None,
+            "spectrum_title": None,
+            "search_engine": None,
+            "spectrum_id": None,
+            "modifications": None,
+            "retention_time_seconds": None,
         }
         self.dtype_mapping = {
-            "Spectrum Title": "str",
-            "Raw data location": "str",
-            "Spectrum ID": "int32",
-            "Sequence": "str",
-            "Modifications": "str",
-            "Charge": "int32",
-            "Is decoy": "bool",
-            "Rank": "int32",
-            "Protein ID": "str",
-            "Retention Time (s)": "float32",
-            "Exp m/z": "float32",
-            "Calc m/z": "float32",
-            "uCalc m/z": "float32",
-            "uCalc Mass": "float32",
-            "Accuracy (ppm)": "float32",
-            "Chemical Composition": "str",
-            "Sequence Start": "str",
-            "Sequence Stop": "str",
-            "Sequence Pre AA": "str",
-            "Sequence Post AA": "str",
-            "enzN": "str",
-            "enzC": "str",
-            "Missed Cleavages": "int32",
-            "Search Engine": "str",
+            "spectrum_title": "str",
+            "raw_data_location": "str",
+            "spectrum_id": "int32",
+            "sequence": "str",
+            "modifications": "str",
+            "charge": "int32",
+            "is_decoy": "bool",
+            "rank": "int32",
+            "protein_id": "str",
+            "retention_time_s": "float32",
+            "exp_mz": "float32",
+            "calc_mz": "float32",
+            "ucalc_mz": "float32",
+            "ucalc_mass": "float32",
+            "accuracy_ppm": "float32",
+            "chemical_composition": "str",
+            "sequence_start": "str",
+            "sequence_stop": "str",
+            "sequence_pre_aa": "str",
+            "sequence_post_aa": "str",
+            "enzn": "str",
+            "enzc": "str",
+            "missed_cleavages": "int32",
+            "search_engine": "str",
         }
         self.col_order = pd.Series(self.dtype_mapping.keys())
 
@@ -170,8 +170,8 @@ class IdentBaseParser(BaseParser):
         Operations are performed inplace on self.df
         """
         # Ensure same order of modifications
-        self.df.loc[:, "Modifications"] = (
-            self.df["Modifications"]
+        self.df.loc[:, "modifications"] = (
+            self.df["modifications"]
             .fillna("")
             .str.split(";")
             .apply(sorted, key=lambda x: x.split(":")[::-1])
@@ -179,13 +179,13 @@ class IdentBaseParser(BaseParser):
         )
 
         # Remove any trailing or leading delimiters or only-delimiter modstrings
-        self.df.loc[:, "Modifications"] = self.df.loc[:, "Modifications"].str.replace(
+        self.df.loc[:, "modifications"] = self.df.loc[:, "modifications"].str.replace(
             r"^;+(?=\w)", "", regex=True
         )
-        self.df.loc[:, "Modifications"] = self.df.loc[:, "Modifications"].str.replace(
+        self.df.loc[:, "modifications"] = self.df.loc[:, "modifications"].str.replace(
             r"(?<=\w);+$", "", regex=True
         )
-        self.df.loc[:, "Modifications"] = self.df.loc[:, "Modifications"].str.replace(
+        self.df.loc[:, "modifications"] = self.df.loc[:, "modifications"].str.replace(
             r"^;+$", "", regex=True
         )
 
@@ -195,16 +195,16 @@ class IdentBaseParser(BaseParser):
         Non-IUPAC designations are dropped.
         Operations are performed inplace.
         """
-        self.df["Sequence"] = self.df["Sequence"].str.upper()
+        self.df["sequence"] = self.df["sequence"].str.upper()
         # Added X for missing AAs
         iupac_aas = set("ACDEFGHIKLMNPQRSTVWY")
-        iupac_conform_seqs = self.df["Sequence"].apply(
+        iupac_conform_seqs = self.df["sequence"].apply(
             lambda seq: set(seq).issubset(iupac_aas)
         )
         if any(~iupac_conform_seqs):
             self.df = self.df.loc[iupac_conform_seqs, :]
             logger.warning(
-                f"Sequences are not IUPAC conform. {(~iupac_conform_seqs).sum()} PSMs were dropped."
+                f"sequences are not IUPAC conform. {(~iupac_conform_seqs).sum()} PSMs were dropped."
             )
 
     def add_protein_ids(self):
@@ -213,19 +213,19 @@ class IdentBaseParser(BaseParser):
         Operations are performed inplace on self.df
         """
         peptide_mapper = UPeptideMapper(self.params["database"])
-        mapped_peptides = peptide_mapper.map_peptides(self.df["Sequence"].tolist())
+        mapped_peptides = peptide_mapper.map_peptides(self.df["sequence"].tolist())
 
         peptide_mappings = [
             merge_and_join_dicts(mapped_peptides[seq], self.DELIMITER)
-            for seq in self.df["Sequence"]
+            for seq in self.df["sequence"]
         ]
 
         columns_translations = {
-            "start": "Sequence Start",
-            "end": "Sequence Stop",
-            "post": "Sequence Post AA",
-            "id": "Protein ID",
-            "pre": "Sequence Pre AA",
+            "start": "sequence_start",
+            "end": "sequence_stop",
+            "post": "sequence_post_aa",
+            "id": "protein_id",
+            "pre": "sequence_pre_aa",
         }
         new_columns = pd.DataFrame(peptide_mappings)
         new_columns.rename(columns=columns_translations, inplace=True)
@@ -242,8 +242,8 @@ class IdentBaseParser(BaseParser):
         Operations are performed inplace.
         """
         if self.translated_params["enzyme"]["original_value"] == "nonspecific":
-            self.df.loc[:, ["enzN", "enzC"]] = True
-            self.df.loc[:, "Missed Cleavages"] = 0
+            self.df.loc[:, ["enzn", "enzc"]] = True
+            self.df.loc[:, "missed_cleavages"] = 0
             return None
 
         enzyme_pattern = self.translated_params["enzyme"]["translated_value"]
@@ -254,15 +254,15 @@ class IdentBaseParser(BaseParser):
         pren_seq = (
             pd.concat(
                 [
-                    self.df["Sequence Pre AA"].str.split(rf"{self.DELIMITER}"),
-                    self.df["Sequence"].str[:1],
+                    self.df["sequence_pre_aa"].str.split(rf"{self.DELIMITER}"),
+                    self.df["sequence"].str[:1],
                 ],
                 axis=1,
             )
-            .explode("Sequence Pre AA")
+            .explode("sequence_pre_aa")
             .sum(axis=1)
         )
-        self.df.loc[:, "enzN"] = (
+        self.df.loc[:, "enzn"] = (
             pren_seq.str.split(rf"{enzyme_pattern}").str[0].str.len() == 1
         ).groupby(pren_seq.index).agg(integrity_strictness) | (
             pren_seq.str[0] == "-"
@@ -274,15 +274,15 @@ class IdentBaseParser(BaseParser):
         postc_seq = (
             pd.concat(
                 [
-                    self.df["Sequence"].str[-1:],
-                    self.df["Sequence Post AA"].str.split("<\\|>"),
+                    self.df["sequence"].str[-1:],
+                    self.df["sequence_post_aa"].str.split("<\\|>"),
                 ],
                 axis=1,
             )
-            .explode("Sequence Post AA")
+            .explode("sequence_post_aa")
             .sum(axis=1)
         )
-        self.df.loc[:, "enzC"] = (
+        self.df.loc[:, "enzc"] = (
             postc_seq.str.split(rf"{enzyme_pattern}").str[0].str.len() == 1
         ).groupby(postc_seq.index).agg(integrity_strictness) | (
             postc_seq.str[-1] == "-"
@@ -292,8 +292,8 @@ class IdentBaseParser(BaseParser):
             integrity_strictness
         )
 
-        internal_cuts = self.df["Sequence"].str.split(rf"{enzyme_pattern}")
-        self.df.loc[:, "Missed Cleavages"] = (
+        internal_cuts = self.df["sequence"].str.split(rf"{enzyme_pattern}")
+        self.df.loc[:, "missed_cleavages"] = (
             internal_cuts.apply(len)
             - internal_cuts.apply(lambda row: "" in row).astype(int)
             - 1
@@ -308,16 +308,16 @@ class IdentBaseParser(BaseParser):
         with mp.Pool(self.params.get("cpus", mp.cpu_count() - 1)) as pool:
             cc_masses_and_comp = pool.starmap(
                 get_mass_and_composition,
-                zip(self.df["Sequence"].values, self.df["Modifications"].values),
+                zip(self.df["sequence"].values, self.df["modifications"].values),
                 chunksize=1,
             )
-        self.df.loc[:, ["uCalc Mass", "Chemical Composition"]] = cc_masses_and_comp
-        self.df.loc[:, "uCalc m/z"] = self._calc_mz(
-            mass=self.df["uCalc Mass"], charge=self.df["Charge"]
+        self.df.loc[:, ["ucalc_mass", "chemical_composition"]] = cc_masses_and_comp
+        self.df.loc[:, "ucalc_mz"] = self._calc_mz(
+            mass=self.df["ucalc_mass"], charge=self.df["charge"]
         )
-        self.df.loc[:, "Accuracy (ppm)"] = (
-            (self.df["Exp m/z"].astype(float) - self.df["uCalc m/z"])
-            / self.df["uCalc m/z"]
+        self.df.loc[:, "accuracy_ppm"] = (
+            (self.df["exp_mz"].astype(float) - self.df["ucalc_mz"])
+            / self.df["ucalc_mz"]
             * 1e6
         )
 
@@ -328,8 +328,8 @@ class IdentBaseParser(BaseParser):
             rt_lookup (pd.DataFrame): loaded rt_pickle_file indexable by Spectrum ID
         """
         rt_lookup = pd.read_csv(self.params["rt_pickle_name"], compression="infer")
-        rt_lookup.set_index("Spectrum ID", inplace=True)
-        rt_lookup["Unit"] = rt_lookup["Unit"].replace({"second": 1, "minute": 60})
+        rt_lookup.set_index("spectrum_id", inplace=True)
+        rt_lookup["unit"] = rt_lookup["unit"].replace({"second": 1, "minute": 60})
         return rt_lookup
 
     def get_meta_info(self):
@@ -340,23 +340,20 @@ class IdentBaseParser(BaseParser):
         Operations are performed inplace on self.df
         """
         rt_lookup = self._read_meta_info_lookup_file()
-        spec_ids = self.df["Spectrum ID"].astype(int)
-        self.df["Retention Time (s)"] = (
-            rt_lookup.loc[spec_ids, ["RT", "Unit"]]
-            .astype(float)
-            .product(axis=1)
-            .to_list()
+        spec_ids = self.df["spectrum_id"].astype(int)
+        self.df["retention_time_seconds"] = (
+            rt_lookup.loc[spec_ids, ["rt", "unit"]].product(axis=1).to_list()
         )
-        self.df["Exp m/z"] = rt_lookup.loc[spec_ids, "Precursor mz"].to_list()
-        self.df["Raw data location"] = rt_lookup.loc[spec_ids, "File"].to_list()
-        self.df.loc[:, "Spectrum Title"] = (
-            self.df["Raw data location"]
+        self.df["exp_mz"] = rt_lookup.loc[spec_ids, "precursor_mz"].to_list()
+        self.df["raw_data_location"] = rt_lookup.loc[spec_ids, "file"].to_list()
+        self.df.loc[:, "spectrum_title"] = (
+            self.df["raw_data_location"]
             + "."
-            + self.df["Spectrum ID"].astype(str)
+            + self.df["spectrum_id"].astype(str)
             + "."
-            + self.df["Spectrum ID"].astype(str)
+            + self.df["spectrum_id"].astype(str)
             + "."
-            + self.df["Charge"].astype(str)
+            + self.df["charge"].astype(str)
         )
 
     def add_ranks(self):
@@ -364,7 +361,7 @@ class IdentBaseParser(BaseParser):
 
         Operations are performed inplace on self.df
         """
-        eng_name = self.df["Search Engine"].unique()[0]
+        eng_name = self.df["search_engine"].unique()[0]
         score_col = self.translated_params["validation_score_field"][
             "translated_value"
         ][eng_name]
@@ -372,10 +369,9 @@ class IdentBaseParser(BaseParser):
             "translated_value"
         ][eng_name]
         ranking_needs_to_be_ascending = False if top_is_highest is True else True
-
         self.df.loc[:, score_col] = self.df[score_col].astype(float)
-        self.df.loc[:, "Rank"] = (
-            self.df.groupby("Spectrum ID")[score_col]
+        self.df.loc[:, "rank"] = (
+            self.df.groupby("spectrum_id")[score_col]
             .rank(ascending=ranking_needs_to_be_ascending, method="min")
             .astype(int)
         )
@@ -386,7 +382,7 @@ class IdentBaseParser(BaseParser):
         Operations are performed inplace on self.df
         """
         decoy_tag = self.params.get("decoy_tag", "decoy_")
-        self.df.loc[:, "Is decoy"] = self.df["Protein ID"].str.contains(decoy_tag)
+        self.df.loc[:, "is_decoy"] = self.df["protein_id"].str.contains(decoy_tag)
 
     def sanitize(self):
         """Perform dataframe sanitation steps.
@@ -396,8 +392,8 @@ class IdentBaseParser(BaseParser):
         - Columns in the dataframe which could not be properly mapped are removed (warning is raised)
         Operations are performed inplace on self.df
         """
-        missing_data_locs = ~(self.df["Raw data location"].str.len() > 0)
-        self.df.loc[missing_data_locs, "Raw data location"] = ""
+        missing_data_locs = ~(self.df["raw_data_location"].str.len() > 0)
+        self.df.loc[missing_data_locs, "raw_data_location"] = ""
 
         # Set missing columns to None and reorder columns in standardized manner
         new_cols = self.col_order[~self.col_order.isin(self.df.columns)].to_list()

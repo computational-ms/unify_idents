@@ -19,12 +19,12 @@ def test_base_parser_read_rt_lookup_file():
 
     bp = IdentBaseParser(input_file, params={"rt_pickle_name": rt_lookup_path})
     rt_lookup = bp._read_meta_info_lookup_file()
-    assert (rt_lookup["Unit"] == 1).all()
+    assert (rt_lookup["unit"] == 1).all()
     assert pytest.approx(
-        rt_lookup["Precursor mz"].mean(), 550.8444810049874
+        rt_lookup["precursor_mz"].mean(), 550.8444810049874
     )  # check consistency
-    assert pytest.approx(rt_lookup.loc[2450, "Precursor mz"], 618.2697)
-    assert pytest.approx(rt_lookup.loc[2450, "RT"], 92067.714)
+    assert pytest.approx(rt_lookup.loc[2450, "precursor_mz"], 618.2697)
+    assert pytest.approx(rt_lookup.loc[2450, "rt"], 92067.714)
 
 
 def test_engine_parsers_IdentBaseParser_init():
@@ -84,13 +84,13 @@ def test_engine_parsers_IdentBase_Parser_sanitize():
         columns=obj.col_order.to_list()
         + ["Engine:C", "Engine:B", "Engine:A", "This should not exist"],
     )
-    obj.df["Raw data location"] = "test.mgf"
-    obj.df["Spectrum Title"] = "spec_title.this_should_go"
-    obj.df.loc[3, "Raw data location"] = None
-    obj.df["Modifications"] = "ZZ:1;AA:8"
+    obj.df["raw_data_location"] = "test.mgf"
+    obj.df["spectrum_title"] = "spec_title.this_should_go"
+    obj.df.loc[3, "raw_data_location"] = None
+    obj.df["modifications"] = "ZZ:1;AA:8"
     obj.sanitize()
-    assert obj.df.loc[3, "Raw data location"] == ""
-    assert (obj.df["Modifications"] == "ZZ:1;AA:8").all()
+    assert obj.df.loc[3, "raw_data_location"] == ""
+    assert (obj.df["modifications"] == "ZZ:1;AA:8").all()
     assert obj.df.columns.to_list() == obj.col_order.to_list() + [
         "Engine:A",
         "Engine:B",
@@ -102,24 +102,24 @@ def test_add_ranks_increasing_engine_scores_better():
     obj = IdentBaseParser(input_file=None, params=None)
     obj.df = pd.DataFrame(
         np.ones((5, len(obj.col_order) + 1)),
-        columns=obj.col_order.to_list() + ["MSFragger:Hyperscore"],
+        columns=obj.col_order.to_list() + ["msfragger:hyperscore"],
     )
-    obj.df["MSFragger:Hyperscore"] = [5, 2, 1, 3, 3]
-    obj.df["Search Engine"] = "msfragger_3_0"
+    obj.df["msfragger:hyperscore"] = [5, 2, 1, 3, 3]
+    obj.df["search_engine"] = "msfragger_3_0"
     obj.add_ranks()
-    assert obj.df["Rank"].to_list() == [1, 4, 5, 2, 2]
+    assert obj.df["rank"].to_list() == [1, 4, 5, 2, 2]
 
 
 def test_add_ranks_decreasing_engine_scores_better():
     obj = IdentBaseParser(input_file=None, params=None)
     obj.df = pd.DataFrame(
         np.ones((5, len(obj.col_order) + 1)),
-        columns=obj.col_order.to_list() + ["MSFragger:Hyperscore"],
+        columns=obj.col_order.to_list() + ["msfragger:hyperscore"],
     )
-    obj.df["MS-GF:SpecEValue"] = [5, 2, 1, 3, 3]
-    obj.df["Search Engine"] = "msgfplus_2021_03_22"
+    obj.df["ms-gf:spec_evalue"] = [5, 2, 1, 3, 3]
+    obj.df["search_engine"] = "msgfplus_2021_03_22"
     obj.add_ranks()
-    assert obj.df["Rank"].to_list() == [5, 2, 1, 3, 3]
+    assert obj.df["rank"].to_list() == [5, 2, 1, 3, 3]
 
 
 def test_add_protein_ids():
@@ -132,26 +132,26 @@ def test_add_protein_ids():
     )
     obj.df = pd.DataFrame(
         np.ones((1, 1)),
-        columns=["MSFragger:Hyperscore"],
+        columns=["msfragger:hyperscore"],
     )
-    obj.df.loc[0, "Sequence"] = "SAVVGTFFR"
+    obj.df.loc[0, "sequence"] = "SAVVGTFFR"
     obj.add_protein_ids()
 
     assert set(obj.df.columns) == {
-        "Sequence Stop",
-        "Sequence",
-        "Protein ID",
-        "Sequence Post AA",
-        "Sequence Pre AA",
-        "Sequence Start",
-        "MSFragger:Hyperscore",
+        "sequence_stop",
+        "sequence",
+        "protein_id",
+        "sequence_post_aa",
+        "sequence_pre_aa",
+        "sequence_start",
+        "msfragger:hyperscore",
     }
-    assert obj.df.loc[0, "Sequence Start"] == "287"
-    assert obj.df.loc[0, "Sequence Stop"] == "295"
-    assert obj.df.loc[0, "Sequence Pre AA"] == "R"
-    assert obj.df.loc[0, "Sequence Post AA"] == "D"
+    assert obj.df.loc[0, "sequence_start"] == "287"
+    assert obj.df.loc[0, "sequence_stop"] == "295"
+    assert obj.df.loc[0, "sequence_pre_aa"] == "R"
+    assert obj.df.loc[0, "sequence_post_aa"] == "D"
     assert (
-        obj.df.loc[0, "Protein ID"]
+        obj.df.loc[0, "protein_id"]
         == "Cre12.g514050.t1.2 pacid=30792611 transcript=Cre12.g514050.t1.2 locus=Cre12.g514050 ID=Cre12.g514050.t1.2.v5.5 annot-version=v5.5"
     )
 
@@ -166,12 +166,12 @@ def test_calc_masses_offsets_and_composition():
     )
     obj.df = pd.DataFrame(
         np.ones((3, len(obj.col_order) + 1)),
-        columns=obj.col_order.to_list() + ["MSFragger:Hyperscore"],
+        columns=obj.col_order.to_list() + ["msfragger:hyperscore"],
     )
-    obj.df["Spectrum ID"] = 3 * [10152]
+    obj.df["spectrum_id"] = 3 * [10152]
     obj.get_meta_info()
-    obj.df.loc[:, "Sequence"] = 3 * ["PEPTCIDE"]
-    obj.df.loc[:, "Modifications"] = [
+    obj.df.loc[:, "sequence"] = 3 * ["PEPTCIDE"]
+    obj.df.loc[:, "modifications"] = [
         "",
         "Carbamidomethyl:5",
         "Acetyl:0;Carbamidomethyl:5",
@@ -181,10 +181,10 @@ def test_calc_masses_offsets_and_composition():
         [902.3691, 902.3691 + 57.021464, 902.3691 + 57.021464 + 42.010565]
     )
 
-    assert np.allclose(obj.df["uCalc Mass"], ref_masses, atol=1e-4)
-    assert np.allclose(obj.df["uCalc m/z"], ref_masses + obj.PROTON, atol=1e-4)
+    assert np.allclose(obj.df["ucalc_mass"], ref_masses, atol=1e-4)
+    assert np.allclose(obj.df["ucalc_mz"], ref_masses + obj.PROTON, atol=1e-4)
     assert np.allclose(
-        obj.df["Accuracy (ppm)"], [-159398.095, -209306.942, -242444.593], atol=1e-3
+        obj.df["accuracy_ppm"], [-159398.095, -209306.942, -242444.593], atol=1e-3
     )
 
 
@@ -198,15 +198,15 @@ def test_get_exp_rt_and_mz():
     )
     obj.df = pd.DataFrame(
         np.ones((5, len(obj.col_order) + 1)),
-        columns=obj.col_order.to_list() + ["MSFragger:Hyperscore"],
+        columns=obj.col_order.to_list() + ["msfragger:hyperscore"],
     )
-    obj.df["Spectrum ID"] = [10152, 10381, 10414, 10581, 11535]
+    obj.df["spectrum_id"] = [10152, 10381, 10414, 10581, 11535]
     obj.get_meta_info()
     assert np.allclose(
-        obj.df["Exp m/z"], [759.379, 439.196, 739.358, 664.286, 496.264], atol=1e-3
+        obj.df["exp_mz"], [759.379, 439.196, 739.358, 664.286, 496.264], atol=1e-3
     )
     assert np.allclose(
-        obj.df["Retention Time (s)"],
+        obj.df["retention_time_seconds"],
         [114735.00, 116583.52, 116805.30, 118033.46, 124967.99],
         atol=1e-2,
     )
@@ -288,9 +288,9 @@ def test_assert_only_iupac_and_missing_aas():
     )
     obj.df = pd.DataFrame(
         np.ones((4, len(obj.col_order) + 1)),
-        columns=obj.col_order.to_list() + ["MSFragger:Hyperscore"],
+        columns=obj.col_order.to_list() + ["msfragger:hyperscore"],
     )
-    obj.df["Sequence"] = ["PEPTIDE", "[3jd2]", "ACDXU", "MREPEPTIDE"]
+    obj.df["sequence"] = ["PEPTIDE", "[3jd2]", "ACDXU", "MREPEPTIDE"]
     obj.assert_only_iupac_and_missing_aas()
 
     assert all(obj.df.index == [0, 3])
@@ -306,13 +306,13 @@ def test_add_decoy_identity():
     )
     obj.df = pd.DataFrame(
         np.ones((4, len(obj.col_order) + 1)),
-        columns=obj.col_order.to_list() + ["MSFragger:Hyperscore"],
+        columns=obj.col_order.to_list() + ["msfragger:hyperscore"],
     )
-    obj.df["Protein ID"] = ["NOTADECOY", "PEPTIDE", "decoy_PEPTIDE", "decoy_ASDF"]
+    obj.df["protein_id"] = ["NOTADECOY", "PEPTIDE", "decoy_PEPTIDE", "decoy_ASDF"]
 
     obj.add_decoy_identity()
 
-    assert all(obj.df["Is decoy"] == [False, False, True, True])
+    assert all(obj.df["is_decoy"] == [False, False, True, True])
 
 
 def test_add_decoy_identity_non_default_prefix():
@@ -326,9 +326,9 @@ def test_add_decoy_identity_non_default_prefix():
     )
     obj.df = pd.DataFrame(
         np.ones((4, len(obj.col_order) + 1)),
-        columns=obj.col_order.to_list() + ["MSFragger:Hyperscore"],
+        columns=obj.col_order.to_list() + ["msfragger:hyperscore"],
     )
-    obj.df["Protein ID"] = [
+    obj.df["protein_id"] = [
         "NOTADECOY",
         "PEPTIDE",
         "decoy_PEPTIDE",
@@ -337,7 +337,7 @@ def test_add_decoy_identity_non_default_prefix():
 
     obj.add_decoy_identity()
 
-    assert all(obj.df["Is decoy"] == [False, False, False, True])
+    assert all(obj.df["is_decoy"] == [False, False, False, True])
 
 
 def test_check_enzyme_specificity_trypsin_all():
@@ -352,16 +352,16 @@ def test_check_enzyme_specificity_trypsin_all():
     )
     obj.df = pd.DataFrame(
         np.ones((4, len(obj.col_order) + 1)),
-        columns=obj.col_order.to_list() + ["MSFragger:Hyperscore"],
+        columns=obj.col_order.to_list() + ["msfragger:hyperscore"],
     )
-    obj.df["Sequence"] = ["PEPRTIDEK", "EPTIDEK", "EPTIDEK", "EPRPTRIRDEK"]
-    obj.df["Sequence Pre AA"] = ["K", "K", "A", "K"]
-    obj.df["Sequence Post AA"] = ["A", "P", "A<|>P", "A<|>V"]
+    obj.df["sequence"] = ["PEPRTIDEK", "EPTIDEK", "EPTIDEK", "EPRPTRIRDEK"]
+    obj.df["sequence_pre_aa"] = ["K", "K", "A", "K"]
+    obj.df["sequence_post_aa"] = ["A", "P", "A<|>P", "A<|>V"]
     obj.check_enzyme_specificity()
 
-    assert all(obj.df["enzN"] == [False, True, False, True])
-    assert all(obj.df["enzC"] == [True, False, False, True])
-    assert all(obj.df["Missed Cleavages"] == [1, 0, 0, 2])
+    assert all(obj.df["enzn"] == [False, True, False, True])
+    assert all(obj.df["enzc"] == [True, False, False, True])
+    assert all(obj.df["missed_cleavages"] == [1, 0, 0, 2])
 
 
 def test_check_enzyme_specificity_trypsin_any():
@@ -376,16 +376,16 @@ def test_check_enzyme_specificity_trypsin_any():
     )
     obj.df = pd.DataFrame(
         np.ones((4, len(obj.col_order) + 1)),
-        columns=obj.col_order.to_list() + ["MSFragger:Hyperscore"],
+        columns=obj.col_order.to_list() + ["msfragger:hyperscore"],
     )
-    obj.df["Sequence"] = ["PEPRTIDEK", "EPTIDEK", "EPTIDEK", "EPTIDEK"]
-    obj.df["Sequence Pre AA"] = ["K", "K", "A", "K"]
-    obj.df["Sequence Post AA"] = ["A", "P", "A<|>P", "A<|>V"]
+    obj.df["sequence"] = ["PEPRTIDEK", "EPTIDEK", "EPTIDEK", "EPTIDEK"]
+    obj.df["sequence_pre_aa"] = ["K", "K", "A", "K"]
+    obj.df["sequence_post_aa"] = ["A", "P", "A<|>P", "A<|>V"]
     obj.check_enzyme_specificity()
 
-    assert all(obj.df["enzN"] == [False, True, False, True])
-    assert all(obj.df["enzC"] == [True, False, True, True])
-    assert all(obj.df["Missed Cleavages"] == [1, 0, 0, 0])
+    assert all(obj.df["enzn"] == [False, True, False, True])
+    assert all(obj.df["enzc"] == [True, False, True, True])
+    assert all(obj.df["missed_cleavages"] == [1, 0, 0, 0])
 
 
 def test_check_enzyme_specificity_nonspecific():
@@ -400,13 +400,13 @@ def test_check_enzyme_specificity_nonspecific():
     )
     obj.df = pd.DataFrame(
         np.ones((4, len(obj.col_order) + 1)),
-        columns=obj.col_order.to_list() + ["MSFragger:Hyperscore"],
+        columns=obj.col_order.to_list() + ["msfragger:hyperscore"],
     )
-    obj.df["Sequence"] = ["ASDF", "EPTIDEK", "EPTIDEK", "EPTIDEK"]
-    obj.df["Sequence Pre AA"] = ["L<|>E", "A", "R", "P"]
-    obj.df["Sequence Post AA"] = ["F", "L<|>E", "A<|>P", "A<|>V"]
+    obj.df["sequence"] = ["ASDF", "EPTIDEK", "EPTIDEK", "EPTIDEK"]
+    obj.df["sequence_pre_aa"] = ["L<|>E", "A", "R", "P"]
+    obj.df["sequence_post_aa"] = ["F", "L<|>E", "A<|>P", "A<|>V"]
     obj.check_enzyme_specificity()
 
-    assert all(obj.df["enzN"] == [True, True, True, True])
-    assert all(obj.df["enzC"] == [True, True, True, True])
-    assert all(obj.df["Missed Cleavages"] == [0, 0, 0, 0])
+    assert all(obj.df["enzn"] == [True, True, True, True])
+    assert all(obj.df["enzc"] == [True, True, True, True])
+    assert all(obj.df["missed_cleavages"] == [0, 0, 0, 0])
