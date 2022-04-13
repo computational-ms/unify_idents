@@ -80,17 +80,17 @@ def test_engine_parsers_msfragger_check_dataframe_integrity():
     )
     df = parser.unify()
     assert len(df) == 3417
-    assert pytest.approx(df["uCalc m/z"].mean()) == 477.8585
-    assert pytest.approx(df["Exp m/z"].mean()) == 478.12137
+    assert pytest.approx(df["ucalc_mz"].mean()) == 477.8585
+    assert pytest.approx(df["exp_mz"].mean()) == 478.12137
 
-    assert df["Modifications"].str.contains("Acetyl:0").sum() == 2
-    assert df["Modifications"].str.contains("Oxidation:").sum() == 221
+    assert df["modifications"].str.contains("Acetyl:0").sum() == 2
+    assert df["modifications"].str.contains("Oxidation:").sum() == 221
     assert (
-        df["Modifications"].str.count("Carbamidomethyl:")
-        == df["Sequence"].str.count("C")
+        df["modifications"].str.count("Carbamidomethyl:")
+        == df["sequence"].str.count("C")
     ).all()
-    assert df["Modifications"].str.count(":").sum() == 2242
-    assert (df["Raw data location"] == "path/for/glory.mzML").all()
+    assert df["modifications"].str.count(":").sum() == 2242
+    assert (df["raw_data_location"] == "path/for/glory.mzML").all()
 
 
 def test_map_mod_translation():

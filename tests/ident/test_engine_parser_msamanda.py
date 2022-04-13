@@ -77,16 +77,16 @@ def test_engine_parsers_msamanda_check_dataframe_integrity():
     )
     df = parser.unify()
     assert len(df) == 87
-    assert pytest.approx(df["uCalc m/z"].mean()) == 485.2679
-    assert pytest.approx(df["Exp m/z"].mean()) == 485.26797
+    assert pytest.approx(df["ucalc_mz"].mean()) == 485.2679
+    assert pytest.approx(df["exp_mz"].mean()) == 485.26797
 
-    assert df["Modifications"].str.contains("Acetyl:0").sum() == 0
+    assert df["modifications"].str.contains("Acetyl:0").sum() == 0
     assert (
-        df["Modifications"].str.count("Carbamidomethyl:")
-        == df["Sequence"].str.count("C")
+        df["modifications"].str.count("Carbamidomethyl:")
+        == df["sequence"].str.count("C")
     ).all()
-    assert df["Modifications"].str.count(":").sum() == 66
-    assert (df["Raw data location"] == "path/for/glory.mzML").all()
+    assert df["modifications"].str.count(":").sum() == 66
+    assert (df["raw_data_location"] == "path/for/glory.mzML").all()
 
 
 def test_map_mod_translation():

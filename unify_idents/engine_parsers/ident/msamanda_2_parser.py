@@ -27,8 +27,8 @@ class MSAmanda_2_Parser(IdentBaseParser):
         }
         self.df.rename(columns=self.mapping_dict, inplace=True)
         self.df.columns = self.df.columns.str.lstrip(" ")
-        if not "Modifications" in self.df.columns:
-            self.df["Modifications"] = ""
+        if not "modifications" in self.df.columns:
+            self.df["modifications"] = ""
 
         self.df.drop(
             columns=[
@@ -92,7 +92,7 @@ class MSAmanda_2_Parser(IdentBaseParser):
         Returns:
             (pd.Series): column with formatted mod strings
         """
-        mod_split_col = self.df["Modifications"].fillna("").str.split(";")
+        mod_split_col = self.df["modifications"].fillna("").str.split(";")
         mods_translated = mod_split_col.apply(self._map_mod_translation)
 
         return mods_translated.str.rstrip(";")
@@ -104,9 +104,9 @@ class MSAmanda_2_Parser(IdentBaseParser):
         Returns:
             self.df (pd.DataFrame): unified dataframe
         """
-        self.df["Search Engine"] = "msamanda_2_0_0_17442"
-        self.df["Spectrum ID"] = self.df["Spectrum Title"].str.split(".").str[-3]
-        self.df["Modifications"] = self.translate_mods()
+        self.df["search_engine"] = "msamanda_2_0_0_17442"
+        self.df["spectrum_id"] = self.df["spectrum_title"].str.split(".").str[-3]
+        self.df["modifications"] = self.translate_mods()
         self.process_unify_style()
 
         return self.df

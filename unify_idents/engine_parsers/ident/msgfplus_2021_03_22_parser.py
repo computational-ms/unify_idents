@@ -82,7 +82,7 @@ class MSGFPlus_2021_03_22_Parser(IdentBaseParser):
 
         tree = ETree.parse(self.input_file)
         self.root = tree.getroot()
-        self.reference_dict["Search Engine"] = "msgfplus_" + "_".join(
+        self.reference_dict["search_engine"] = "msgfplus_" + "_".join(
             re.findall(
                 r"([/d]*\d+)",
                 self.root.find(".//{*}AnalysisSoftware").attrib["version"],
@@ -125,14 +125,14 @@ class MSGFPlus_2021_03_22_Parser(IdentBaseParser):
         lookup = {}
         for pep in self.root.findall(".//{*}Peptide"):
             id = pep.attrib.get("id", "")
-            lookup[id] = {"Modifications": []}
+            lookup[id] = {"modifications": []}
             for child in pep.findall(".//{*}PeptideSequence"):
-                lookup[id]["Sequence"] = child.text
+                lookup[id]["sequence"] = child.text
             for child in pep.findall(".//{*}Modification"):
-                lookup[id]["Modifications"].append(
+                lookup[id]["modifications"].append(
                     f"{child.find('.//{*}cvParam').attrib['name']}:{child.attrib['location']}"
                 )
-            lookup[id]["Modifications"] = ";".join(lookup[id]["Modifications"])
+            lookup[id]["modifications"] = ";".join(lookup[id]["modifications"])
         return lookup
 
     def unify(self):
@@ -162,7 +162,7 @@ class MSGFPlus_2021_03_22_Parser(IdentBaseParser):
         logger.remove()
         logger.add(sys.stdout)
         self.df = pd.concat(chunk_dfs, axis=0, ignore_index=True)
-        seq_mods = pd.DataFrame(self.df["Sequence"].map(peptide_lookup).to_list())
+        seq_mods = pd.DataFrame(self.df["sequence"].map(peptide_lookup).to_list())
         self.df.loc[:, seq_mods.columns] = seq_mods
         self.process_unify_style()
 

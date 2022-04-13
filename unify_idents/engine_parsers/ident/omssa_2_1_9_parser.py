@@ -111,8 +111,8 @@ class Omssa_Parser(IdentBaseParser):
 
         Operations are performed inplace.
         """
-        self.df["Sequence"] = self.df["Sequence"].str.upper()
-        self.df["Modifications"] = self.df["Modifications"].str.replace(" ,", ";")
+        self.df["sequence"] = self.df["sequence"].str.upper()
+        self.df["modifications"] = self.df["modifications"].str.replace(" ,", ";")
         fix_mods = None
         # Map fixed mods
         fixed_mod_types = [
@@ -120,7 +120,7 @@ class Omssa_Parser(IdentBaseParser):
         ]
         for fm in fixed_mod_types:
             fm_strings = (
-                self.df["Sequence"]
+                self.df["sequence"]
                 .str.split(fm["aa"])
                 .apply(
                     lambda l: ";".join(
@@ -139,8 +139,8 @@ class Omssa_Parser(IdentBaseParser):
                 fix_mods = fix_mods + ";" + fm_strings
 
         if len(fix_mods) > 0:
-            self.df["Modifications"] = (
-                self.df["Modifications"].fillna("") + ";" + fix_mods
+            self.df["modifications"] = (
+                self.df["modifications"].fillna("") + ";" + fix_mods
             )
 
     def unify(self):
@@ -150,13 +150,13 @@ class Omssa_Parser(IdentBaseParser):
         Returns:
             self.df (pd.DataFrame): unified dataframe
         """
-        self.df["Calc m/z"] = self._calc_mz(
-            mass=self.df["Calc m/z"], charge=self.df["Charge"]
+        self.df["calc_mz"] = self._calc_mz(
+            mass=self.df["calc_mz"], charge=self.df["charge"]
         )
-        self.df["Spectrum ID"] = (
-            self.df["Spectrum Title"].str.split(".").str[-3].astype(int)
+        self.df["spectrum_id"] = (
+            self.df["spectrum_title"].str.split(".").str[-3].astype(int)
         )
-        self.df["Search Engine"] = "omssa_2_1_9"
+        self.df["search_engine"] = "omssa_2_1_9"
         self.translate_mods()
         self.process_unify_style()
 

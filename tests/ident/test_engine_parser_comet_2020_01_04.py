@@ -90,17 +90,17 @@ def test_engine_parsers_comet_check_dataframe_integrity():
         },
     )
     df = parser.unify()
-    assert pytest.approx(df["uCalc m/z"].mean()) == 457.85944
-    assert pytest.approx(df["Exp m/z"].mean()) == 457.87625
+    assert pytest.approx(df["ucalc_mz"].mean()) == 457.85944
+    assert pytest.approx(df["exp_mz"].mean()) == 457.87625
 
-    assert df["Modifications"].str.contains("Acetyl:0").sum() == 5
-    assert df["Modifications"].str.contains("Oxidation:").sum() == 0
+    assert df["modifications"].str.contains("Acetyl:0").sum() == 5
+    assert df["modifications"].str.contains("Oxidation:").sum() == 0
     assert (
-        df["Modifications"].str.count("Carbamidomethyl:")
-        == df["Sequence"].str.count("C")
+        df["modifications"].str.count("Carbamidomethyl:")
+        == df["sequence"].str.count("C")
     ).all()
-    assert df["Modifications"].str.count(":").sum() == 38
-    assert (df["Raw data location"] == "path/for/glory.mzML").all()
+    assert df["modifications"].str.count(":").sum() == 38
+    assert (df["raw_data_location"] == "path/for/glory.mzML").all()
 
 
 def test_get_single_spec_df():
@@ -111,35 +111,35 @@ def test_get_single_spec_df():
         .find(".//{*}SpectrumIdentificationList/{*}SpectrumIdentificationResult")
     )
     ref_dict = {
-        "Exp m/z": None,
-        "Calc m/z": None,
-        "Spectrum Title": None,
-        "Search Engine": "comet_2020_01_4",
-        "Spectrum ID": None,
-        "Modifications": None,
-        "Retention Time (s)": None,
-        "Charge": None,
-        "Comet:Score": None,
-        "Comet:DeltaCn": None,
-        "Comet:XCorr": None,
-        "Comet:EValue": None,
-        "Sequence": None,
-        "Comet:SpecEValue": None,
-        "Comet:Num Matched Ions": None,
-        "Comet:Num Unmatched Ions": None,
+        "exp_mz": None,
+        "calc_mz": None,
+        "spectrum_title": None,
+        "search_engine": "comet_2020_01_4",
+        "spectrum_id": None,
+        "modifications": None,
+        "retention_time_seconds": None,
+        "charge": None,
+        "comet:score": None,
+        "comet:deltacn": None,
+        "comet:xcorr": None,
+        "comet:evalue": None,
+        "sequence": None,
+        "comet:spec_evalue": None,
+        "comet:num_matched_ions": None,
+        "comet:num_unmatched_ions": None,
     }
     mapping_dict = {
-        "chargeState": "Charge",
-        "Comet:spscore": "Comet:Score",
-        "Comet:deltacn": "Comet:DeltaCn",
-        "Comet:xcorr": "Comet:XCorr",
-        "Comet:expectation value": "Comet:EValue",
-        "peptide_ref": "Sequence",
-        "experimentalMassToCharge": "Exp m/z",
-        "calculatedMassToCharge": "Calc m/z",
-        "SpecEValue": "Comet:SpecEValue",
-        "number of matched peaks": "Comet:Num Matched Ions",
-        "number of unmatched peaks": "Comet:Num Unmatched Ions",
+        "chargeState": "charge",
+        "Comet:spscore": "comet:score",
+        "Comet:deltacn": "comet:deltacn",
+        "Comet:xcorr": "comet:xcorr",
+        "Comet:expectation value": "comet:evalue",
+        "peptide_ref": "sequence",
+        "experimentalMassToCharge": "exp_mz",
+        "calculatedMassToCharge": "calc_mz",
+        "SpecEValue": "comet:spec_evalue",
+        "number of matched peaks": "comet:num_matched_ions",
+        "number of unmatched peaks": "comet:num_unmatched_ions",
     }
 
     result = _get_single_spec_df(ref_dict, mapping_dict, element)

@@ -90,17 +90,17 @@ def test_engine_parsers_comet_check_dataframe_integrity():
     )
     df = parser.unify()
 
-    assert pytest.approx(df["uCalc m/z"].mean()) == 465.30768
-    assert pytest.approx(df["Exp m/z"].mean()) == 465.3078
+    assert pytest.approx(df["ucalc_mz"].mean()) == 465.30768
+    assert pytest.approx(df["exp_mz"].mean()) == 465.3078
 
-    assert df["Modifications"].str.contains("Acetyl:0").sum() == 3
-    assert df["Modifications"].str.contains("Oxidation:").sum() == 0
+    assert df["modifications"].str.contains("Acetyl:0").sum() == 3
+    assert df["modifications"].str.contains("Oxidation:").sum() == 0
     assert (
-        df["Modifications"].str.count("Carbamidomethyl:")
-        == df["Sequence"].str.count("C")
+        df["modifications"].str.count("Carbamidomethyl:")
+        == df["sequence"].str.count("C")
     ).all()
-    assert df["Modifications"].str.count(":").sum() == 59
-    assert (df["Raw data location"] == "path/for/glory.mzML").all()
+    assert df["modifications"].str.count(":").sum() == 59
+    assert (df["raw_data_location"] == "path/for/glory.mzML").all()
 
 
 def test_get_single_spec_df():
@@ -112,14 +112,14 @@ def test_get_single_spec_df():
         ],
     )
     ref_dict = {
-        "Exp m/z": None,
-        "Calc m/z": None,
-        "Spectrum Title": None,
-        "Search Engine": "mascot_2_6_2",
-        "Spectrum ID": None,
-        "Modifications": None,
-        "Retention Time (s)": None,
-        "Mascot:Score": None,
+        "exp_mz": None,
+        "calc_mz": None,
+        "spectrum_title": None,
+        "search_engine": "mascot_2_6_2",
+        "spectrum_id": None,
+        "modifications": None,
+        "retention_time_seconds": None,
+        "mascot:score": None,
     }
 
     result = _get_single_spec_df(ref_dict, spec)

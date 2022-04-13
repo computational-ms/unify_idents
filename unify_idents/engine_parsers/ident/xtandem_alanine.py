@@ -34,14 +34,14 @@ def _get_single_spec_df(reference_dict, mapping_dict, spectrum):
     if "z" not in spectrum.attrib:
         return None
     spec_title = spectrum.findall('.//**[@label="Description"]')[0].text.split()[0]
-    spec_level_dict["Spectrum Title"] = spec_title
-    spec_level_dict["Spectrum ID"] = spec_title.split(".")[-3]
+    spec_level_dict["spectrum_title"] = spec_title
+    spec_level_dict["spectrum_id"] = spec_title.split(".")[-3]
 
     # Iterate children
     for psm in spectrum.findall(".//protein/*/domain"):
         psm_level_dict = spec_level_dict.copy()
 
-        psm_level_dict["Calc m/z"] = psm.attrib["mh"]
+        psm_level_dict["calc_mz"] = psm.attrib["mh"]
 
         psm_level_info = mapping_dict.keys() & psm.attrib.keys()
         psm_level_dict.update({mapping_dict[k]: psm.attrib[k] for k in psm_level_info})
@@ -54,7 +54,7 @@ def _get_single_spec_df(reference_dict, mapping_dict, spectrum):
             rel_pos = int(abs_pos) - int(psm.attrib["start"])
             mods.append(f"{mass}:{rel_pos}")
 
-        psm_level_dict["Modifications"] = mods
+        psm_level_dict["modifications"] = mods
 
         spec_records.append(psm_level_dict)
     return pd.DataFrame(spec_records)
@@ -72,7 +72,7 @@ class XTandemAlanine_Parser(IdentBaseParser):
         self.style = "xtandem_style_1"
         tree = ETree.parse(self.input_file)
         self.root = tree.getroot()
-        self.reference_dict["Search Engine"] = (
+        self.reference_dict["search_engine"] = (
             "xtandem_"
             + re.search(
                 r"(?<=Tandem )\w+",
@@ -122,7 +122,7 @@ class XTandemAlanine_Parser(IdentBaseParser):
             df (pd.DataFrame): dataframe with processed modification column
 
         """
-        unique_mods = set().union(*df["Modifications"].apply(set).values)
+        unique_mods = set().union(*df["modifications"].apply(set).values)
         unique_mod_masses = {m.split(":")[0] for m in unique_mods}
         potential_names = {
             m: [
@@ -142,18 +142,18 @@ class XTandemAlanine_Parser(IdentBaseParser):
             else:
                 for name in potential_mods:
                     # TODO: Is position 'any' respected here
-                    in_seq = df["Sequence"].str[int(pos)].isin(
+                    in_seq = df["sequence"].str[int(pos)].isin(
                         self.mod_dict[name]["aa"]
-                    ) & df["Modifications"].str.join("|").str.contains(m)
+                    ) & df["modifications"].str.join("|").str.contains(m)
                     if in_seq.sum() != 0:
                         new_mods.loc[in_seq] += f"{name}:{int(pos)+1};"
                     n_term = (~in_seq) & (
                         ("Prot-N-term" in self.mod_dict[name]["position"])
-                        & df["Modifications"].str.join("|").str.contains(m)
+                        & df["modifications"].str.join("|").str.contains(m)
                     )
                     if n_term.sum() != 0:
                         new_mods.loc[n_term] += f"{name}:0;"
-        df["Modifications"] = new_mods.str.rstrip(";")
+        df["modifications"] = new_mods.str.rstrip(";")
 
         return df
 
@@ -180,9 +180,9 @@ class XTandemAlanine_Parser(IdentBaseParser):
         logger.add(sys.stdout)
         chunk_dfs = [df for df in chunk_dfs if not df is None]
         self.df = pd.concat(chunk_dfs, axis=0, ignore_index=True)
-        self.df["Calc m/z"] = (
-            (self.df["Calc m/z"].astype(float) - self.PROTON)
-            / self.df["Charge"].astype(int)
+        self.df["calc_mz"] = (
+            (self.df["calc_mz"].astype(float) - self.PROTON)
+            / self.df["charge"].astype(int)
         ) + self.PROTON
         self.df = self.map_mod_names(self.df)
         self.process_unify_style()
