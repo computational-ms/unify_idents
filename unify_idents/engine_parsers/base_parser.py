@@ -329,7 +329,7 @@ class IdentBaseParser(BaseParser):
         """
         rt_lookup = pd.read_csv(self.params["rt_pickle_name"], compression="infer")
         rt_lookup.set_index("spectrum_id", inplace=True)
-        rt_lookup["unit"] = rt_lookup["unit"].replace({"second": 1, "minute": 60})
+        rt_lookup["rt_unit"] = rt_lookup["rt_unit"].replace({"second": 1, "minute": 60})
         return rt_lookup
 
     def get_meta_info(self):
@@ -342,7 +342,7 @@ class IdentBaseParser(BaseParser):
         rt_lookup = self._read_meta_info_lookup_file()
         spec_ids = self.df["spectrum_id"].astype(int)
         self.df["retention_time_seconds"] = (
-            rt_lookup.loc[spec_ids, ["rt", "unit"]].product(axis=1).to_list()
+            rt_lookup.loc[spec_ids, ["rt", "rt_unit"]].product(axis=1).to_list()
         )
         self.df["exp_mz"] = rt_lookup.loc[spec_ids, "precursor_mz"].to_list()
         self.df["raw_data_location"] = rt_lookup.loc[spec_ids, "file"].to_list()
