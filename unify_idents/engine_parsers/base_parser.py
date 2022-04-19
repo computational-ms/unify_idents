@@ -105,7 +105,7 @@ class IdentBaseParser(BaseParser):
             "is_decoy": "bool",
             "rank": "int32",
             "protein_id": "str",
-            "retention_time_s": "float32",
+            "retention_time_seconds": "float32",
             "exp_mz": "float32",
             "calc_mz": "float32",
             "ucalc_mz": "float32",
