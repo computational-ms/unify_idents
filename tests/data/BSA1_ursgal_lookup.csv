@@ -1,4 +1,4 @@
-file,spectrum_id,rt,unit,precursor_mz
+file,spectrum_id,rt,rt_unit,precursor_mz
 path/for/glory.mzML,2442,90237.7001953128,second,457.723968505859
 path/for/glory.mzML,2443,90518.3715820314,second,483.539184570312
 path/for/glory.mzML,2444,90540.966796875,second,618.719482421875
