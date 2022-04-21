@@ -112,7 +112,9 @@ class Omssa_Parser(IdentBaseParser):
         Operations are performed inplace.
         """
         self.df["sequence"] = self.df["sequence"].str.upper()
-        self.df["modifications"] = self.df["modifications"].str.replace(" ,", ";")
+        self.df["modifications"] = (
+            self.df["modifications"].fillna("").str.replace(" ,", ";")
+        )
         fix_mods = None
         # Map fixed mods
         fixed_mod_types = [
@@ -138,7 +140,7 @@ class Omssa_Parser(IdentBaseParser):
             else:
                 fix_mods = fix_mods + ";" + fm_strings
 
-        if len(fix_mods) > 0:
+        if fix_mods is not None:
             self.df["modifications"] = (
                 self.df["modifications"].fillna("") + ";" + fix_mods
             )
