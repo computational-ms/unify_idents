@@ -27,9 +27,6 @@ def test_unify_get_parser_classes():
         {
             "rt_pickle_name": rt_lookup_path,
             "database": db_path,
-            "header_translations": uparma.UParma().get_default_params(
-                style="unify_csv_style_1"
-            )["header_translations"],
             "modifications": [
                 {
                     "aa": "M",
@@ -90,9 +87,6 @@ def test_unify_get_omssa_parser():
         {
             "rt_pickle_name": rt_lookup_path,
             "database": db_path,
-            "header_translations": uparma.UParma().get_default_params(
-                style="unify_csv_style_1"
-            )["header_translations"],
             "modifications": [
                 {
                     "aa": "M",
@@ -131,9 +125,6 @@ def test_unify_get_msgfplus_parser():
         {
             "rt_pickle_name": rt_lookup_path,
             "database": db_path,
-            "header_translations": uparma.UParma().get_default_params(
-                style="unify_csv_style_1"
-            )["header_translations"],
             "modifications": [
                 {
                     "aa": "M",
@@ -168,9 +159,6 @@ def test_unify_get_msamanda_parser():
         {
             "rt_pickle_name": rt_lookup_path,
             "database": db_path,
-            "header_translations": uparma.UParma().get_default_params(
-                style="unify_csv_style_1"
-            )["header_translations"],
             "modifications": [
                 {
                     "aa": "M",
@@ -205,9 +193,6 @@ def test_unify_get_xtandem_parser():
         {
             "rt_pickle_name": rt_lookup_path,
             "database": db_path,
-            "header_translations": uparma.UParma().get_default_params(
-                style="unify_csv_style_1"
-            )["header_translations"],
             "modifications": [
                 {
                     "aa": "M",
@@ -242,9 +227,6 @@ def test_unify_get_msfragger_parser():
         {
             "rt_pickle_name": rt_lookup_path,
             "database": db_path,
-            "header_translations": uparma.UParma().get_default_params(
-                style="unify_csv_style_1"
-            )["header_translations"],
             "modifications": [
                 {
                     "aa": "M",
@@ -279,9 +261,6 @@ def test_unify_get_comet_parser():
         {
             "rt_pickle_name": rt_lookup_path,
             "database": db_path,
-            "header_translations": uparma.UParma().get_default_params(
-                style="unify_csv_style_1"
-            )["header_translations"],
             "modifications": [
                 {
                     "aa": "M",
@@ -316,9 +295,6 @@ def test_unify_get_mascot_parser():
         {
             "rt_pickle_name": rt_lookup_path,
             "database": db_path,
-            "header_translations": uparma.UParma().get_default_params(
-                style="unify_csv_style_1"
-            )["header_translations"],
             "modifications": [
                 {
                     "aa": "M",
