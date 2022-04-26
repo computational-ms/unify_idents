@@ -13,6 +13,15 @@ def test_engine_parsers_msfragger_init():
         input_file,
         params={
             "cpus": 2,
+            "enzyme": {
+                "original_value": "trypsin",
+                "translated_value": "(?<=[KR])(?![P])",
+            },
+            "terminal_cleavage_site_integrity": {"translated_value": "any"},
+            "validation_score_field": {
+                "translated_value": {"msfragger_3_0": "msfragger:hyperscore"}
+            },
+            "bigger_scores_better": {"translated_value": {"msfragger_3_0": True}},
             "modifications": [
                 {
                     "aa": "M",
@@ -55,6 +64,15 @@ def test_engine_parsers_msfragger_check_dataframe_integrity():
             "cpus": 2,
             "rt_pickle_name": rt_lookup_path,
             "database": db_path,
+            "enzyme": {
+                "original_value": "trypsin",
+                "translated_value": "(?<=[KR])(?![P])",
+            },
+            "terminal_cleavage_site_integrity": {"translated_value": "any"},
+            "validation_score_field": {
+                "translated_value": {"msfragger_3_0": "msfragger:hyperscore"}
+            },
+            "bigger_scores_better": {"translated_value": {"msfragger_3_0": True}},
             "modifications": [
                 {
                     "aa": "M",
@@ -102,6 +120,15 @@ def test_map_mod_translation():
         input_file,
         params={
             "cpus": 2,
+            "enzyme": {
+                "original_value": "trypsin",
+                "translated_value": "(?<=[KR])(?![P])",
+            },
+            "terminal_cleavage_site_integrity": {"translated_value": "any"},
+            "validation_score_field": {
+                "translated_value": {"msfragger_3_0": "msfragger:hyperscore"}
+            },
+            "bigger_scores_better": {"translated_value": {"msfragger_3_0": True}},
             "modifications": [
                 {
                     "aa": "M",

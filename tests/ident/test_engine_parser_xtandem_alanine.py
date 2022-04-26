@@ -21,6 +21,15 @@ def test_engine_parsers_xtandem_init():
         input_file,
         params={
             "cpus": 2,
+            "enzyme": {
+                "original_value": "trypsin",
+                "translated_value": "(?<=[KR])(?![P])",
+            },
+            "terminal_cleavage_site_integrity": {"translated_value": "any"},
+            "validation_score_field": {
+                "translated_value": {"xtandem_alanine": "x!tandem:hyperscore"}
+            },
+            "bigger_scores_better": {"translated_value": {"xtandem_alanine": True}},
             "modifications": [
                 {
                     "aa": "M",
@@ -74,6 +83,15 @@ def test_engine_parsers_xtandem_check_dataframe_integrity():
             "cpus": 2,
             "rt_pickle_name": rt_lookup_path,
             "database": db_path,
+            "enzyme": {
+                "original_value": "trypsin",
+                "translated_value": "(?<=[KR])(?![P])",
+            },
+            "terminal_cleavage_site_integrity": {"translated_value": "any"},
+            "validation_score_field": {
+                "translated_value": {"xtandem_alanine": "x!tandem:hyperscore"}
+            },
+            "bigger_scores_better": {"translated_value": {"xtandem_alanine": True}},
             "modifications": [
                 {
                     "aa": "M",
@@ -191,6 +209,15 @@ def test_engine_parsers_xtandem_nterminal_mod():
             "cpus": 2,
             "rt_pickle_name": rt_lookup_path,
             "database": db_path,
+            "enzyme": {
+                "original_value": "trypsin",
+                "translated_value": "(?<=[KR])(?![P])",
+            },
+            "terminal_cleavage_site_integrity": {"translated_value": "any"},
+            "validation_score_field": {
+                "translated_value": {"xtandem_alanine": "x!tandem:hyperscore"}
+            },
+            "bigger_scores_better": {"translated_value": {"xtandem_alanine": True}},
             "modifications": [
                 {
                     "aa": "M",
@@ -231,6 +258,15 @@ def test_engine_parsers_xtandem_multiple_psms():
             "cpus": 2,
             "rt_pickle_name": rt_lookup_path,
             "database": db_path,
+            "enzyme": {
+                "original_value": "trypsin",
+                "translated_value": "(?<=[KR])(?![P])",
+            },
+            "terminal_cleavage_site_integrity": {"translated_value": "any"},
+            "validation_score_field": {
+                "translated_value": {"xtandem_alanine": "x!tandem:hyperscore"}
+            },
+            "bigger_scores_better": {"translated_value": {"xtandem_alanine": True}},
             "modifications": [
                 {
                     "aa": "M",
@@ -287,6 +323,15 @@ def test_engine_parsers_xtandem_map_mod_names():
         input_file,
         params={
             "cpus": 2,
+            "enzyme": {
+                "original_value": "trypsin",
+                "translated_value": "(?<=[KR])(?![P])",
+            },
+            "terminal_cleavage_site_integrity": {"translated_value": "any"},
+            "validation_score_field": {
+                "translated_value": {"xtandem_alanine": "x!tandem:hyperscore"}
+            },
+            "bigger_scores_better": {"translated_value": {"xtandem_alanine": True}},
             "modifications": [
                 {
                     "aa": "M",
@@ -322,6 +367,15 @@ def test_engine_parsers_xtandem_map_mod_names_nterm():
         input_file,
         params={
             "cpus": 2,
+            "enzyme": {
+                "original_value": "trypsin",
+                "translated_value": "(?<=[KR])(?![P])",
+            },
+            "terminal_cleavage_site_integrity": {"translated_value": "any"},
+            "validation_score_field": {
+                "translated_value": {"xtandem_alanine": "x!tandem:hyperscore"}
+            },
+            "bigger_scores_better": {"translated_value": {"xtandem_alanine": True}},
             "modifications": [
                 {
                     "aa": "M",
