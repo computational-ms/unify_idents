@@ -1,5 +1,4 @@
 """Engine parser."""
-import xml.etree.ElementTree as ETree
 
 import numpy as np
 import pandas as pd

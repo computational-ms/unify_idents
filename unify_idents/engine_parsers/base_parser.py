@@ -48,12 +48,6 @@ class BaseParser:
         self.params = params
         self.xml_file_list = self.params.get("xml_file_list", None)
         self.param_mapper = uparma.UParma()
-        self.translated_params = self.param_mapper.get_default_params(
-            "unify_csv_style_1"
-        )
-        self.translated_params.update(
-            self.param_mapper.convert(self.params, "unify_csv_style_1")
-        )
 
     @classmethod
     def check_parser_compatibility(cls, file):
@@ -241,15 +235,15 @@ class IdentBaseParser(BaseParser):
         Calculates number of missed cleavage sites.
         Operations are performed inplace.
         """
-        if self.translated_params["enzyme"]["original_value"] == "nonspecific":
+        if self.params["enzyme"]["original_value"] == "nonspecific":
             self.df.loc[:, ["enzn", "enzc"]] = True
             self.df.loc[:, "missed_cleavages"] = 0
             return None
 
-        enzyme_pattern = self.translated_params["enzyme"]["translated_value"]
-        integrity_strictness = self.translated_params[
-            "terminal_cleavage_site_integrity"
-        ]["translated_value"]
+        enzyme_pattern = self.params["enzyme"]["translated_value"]
+        integrity_strictness = self.params["terminal_cleavage_site_integrity"][
+            "translated_value"
+        ]
 
         pren_seq = (
             pd.concat(
@@ -362,12 +356,10 @@ class IdentBaseParser(BaseParser):
         Operations are performed inplace on self.df
         """
         eng_name = self.df["search_engine"].unique()[0]
-        score_col = self.translated_params["validation_score_field"][
-            "translated_value"
-        ][eng_name]
-        top_is_highest = self.translated_params["bigger_scores_better"][
-            "translated_value"
-        ][eng_name]
+        score_col = self.params["validation_score_field"]["translated_value"][eng_name]
+        top_is_highest = self.params["bigger_scores_better"]["translated_value"][
+            eng_name
+        ]
         ranking_needs_to_be_ascending = False if top_is_highest is True else True
         self.df.loc[:, score_col] = self.df[score_col].astype(float)
         self.df.loc[:, "rank"] = (
