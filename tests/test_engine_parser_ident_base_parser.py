@@ -23,7 +23,7 @@ def test_base_parser_read_rt_lookup_file():
     assert pytest.approx(rt_lookup["precursor_mz"].mean()) == 550.8444810049874
     # check consistency
     assert pytest.approx(rt_lookup.loc[2450, "precursor_mz"]) == 618.2697
-    assert pytest.approx(rt_lookup.loc[2450, "rt"]) == 92067.714
+    assert pytest.approx(rt_lookup.loc[2450, "rt"]) == 1534.4619140625
 
 
 def test_engine_parsers_IdentBaseParser_init():
@@ -194,6 +194,7 @@ def test_calc_masses_offsets_and_composition():
         columns=obj.col_order.to_list() + ["msfragger:hyperscore"],
     )
     obj.df["spectrum_id"] = 3 * [10152]
+    obj.df["retention_time_seconds"] = 3 * [1912.25016]
     obj.get_meta_info()
     obj.df.loc[:, "sequence"] = 3 * ["PEPTCIDE"]
     obj.df.loc[:, "modifications"] = [
@@ -226,6 +227,13 @@ def test_get_exp_rt_and_mz():
         columns=obj.col_order.to_list() + ["msfragger:hyperscore"],
     )
     obj.df["spectrum_id"] = [10152, 10381, 10414, 10581, 11535]
+    obj.df["retention_time_seconds"] = [
+        1912.25016,
+        1943.05878,
+        1946.75502,
+        1967.22444,
+        2082.79998,
+    ]
     obj.get_meta_info()
     assert np.allclose(
         obj.df["exp_mz"], [759.379, 439.196, 739.358, 664.286, 496.264], atol=1e-3
@@ -441,3 +449,35 @@ def test_check_enzyme_specificity_nonspecific():
     assert all(obj.df["enzn"] == [True, True, True, True])
     assert all(obj.df["enzc"] == [True, True, True, True])
     assert all(obj.df["missed_cleavages"] == [0, 0, 0, 0])
+
+
+def test_groupby_rt_and_spec_id():
+    obj = IdentBaseParser(
+        input_file=None,
+        params={
+            "cpus": 2,
+            "rt_pickle_name": pytest._test_path / "data/_ursgal_lookup.csv",
+        },
+    )
+    obj.df = pd.DataFrame(
+        np.ones((3, len(obj.col_order) + 1)),
+        columns=obj.col_order.to_list() + ["msfragger:hyperscore"],
+    )
+    obj.df["spectrum_id"] = [10152, 10381, 10414]
+    obj.df["retention_time_seconds"] = [
+        1912.25016,  # Identical
+        1943.058,  # Very similar
+        1946.76,  # Similar
+    ]
+    obj.get_meta_info()
+    assert (
+        all(obj.df["exp_mz"] == [759.379943847656, 439.196746826172, 739.358459472656])
+        is True
+    )
+    assert (
+        all(obj.df["retention_time_seconds"] == [114735.0096, 116583.5268, 116805.3012])
+        is True
+    )
+    with pytest.raises(KeyError):
+        obj.df[0, "spectrum_id"] = 1234567
+        obj.get_meta_info()
