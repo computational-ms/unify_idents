@@ -182,6 +182,7 @@ class MSFragger_3_Parser(IdentBaseParser):
             self.df (pd.DataFrame): unified dataframe
         """
         self.df["search_engine"] = "msfragger_3_0"
+        self.df["retention_time_seconds"] *= 60.0
         self.df["exp_mz"] = self._calc_mz(
             mass=self.df["msfragger:precursor_neutral_mass_da"],
             charge=self.df["charge"],

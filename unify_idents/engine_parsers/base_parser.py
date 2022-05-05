@@ -48,6 +48,7 @@ class BaseParser:
         self.params = params
         self.xml_file_list = self.params.get("xml_file_list", None)
         self.param_mapper = uparma.UParma()
+        self.style = None
 
     @classmethod
     def check_parser_compatibility(cls, file):
@@ -322,8 +323,8 @@ class IdentBaseParser(BaseParser):
             rt_lookup (pd.DataFrame): loaded rt_pickle_file indexable by Spectrum ID
         """
         rt_lookup = pd.read_csv(self.params["rt_pickle_name"], compression="infer")
-        rt_lookup.set_index("spectrum_id", inplace=True)
         rt_lookup["rt_unit"] = rt_lookup["rt_unit"].replace({"second": 1, "minute": 60})
+        rt_lookup.set_index(["spectrum_id", rt_lookup["rt"].round(2)], inplace=True)
         return rt_lookup
 
     def get_meta_info(self):
@@ -335,11 +336,31 @@ class IdentBaseParser(BaseParser):
         """
         rt_lookup = self._read_meta_info_lookup_file()
         spec_ids = self.df["spectrum_id"].astype(int)
+        if self.style in ("comet_style_1", "omssa_style_1"):
+            logger.warning(
+                "This engine does not provide retention time information. Grouping only by Spectrum ID. This may cause problems when working with multi-file inputs."
+            )
+            rt_lookup = rt_lookup.loc[pd.IndexSlice[spec_ids.unique(), :]].droplevel(
+                "rt"
+            )
+            spec_rt_idx = spec_ids
+        else:
+            spec_rt_idx = (
+                pd.concat(
+                    [
+                        spec_ids,
+                        self.df["retention_time_seconds"].astype(float).round(2),
+                    ],
+                    axis=1,
+                )
+                .apply(tuple, axis=1)
+                .to_list()
+            )
         self.df["retention_time_seconds"] = (
-            rt_lookup.loc[spec_ids, ["rt", "rt_unit"]].product(axis=1).to_list()
+            rt_lookup.loc[spec_rt_idx, ["rt", "rt_unit"]].product(axis=1).to_list()
         )
-        self.df["exp_mz"] = rt_lookup.loc[spec_ids, "precursor_mz"].to_list()
-        self.df["raw_data_location"] = rt_lookup.loc[spec_ids, "file"].to_list()
+        self.df["exp_mz"] = rt_lookup.loc[spec_rt_idx, "precursor_mz"].to_list()
+        self.df["raw_data_location"] = rt_lookup.loc[spec_rt_idx, "file"].to_list()
         self.df.loc[:, "spectrum_title"] = (
             self.df["raw_data_location"]
             + "."
