@@ -168,7 +168,7 @@ class IdentBaseParser(BaseParser):
             self.df["modifications"]
             .fillna("")
             .str.split(";")
-            .apply(sorted, key=lambda x: x.split(":")[::-1])
+            .apply(sorted, key=lambda x: (int(x.split(":")[-1]), x.split(":")[0]))
             .str.join(";")
         )
 
@@ -225,9 +225,12 @@ class IdentBaseParser(BaseParser):
         new_columns.rename(columns=columns_translations, inplace=True)
 
         self.df.loc[:, new_columns.columns] = new_columns.values
-        self.df = self.df.iloc[
-            new_columns.dropna(axis=0, how="all").index, :
-        ].reset_index(drop=True)
+        new_columns = new_columns.dropna(axis=0, how="all")
+        if len(new_columns) != len(self.df):
+            logger.warning(
+                f"{len(self.df)-len(new_columns)} PSMs were dropped because their respective sequences could not be mapped."
+            )
+        self.df = self.df.iloc[new_columns.index, :].reset_index(drop=True)
 
     def check_enzyme_specificity(self):
         """Check consistency of N/C-terminal cleavage sites.
