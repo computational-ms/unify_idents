@@ -3,6 +3,7 @@ import multiprocessing as mp
 
 import pandas as pd
 import uparma
+import regex as re
 from chemical_composition import ChemicalComposition
 from loguru import logger
 from peptide_mapper.mapper import UPeptideMapper
@@ -163,14 +164,6 @@ class IdentBaseParser(BaseParser):
         Modifications are sorted by position and leading, repeated or trailing delimiters are removed
         Operations are performed inplace on self.df
         """
-        # Ensure same order of modifications
-        self.df.loc[:, "modifications"] = (
-            self.df["modifications"]
-            .fillna("")
-            .str.split(";")
-            .apply(sorted, key=lambda x: (int(x.split(":")[-1]), x.split(":")[0]))
-            .str.join(";")
-        )
 
         # Remove any trailing or leading delimiters or only-delimiter modstrings
         self.df.loc[:, "modifications"] = self.df.loc[:, "modifications"].str.replace(
@@ -181,6 +174,24 @@ class IdentBaseParser(BaseParser):
         )
         self.df.loc[:, "modifications"] = self.df.loc[:, "modifications"].str.replace(
             r"^;+$", "", regex=True
+        )
+
+        # Ensure same order of modifications
+        sort_pattern = r"(\w+)(?:\:)(\d+)"
+        self.df.loc[:, "modifications"] = (
+            self.df["modifications"]
+            .fillna("")
+            .str.split(";")
+            .apply(
+                sorted,
+                key=lambda x: (
+                    int(re.search(sort_pattern, x).group(2)),
+                    re.search(sort_pattern, x).group(1),
+                )
+                if x != ""
+                else "",
+            )
+            .str.join(";")
         )
 
     def assert_only_iupac_and_missing_aas(self):
