@@ -1,0 +1,5 @@
+file,spectrum_id,ms_level,rt,rt_unit,precursor_mz,precursor_charge,precursor_intensity,precursor_id,resolution,ion_injection_time,ion_injection_time_unit,filter_string,ms2_isolation_width,ms2_isolation_mz
+thermo_raw_file_parser_1_1_11_w10_78a418d9ab52fbbf024bc355106f7ca3/7eac007e11d76d67a23645d8bce2403b_1.thermorawparser.mzml,57804,2,5251.73367502785,s,1097.3212890625,4,,57798,,,,,,
+thermo_raw_file_parser_1_1_11_w10_78a418d9ab52fbbf024bc355106f7ca3/7eac007e11d76d67a23645d8bce2403b_1.thermorawparser.mzml,4166,2,1150.278048063276,s,557.92236328125,3,,4164,,,,,,
+thermo_raw_file_parser_1_1_11_w10_78a418d9ab52fbbf024bc355106f7ca3/7eac007e11d76d67a23645d8bce2403b_1.thermorawparser.mzml,63246,2,5680.423484111784,s,825.942016601563,3,,63236,,,,,,
+thermo_raw_file_parser_1_1_11_w10_78a418d9ab52fbbf024bc355106f7ca3/7eac007e11d76d67a23645d8bce2403b_1.thermorawparser.mzml,4110,2,1144.708894039152,s,565.608642578125,3,,4109,,,,,,
