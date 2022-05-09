@@ -20,11 +20,10 @@ def test_base_parser_read_rt_lookup_file():
     bp = IdentBaseParser(input_file, params={"rt_pickle_name": rt_lookup_path})
     rt_lookup = bp._read_meta_info_lookup_file()
     assert (rt_lookup["rt_unit"] == 1).all()
-    assert pytest.approx(
-        rt_lookup["precursor_mz"].mean(), 550.8444810049874
-    )  # check consistency
-    assert pytest.approx(rt_lookup.loc[2450, "precursor_mz"], 618.2697)
-    assert pytest.approx(rt_lookup.loc[2450, "rt"], 92067.714)
+    assert pytest.approx(rt_lookup["precursor_mz"].mean()) == 550.8444810049874
+    # check consistency
+    assert pytest.approx(rt_lookup.loc[2450, "precursor_mz"]) == 618.2697
+    assert pytest.approx(rt_lookup.loc[2450, "rt"]) == 1534.4619140625
 
 
 def test_engine_parsers_IdentBaseParser_init():
@@ -99,7 +98,15 @@ def test_engine_parsers_IdentBase_Parser_sanitize():
 
 
 def test_add_ranks_increasing_engine_scores_better():
-    obj = IdentBaseParser(input_file=None, params=None)
+    obj = IdentBaseParser(
+        input_file=None,
+        params={
+            "validation_score_field": {
+                "translated_value": {"msfragger_3_0": "msfragger:hyperscore"}
+            },
+            "bigger_scores_better": {"translated_value": {"msfragger_3_0": True}},
+        },
+    )
     obj.df = pd.DataFrame(
         np.ones((5, len(obj.col_order) + 1)),
         columns=obj.col_order.to_list() + ["msfragger:hyperscore"],
@@ -111,7 +118,17 @@ def test_add_ranks_increasing_engine_scores_better():
 
 
 def test_add_ranks_decreasing_engine_scores_better():
-    obj = IdentBaseParser(input_file=None, params=None)
+    obj = IdentBaseParser(
+        input_file=None,
+        params={
+            "validation_score_field": {
+                "translated_value": {"msgfplus_2021_03_22": "ms-gf:spec_evalue"}
+            },
+            "bigger_scores_better": {
+                "translated_value": {"msgfplus_2021_03_22": False}
+            },
+        },
+    )
     obj.df = pd.DataFrame(
         np.ones((5, len(obj.col_order) + 1)),
         columns=obj.col_order.to_list() + ["msfragger:hyperscore"],
@@ -128,6 +145,10 @@ def test_add_protein_ids():
         params={
             "cpus": 2,
             "database": pytest._test_path / "data/test_Creinhardtii_target_decoy.fasta",
+            "validation_score_field": {
+                "translated_value": {"msfragger_3_0": "msfragger:hyperscore"}
+            },
+            "bigger_scores_better": {"translated_value": {"msfragger_3_0": True}},
         },
     )
     obj.df = pd.DataFrame(
@@ -162,6 +183,10 @@ def test_calc_masses_offsets_and_composition():
         params={
             "cpus": 2,
             "rt_pickle_name": pytest._test_path / "data/_ursgal_lookup.csv",
+            "validation_score_field": {
+                "translated_value": {"msfragger_3_0": "msfragger:hyperscore"}
+            },
+            "bigger_scores_better": {"translated_value": {"msfragger_3_0": True}},
         },
     )
     obj.df = pd.DataFrame(
@@ -169,6 +194,7 @@ def test_calc_masses_offsets_and_composition():
         columns=obj.col_order.to_list() + ["msfragger:hyperscore"],
     )
     obj.df["spectrum_id"] = 3 * [10152]
+    obj.df["retention_time_seconds"] = 3 * [1912.25016]
     obj.get_meta_info()
     obj.df.loc[:, "sequence"] = 3 * ["PEPTCIDE"]
     obj.df.loc[:, "modifications"] = [
@@ -201,6 +227,13 @@ def test_get_exp_rt_and_mz():
         columns=obj.col_order.to_list() + ["msfragger:hyperscore"],
     )
     obj.df["spectrum_id"] = [10152, 10381, 10414, 10581, 11535]
+    obj.df["retention_time_seconds"] = [
+        1912.25016,
+        1943.05878,
+        1946.75502,
+        1967.22444,
+        2082.79998,
+    ]
     obj.get_meta_info()
     assert np.allclose(
         obj.df["exp_mz"], [759.379, 439.196, 739.358, 664.286, 496.264], atol=1e-3
@@ -346,8 +379,11 @@ def test_check_enzyme_specificity_trypsin_all():
         params={
             "cpus": 2,
             "rt_pickle_name": pytest._test_path / "data/_ursgal_lookup.csv",
-            "enzyme": "trypsin",
-            "terminal_cleavage_site_integrity": "all",
+            "enzyme": {
+                "original_value": "trypsin",
+                "translated_value": "(?<=[KR])(?![P])",
+            },
+            "terminal_cleavage_site_integrity": {"translated_value": "all"},
         },
     )
     obj.df = pd.DataFrame(
@@ -370,8 +406,11 @@ def test_check_enzyme_specificity_trypsin_any():
         params={
             "cpus": 2,
             "rt_pickle_name": pytest._test_path / "data/_ursgal_lookup.csv",
-            "enzyme": "trypsin",
-            "terminal_cleavage_site_integrity": "any",
+            "enzyme": {
+                "original_value": "trypsin",
+                "translated_value": "(?<=[KR])(?![P])",
+            },
+            "terminal_cleavage_site_integrity": {"translated_value": "any"},
         },
     )
     obj.df = pd.DataFrame(
@@ -394,8 +433,8 @@ def test_check_enzyme_specificity_nonspecific():
         params={
             "cpus": 2,
             "rt_pickle_name": pytest._test_path / "data/_ursgal_lookup.csv",
-            "enzyme": "nonspecific",
-            "terminal_cleavage_site_integrity": "all",
+            "enzyme": {"original_value": "nonspecific", "translated_value": ".^"},
+            "terminal_cleavage_site_integrity": {"translated_value": "all"},
         },
     )
     obj.df = pd.DataFrame(
@@ -410,3 +449,35 @@ def test_check_enzyme_specificity_nonspecific():
     assert all(obj.df["enzn"] == [True, True, True, True])
     assert all(obj.df["enzc"] == [True, True, True, True])
     assert all(obj.df["missed_cleavages"] == [0, 0, 0, 0])
+
+
+def test_groupby_rt_and_spec_id():
+    obj = IdentBaseParser(
+        input_file=None,
+        params={
+            "cpus": 2,
+            "rt_pickle_name": pytest._test_path / "data/_ursgal_lookup.csv",
+        },
+    )
+    obj.df = pd.DataFrame(
+        np.ones((3, len(obj.col_order) + 1)),
+        columns=obj.col_order.to_list() + ["msfragger:hyperscore"],
+    )
+    obj.df["spectrum_id"] = [10152, 10381, 10414]
+    obj.df["retention_time_seconds"] = [
+        1912.25016,  # Identical
+        1943.058,  # Very similar
+        1946.76,  # Similar
+    ]
+    obj.get_meta_info()
+    assert (
+        all(obj.df["exp_mz"] == [759.379943847656, 439.196746826172, 739.358459472656])
+        is True
+    )
+    assert (
+        all(obj.df["retention_time_seconds"] == [114735.0096, 116583.5268, 116805.3012])
+        is True
+    )
+    with pytest.raises(KeyError):
+        obj.df[0, "spectrum_id"] = 1234567
+        obj.get_meta_info()

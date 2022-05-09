@@ -66,6 +66,15 @@ def test_engine_parsers_comet_check_dataframe_integrity():
             "cpus": 2,
             "rt_pickle_name": rt_lookup_path,
             "database": db_path,
+            "enzyme": {
+                "original_value": "trypsin",
+                "translated_value": "(?<=[KR])(?![P])",
+            },
+            "terminal_cleavage_site_integrity": {"translated_value": "any"},
+            "validation_score_field": {
+                "translated_value": {"mascot_2_6_2": "mascot:score"}
+            },
+            "bigger_scores_better": {"translated_value": {"mascot_2_6_2": False}},
             "modifications": [
                 {
                     "aa": "M",
@@ -134,7 +143,7 @@ def test_get_single_spec_df():
                 "mascot_2_6_2",
                 "2941",
                 "000000000",
-                None,
+                "2010.87902832031",
                 "35.26",
                 "2",
                 "5",

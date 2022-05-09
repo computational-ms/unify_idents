@@ -39,6 +39,9 @@ def _get_single_spec_df(reference_dict, spectrum):
     spec_level_dict["spectrum_id"] = re.search(
         r"(?<=scans=)(\d+)", spec_level_info
     ).group()
+    spec_level_dict["retention_time_seconds"] = re.search(
+        r"(?<=rtinseconds=)(\d+\.\d+)", spec_level_info
+    ).group()
 
     # Iterate children
     for psm in spectrum[2]:

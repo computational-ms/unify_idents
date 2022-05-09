@@ -65,6 +65,15 @@ def test_engine_parsers_comet_check_dataframe_integrity():
         input_file,
         params={
             "cpus": 2,
+            "enzyme": {
+                "original_value": "trypsin",
+                "translated_value": "(?<=[KR])(?![P])",
+            },
+            "terminal_cleavage_site_integrity": {"translated_value": "any"},
+            "validation_score_field": {
+                "translated_value": {"comet_2020_01_4": "comet:e_value"}
+            },
+            "bigger_scores_better": {"translated_value": {"comet_2020_01_4": False}},
             "rt_pickle_name": rt_lookup_path,
             "database": db_path,
             "modifications": [
