@@ -164,7 +164,6 @@ class IdentBaseParser(BaseParser):
         Modifications are sorted by position and leading, repeated or trailing delimiters are removed
         Operations are performed inplace on self.df
         """
-
         # Remove any trailing or leading delimiters or only-delimiter modstrings
         self.df.loc[:, "modifications"] = self.df.loc[:, "modifications"].str.replace(
             r"^;+(?=\w)", "", regex=True
