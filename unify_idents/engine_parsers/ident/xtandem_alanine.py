@@ -146,8 +146,8 @@ class XTandemAlanine_Parser(IdentBaseParser):
                         self.mod_dict[name]["aa"]
                     ) & df["modifications"].str.join("|").str.contains(m)
                     n_term = (~in_seq) & (
-                            ("Prot-N-term" in self.mod_dict[name]["position"])
-                            & df["modifications"].str.join("|").str.contains(m)
+                        ("Prot-N-term" in self.mod_dict[name]["position"])
+                        & df["modifications"].str.join("|").str.contains(m)
                     )
                     if in_seq.sum() != 0:
                         new_mods.loc[in_seq] += f"{name}:{int(pos)+1};"
