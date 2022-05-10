@@ -101,10 +101,8 @@ def test_add_ranks_increasing_engine_scores_better():
     obj = IdentBaseParser(
         input_file=None,
         params={
-            "validation_score_field": {
-                "translated_value": {"msfragger_3_0": "msfragger:hyperscore"}
-            },
-            "bigger_scores_better": {"translated_value": {"msfragger_3_0": True}},
+            "validation_score_field": {"msfragger_3_0": "msfragger:hyperscore"},
+            "bigger_scores_better": {"msfragger_3_0": True},
         },
     )
     obj.df = pd.DataFrame(
@@ -121,12 +119,8 @@ def test_add_ranks_decreasing_engine_scores_better():
     obj = IdentBaseParser(
         input_file=None,
         params={
-            "validation_score_field": {
-                "translated_value": {"msgfplus_2021_03_22": "ms-gf:spec_evalue"}
-            },
-            "bigger_scores_better": {
-                "translated_value": {"msgfplus_2021_03_22": False}
-            },
+            "validation_score_field": {"msgfplus_2021_03_22": "ms-gf:spec_evalue"},
+            "bigger_scores_better": {"msgfplus_2021_03_22": False},
         },
     )
     obj.df = pd.DataFrame(
@@ -145,10 +139,8 @@ def test_add_protein_ids():
         params={
             "cpus": 2,
             "database": pytest._test_path / "data/test_Creinhardtii_target_decoy.fasta",
-            "validation_score_field": {
-                "translated_value": {"msfragger_3_0": "msfragger:hyperscore"}
-            },
-            "bigger_scores_better": {"translated_value": {"msfragger_3_0": True}},
+            "validation_score_field": {"msfragger_3_0": "msfragger:hyperscore"},
+            "bigger_scores_better": {"msfragger_3_0": True},
         },
     )
     obj.df = pd.DataFrame(
@@ -183,10 +175,8 @@ def test_calc_masses_offsets_and_composition():
         params={
             "cpus": 2,
             "rt_pickle_name": pytest._test_path / "data/_ursgal_lookup.csv",
-            "validation_score_field": {
-                "translated_value": {"msfragger_3_0": "msfragger:hyperscore"}
-            },
-            "bigger_scores_better": {"translated_value": {"msfragger_3_0": True}},
+            "validation_score_field": {"msfragger_3_0": "msfragger:hyperscore"},
+            "bigger_scores_better": {"msfragger_3_0": True},
         },
     )
     obj.df = pd.DataFrame(
@@ -379,11 +369,8 @@ def test_check_enzyme_specificity_trypsin_all():
         params={
             "cpus": 2,
             "rt_pickle_name": pytest._test_path / "data/_ursgal_lookup.csv",
-            "enzyme": {
-                "original_value": "trypsin",
-                "translated_value": "(?<=[KR])(?![P])",
-            },
-            "terminal_cleavage_site_integrity": {"translated_value": "all"},
+            "enzyme": "(?<=[KR])(?![P])",
+            "terminal_cleavage_site_integrity": "all",
         },
     )
     obj.df = pd.DataFrame(
@@ -406,11 +393,8 @@ def test_check_enzyme_specificity_trypsin_any():
         params={
             "cpus": 2,
             "rt_pickle_name": pytest._test_path / "data/_ursgal_lookup.csv",
-            "enzyme": {
-                "original_value": "trypsin",
-                "translated_value": "(?<=[KR])(?![P])",
-            },
-            "terminal_cleavage_site_integrity": {"translated_value": "any"},
+            "enzyme": "(?<=[KR])(?![P])",
+            "terminal_cleavage_site_integrity": "any",
         },
     )
     obj.df = pd.DataFrame(
@@ -433,8 +417,8 @@ def test_check_enzyme_specificity_nonspecific():
         params={
             "cpus": 2,
             "rt_pickle_name": pytest._test_path / "data/_ursgal_lookup.csv",
-            "enzyme": {"original_value": "nonspecific", "translated_value": ".^"},
-            "terminal_cleavage_site_integrity": {"translated_value": "all"},
+            "enzyme": ".^",
+            "terminal_cleavage_site_integrity": "all",
         },
     )
     obj.df = pd.DataFrame(
