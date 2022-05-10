@@ -171,6 +171,9 @@ class Mascot_2_6_2_Parser(IdentBaseParser):
                 continue
             if mod_key in self.mods["opt"]:
                 formatted_mod_str += f"{self.mods['opt'][mod_key]}:{pos};"
+            else:
+                logger.error(f"Modification {mod_key} could not be mapped.")
+                raise KeyError
 
         return formatted_mod_str
 
