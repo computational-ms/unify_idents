@@ -1,5 +1,3 @@
-from pathlib import Path
-
 import pytest
 
 from unify_idents.engine_parsers.base_parser import BaseParser

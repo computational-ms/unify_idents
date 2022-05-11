@@ -1,11 +1,11 @@
 #!/usr/bin/env python
-from pathlib import Path
+
+import xml.etree.ElementTree as ETree
 
 import numpy as np
 import pandas as pd
 import pytest
 
-import xml.etree.ElementTree as ETree
 from unify_idents.engine_parsers.ident.xtandem_alanine import (
     XTandemAlanine_Parser,
     _get_single_spec_df,

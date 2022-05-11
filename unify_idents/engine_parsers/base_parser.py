@@ -2,6 +2,7 @@
 import multiprocessing as mp
 
 import pandas as pd
+import regex as re
 import uparma
 from chemical_composition import ChemicalComposition
 from loguru import logger
@@ -164,15 +165,6 @@ class IdentBaseParser(BaseParser):
         Modifications are sorted by position and leading, repeated or trailing delimiters are removed
         Operations are performed inplace on self.df
         """
-        # Ensure same order of modifications
-        self.df.loc[:, "modifications"] = (
-            self.df["modifications"]
-            .fillna("")
-            .str.split(";")
-            .apply(sorted, key=lambda x: x.split(":")[::-1])
-            .str.join(";")
-        )
-
         # Remove any trailing or leading delimiters or only-delimiter modstrings
         self.df.loc[:, "modifications"] = self.df.loc[:, "modifications"].str.replace(
             r"^;+(?=\w)", "", regex=True
@@ -182,6 +174,24 @@ class IdentBaseParser(BaseParser):
         )
         self.df.loc[:, "modifications"] = self.df.loc[:, "modifications"].str.replace(
             r"^;+$", "", regex=True
+        )
+
+        # Ensure same order of modifications
+        sort_pattern = r"(\w+)(?:\:)(\d+)"
+        self.df.loc[:, "modifications"] = (
+            self.df["modifications"]
+            .fillna("")
+            .str.split(";")
+            .apply(
+                sorted,
+                key=lambda x: (
+                    int(re.search(sort_pattern, x).group(2)),
+                    re.search(sort_pattern, x).group(1),
+                )
+                if x != ""
+                else "",
+            )
+            .str.join(";")
         )
 
     def assert_only_iupac_and_missing_aas(self):
@@ -226,9 +236,12 @@ class IdentBaseParser(BaseParser):
         new_columns.rename(columns=columns_translations, inplace=True)
 
         self.df.loc[:, new_columns.columns] = new_columns.values
-        self.df = self.df.iloc[
-            new_columns.dropna(axis=0, how="all").index, :
-        ].reset_index(drop=True)
+        new_columns = new_columns.dropna(axis=0, how="all")
+        if len(new_columns) != len(self.df):
+            logger.warning(
+                f"{len(self.df)-len(new_columns)} PSMs were dropped because their respective sequences could not be mapped."
+            )
+        self.df = self.df.iloc[new_columns.index, :].reset_index(drop=True)
 
     def check_enzyme_specificity(self):
         """Check consistency of N/C-terminal cleavage sites.

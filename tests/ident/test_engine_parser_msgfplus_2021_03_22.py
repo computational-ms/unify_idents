@@ -1,7 +1,7 @@
 #!/usr/bin/env python
-from pathlib import Path
 
 import xml.etree.ElementTree as ETree
+
 import pandas as pd
 import pytest
 

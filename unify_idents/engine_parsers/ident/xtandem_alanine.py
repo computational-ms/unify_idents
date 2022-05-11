@@ -1,11 +1,11 @@
 """Engine parser."""
 import multiprocessing as mp
-import sys
 import xml.etree.ElementTree as ETree
-from itertools import repeat
 
 import pandas as pd
 import regex as re
+import sys
+from itertools import repeat
 from loguru import logger
 from tqdm import tqdm
 
@@ -146,7 +146,10 @@ class XTandemAlanine_Parser(IdentBaseParser):
                         self.mod_dict[name]["aa"]
                     ) & df["modifications"].str.join("|").str.contains(m)
                     n_term = (~in_seq) & (
-                        ("Prot-N-term" in self.mod_dict[name]["position"])
+                        (
+                            ("N-term" in self.mod_dict[name]["position"])
+                            | ("Prot-N-term" in self.mod_dict[name]["position"])
+                        )
                         & df["modifications"].str.join("|").str.contains(m)
                     )
                     if in_seq.sum() != 0:
