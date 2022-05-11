@@ -5,14 +5,19 @@ import unify_idents
 COMET_TEST_FILE = pytest._test_path / "data" / "mapping_data" / "trunc_comet.mzid"
 # MASCOT_TEST_FILE = ""
 # MSAMANDA_TEST_FILE = ""
-MSFRAGGER_TEST_FILE = pytest._test_path / "data" / "mapping_data" / "trunc_msfragger.tsv"
+MSFRAGGER_TEST_FILE = (
+    pytest._test_path / "data" / "mapping_data" / "trunc_msfragger.tsv"
+)
 MSGFPLUS_TEST_FILE = pytest._test_path / "data" / "mapping_data" / "trunc_msgfplus.mzid"
 OMSSA_TEST_FILE = pytest._test_path / "data" / "mapping_data" / "trunc_omssa.csv"
 XTANDEM_TEST_FILE = pytest._test_path / "data" / "mapping_data" / "trunc_xtandem.xml"
 
 PARAMS = {
     "database": pytest._test_path / "data" / "mapping_data" / "trunc_fasta.protein.faa",
-    "rt_pickle_name": pytest._test_path / "data" / "mapping_data" / "trunc_meta.spectra_meta.csv",
+    "rt_pickle_name": pytest._test_path
+    / "data"
+    / "mapping_data"
+    / "trunc_meta.spectra_meta.csv",
     "enzyme": {
         "original_value": "trypsin",
         "translated_value": "(?<=[KR])(?![P])",
@@ -106,9 +111,7 @@ def test_msgfplus_mapping():
 
 
 def test_omssa_mapping():
-    df = unify_idents.Unify(
-        input_file=OMSSA_TEST_FILE, params=PARAMS
-    ).get_dataframe()
+    df = unify_idents.Unify(input_file=OMSSA_TEST_FILE, params=PARAMS).get_dataframe()
     mod_str = df.loc[0, "modifications"]
     assert mod_str == "TMTpro:0;Carbamidomethyl:6"
 
