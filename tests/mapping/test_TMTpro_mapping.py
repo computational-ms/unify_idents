@@ -1,17 +1,18 @@
-import pandas as pd
+import pytest
+
 import unify_idents
 
-COMET_TEST_FILE = "tests/data/mapping_data/trunc_comet.mzid"
+COMET_TEST_FILE = pytest._test_path / "data" / "mapping_data" / "trunc_comet.mzid"
 # MASCOT_TEST_FILE = ""
 # MSAMANDA_TEST_FILE = ""
-MSFRAGGER_TEST_FILE = "tests/data/mapping_data/trunc_msfragger.tsv"
-MSGFPLUS_TEST_FILE = "tests/data/mapping_data/trunc_msgfplus.mzid"
-# OMSSA_TEST_FILE = ""
-XTANDEM_TEST_FILE = "tests/data/mapping_data/trunc_xtandem.xml"
+MSFRAGGER_TEST_FILE = pytest._test_path / "data" / "mapping_data" / "trunc_msfragger.tsv"
+MSGFPLUS_TEST_FILE = pytest._test_path / "data" / "mapping_data" / "trunc_msgfplus.mzid"
+OMSSA_TEST_FILE = pytest._test_path / "data" / "mapping_data" / "trunc_omssa.csv"
+XTANDEM_TEST_FILE = pytest._test_path / "data" / "mapping_data" / "trunc_xtandem.xml"
 
 PARAMS = {
-    "database": "tests/data/mapping_data/trunc_fasta.protein.faa",
-    "rt_pickle_name": "tests/data/mapping_data/trunc_meta.spectra_meta.csv",
+    "database": pytest._test_path / "data" / "mapping_data" / "trunc_fasta.protein.faa",
+    "rt_pickle_name": pytest._test_path / "data" / "mapping_data" / "trunc_meta.spectra_meta.csv",
     "enzyme": {
         "original_value": "trypsin",
         "translated_value": "(?<=[KR])(?![P])",
@@ -23,6 +24,7 @@ PARAMS = {
             "comet_2020_01_4": "comet:e_value",
             "msgfplus_2021_03_22": "ms-gf:spec_evalue",
             "xtandem_alanine": "x!tandem:hyperscore",
+            "omssa_2_1_9": "omssa:pvalue",
         }
     },
     "bigger_scores_better": {
@@ -31,6 +33,7 @@ PARAMS = {
             "comet_2020_01_4": False,
             "msgfplus_2021_03_22": False,
             "xtandem_alanine": True,
+            "omssa_2_1_9": True,
         }
     },
     "modifications": [
@@ -102,10 +105,12 @@ def test_msgfplus_mapping():
     assert mod_str == "TMTpro:0;Oxidation:7;Carbamidomethyl:14;TMTpro:26;TMTpro:27"
 
 
-# def test_omssa_mapping():
-#     df = pd.read_csv(OMSSA_TEST_FILE)
-#     assert df["modifications"].str.contains("TMTpro").all() is True
-#     assert df["modifications"].str.contains("Carbamidomethyl").all() is True
+def test_omssa_mapping():
+    df = unify_idents.Unify(
+        input_file=OMSSA_TEST_FILE, params=PARAMS
+    ).get_dataframe()
+    mod_str = df.loc[0, "modifications"]
+    assert mod_str == "TMTpro:0;Carbamidomethyl:6"
 
 
 def test_xtandem_mapping():

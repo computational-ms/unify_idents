@@ -2,8 +2,8 @@
 import multiprocessing as mp
 
 import pandas as pd
-import uparma
 import regex as re
+import uparma
 from chemical_composition import ChemicalComposition
 from loguru import logger
 from peptide_mapper.mapper import UPeptideMapper

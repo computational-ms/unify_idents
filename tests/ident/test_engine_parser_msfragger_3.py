@@ -1,5 +1,3 @@
-from pathlib import Path
-
 import pytest
 
 from unify_idents.engine_parsers.ident.msfragger_3_parser import MSFragger_3_Parser

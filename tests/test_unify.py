@@ -1,11 +1,13 @@
 #!/usr/bin/env python
 from pathlib import Path
-import pytest
-import uparma
 
+import pytest
+
+import unify_idents
 from unify_idents.engine_parsers.ident.comet_2020_01_4_parser import (
     Comet_2020_01_4_Parser,
 )
+from unify_idents.engine_parsers.ident.mascot_2_6_2_parser import Mascot_2_6_2_Parser
 from unify_idents.engine_parsers.ident.msamanda_2_parser import MSAmanda_2_Parser
 from unify_idents.engine_parsers.ident.msfragger_3_parser import MSFragger_3_Parser
 from unify_idents.engine_parsers.ident.msgfplus_2021_03_22_parser import (
@@ -13,9 +15,7 @@ from unify_idents.engine_parsers.ident.msgfplus_2021_03_22_parser import (
 )
 from unify_idents.engine_parsers.ident.omssa_2_1_9_parser import Omssa_Parser
 from unify_idents.engine_parsers.ident.xtandem_alanine import XTandemAlanine_Parser
-from unify_idents.engine_parsers.ident.mascot_2_6_2_parser import Mascot_2_6_2_Parser
 from unify_idents.unify import Unify
-import unify_idents
 
 
 def test_unify_get_parser_classes():

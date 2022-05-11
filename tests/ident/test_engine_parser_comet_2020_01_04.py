@@ -1,9 +1,9 @@
 #!/usr/bin/env python
-from pathlib import Path
+
+import xml.etree.ElementTree as ETree
 
 import pandas as pd
 import pytest
-import xml.etree.ElementTree as ETree
 
 from unify_idents.engine_parsers.ident.comet_2020_01_4_parser import (
     Comet_2020_01_4_Parser,

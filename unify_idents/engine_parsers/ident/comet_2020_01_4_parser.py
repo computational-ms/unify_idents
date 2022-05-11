@@ -1,12 +1,12 @@
 """Engine parser."""
 import multiprocessing as mp
-import sys
 import xml.etree.ElementTree as ETree
-from itertools import repeat
 
 import numpy as np
 import pandas as pd
 import regex as re
+import sys
+from itertools import repeat
 from loguru import logger
 from tqdm import tqdm
 
