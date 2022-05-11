@@ -106,7 +106,7 @@ def test_msgfplus_mapping():
 def test_omssa_mapping():
     df = unify_idents.Unify(input_file=OMSSA_TEST_FILE, params=PARAMS).get_dataframe()
     mod_str = df.loc[0, "modifications"]
-    assert mod_str == "TMTpro:0;Carbamidomethyl:6"
+    assert mod_str == "TMTpro:0;Carbamidomethyl:5;Carbamidomethyl:17;TMTpro:20;TMTpro:27"
 
 
 def test_xtandem_mapping():
