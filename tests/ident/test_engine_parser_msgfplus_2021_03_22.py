@@ -1,7 +1,7 @@
 #!/usr/bin/env python
-from pathlib import Path
 
 import xml.etree.ElementTree as ETree
+
 import pandas as pd
 import pytest
 
@@ -17,17 +17,10 @@ def test_engine_parsers_msgfplus_init():
         input_file,
         params={
             "cpus": 2,
-            "enzyme": {
-                "original_value": "trypsin",
-                "translated_value": "(?<=[KR])(?![P])",
-            },
-            "terminal_cleavage_site_integrity": {"translated_value": "any"},
-            "validation_score_field": {
-                "translated_value": {"msgfplus_2021_03_22": "ms-gf:spec_evalue"}
-            },
-            "bigger_scores_better": {
-                "translated_value": {"msgfplus_2021_03_22": False}
-            },
+            "enzyme": "(?<=[KR])(?![P])",
+            "terminal_cleavage_site_integrity": "any",
+            "validation_score_field": {"msgfplus_2021_03_22": "ms-gf:spec_evalue"},
+            "bigger_scores_better": {"msgfplus_2021_03_22": False},
             "modifications": [
                 {
                     "aa": "M",
@@ -77,17 +70,10 @@ def test_engine_parsers_msgfplus_check_dataframe_integrity():
             "cpus": 2,
             "rt_pickle_name": rt_lookup_path,
             "database": db_path,
-            "enzyme": {
-                "original_value": "trypsin",
-                "translated_value": "(?<=[KR])(?![P])",
-            },
-            "terminal_cleavage_site_integrity": {"translated_value": "any"},
-            "validation_score_field": {
-                "translated_value": {"msgfplus_2021_03_22": "ms-gf:spec_evalue"}
-            },
-            "bigger_scores_better": {
-                "translated_value": {"msgfplus_2021_03_22": False}
-            },
+            "enzyme": "(?<=[KR])(?![P])",
+            "terminal_cleavage_site_integrity": "any",
+            "validation_score_field": {"msgfplus_2021_03_22": "ms-gf:spec_evalue"},
+            "bigger_scores_better": {"msgfplus_2021_03_22": False},
             "modifications": [
                 {
                     "aa": "M",
@@ -132,17 +118,10 @@ def test_engine_parsers_msgfplus_get_peptide_lookup():
         input_file,
         params={
             "cpus": 2,
-            "enzyme": {
-                "original_value": "trypsin",
-                "translated_value": "(?<=[KR])(?![P])",
-            },
-            "terminal_cleavage_site_integrity": {"translated_value": "any"},
-            "validation_score_field": {
-                "translated_value": {"msgfplus_2021_03_22": "ms-gf:spec_evalue"}
-            },
-            "bigger_scores_better": {
-                "translated_value": {"msgfplus_2021_03_22": False}
-            },
+            "enzyme": "(?<=[KR])(?![P])",
+            "terminal_cleavage_site_integrity": "any",
+            "validation_score_field": {"msgfplus_2021_03_22": "ms-gf:spec_evalue"},
+            "bigger_scores_better": {"msgfplus_2021_03_22": False},
             "modifications": [
                 {
                     "aa": "M",

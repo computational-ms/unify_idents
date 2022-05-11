@@ -1,0 +1,2 @@
+Spectrum number, Filename/id, Peptide, E-value, Mass, gi, Accession, Start, Stop, Defline, Mods, Charge, Theo Mass, P-value, NIST score
+59037,661b03294f19f32dbf30748b4e691535_1.pymzml.59037.59037.3,tLPLCNLLLILLSTDTCVLKENELFHK,0.286584064905776,4109.345,0,BL_ORD_ID:2331,300,326,decoy_sp|P50443|S26A2_HUMAN Sulfate transporter OS=Homo sapiens OX=9606 GN=SLC26A2 PE=1 SV=2,TMTpro:0,5,4109.345,0.0034117150584021,0

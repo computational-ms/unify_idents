@@ -2,6 +2,7 @@
 import multiprocessing as mp
 
 import pandas as pd
+import regex as re
 import uparma
 from chemical_composition import ChemicalComposition
 from loguru import logger
@@ -164,15 +165,6 @@ class IdentBaseParser(BaseParser):
         Modifications are sorted by position and leading, repeated or trailing delimiters are removed
         Operations are performed inplace on self.df
         """
-        # Ensure same order of modifications
-        self.df.loc[:, "modifications"] = (
-            self.df["modifications"]
-            .fillna("")
-            .str.split(";")
-            .apply(sorted, key=lambda x: x.split(":")[::-1])
-            .str.join(";")
-        )
-
         # Remove any trailing or leading delimiters or only-delimiter modstrings
         self.df.loc[:, "modifications"] = self.df.loc[:, "modifications"].str.replace(
             r"^;+(?=\w)", "", regex=True
@@ -182,6 +174,24 @@ class IdentBaseParser(BaseParser):
         )
         self.df.loc[:, "modifications"] = self.df.loc[:, "modifications"].str.replace(
             r"^;+$", "", regex=True
+        )
+
+        # Ensure same order of modifications
+        sort_pattern = r"(\w+)(?:\:)(\d+)"
+        self.df.loc[:, "modifications"] = (
+            self.df["modifications"]
+            .fillna("")
+            .str.split(";")
+            .apply(
+                sorted,
+                key=lambda x: (
+                    int(re.search(sort_pattern, x).group(2)),
+                    re.search(sort_pattern, x).group(1),
+                )
+                if x != ""
+                else "",
+            )
+            .str.join(";")
         )
 
     def assert_only_iupac_and_missing_aas(self):
@@ -226,9 +236,12 @@ class IdentBaseParser(BaseParser):
         new_columns.rename(columns=columns_translations, inplace=True)
 
         self.df.loc[:, new_columns.columns] = new_columns.values
-        self.df = self.df.iloc[
-            new_columns.dropna(axis=0, how="all").index, :
-        ].reset_index(drop=True)
+        new_columns = new_columns.dropna(axis=0, how="all")
+        if len(new_columns) != len(self.df):
+            logger.warning(
+                f"{len(self.df)-len(new_columns)} PSMs were dropped because their respective sequences could not be mapped."
+            )
+        self.df = self.df.iloc[new_columns.index, :].reset_index(drop=True)
 
     def check_enzyme_specificity(self):
         """Check consistency of N/C-terminal cleavage sites.
@@ -236,15 +249,13 @@ class IdentBaseParser(BaseParser):
         Calculates number of missed cleavage sites.
         Operations are performed inplace.
         """
-        if self.params["enzyme"]["original_value"] == "nonspecific":
+        if self.params["enzyme"] == ".^":
             self.df.loc[:, ["enzn", "enzc"]] = True
             self.df.loc[:, "missed_cleavages"] = 0
             return None
 
-        enzyme_pattern = self.params["enzyme"]["translated_value"]
-        integrity_strictness = self.params["terminal_cleavage_site_integrity"][
-            "translated_value"
-        ]
+        enzyme_pattern = self.params["enzyme"]
+        integrity_strictness = self.params["terminal_cleavage_site_integrity"]
 
         pren_seq = (
             pd.concat(
@@ -377,10 +388,8 @@ class IdentBaseParser(BaseParser):
         Operations are performed inplace on self.df
         """
         eng_name = self.df["search_engine"].unique()[0]
-        score_col = self.params["validation_score_field"]["translated_value"][eng_name]
-        top_is_highest = self.params["bigger_scores_better"]["translated_value"][
-            eng_name
-        ]
+        score_col = self.params["validation_score_field"][eng_name]
+        top_is_highest = self.params["bigger_scores_better"][eng_name]
         ranking_needs_to_be_ascending = False if top_is_highest is True else True
         self.df.loc[:, score_col] = self.df[score_col].astype(float)
         self.df.loc[:, "rank"] = (

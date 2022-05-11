@@ -1,9 +1,9 @@
 #!/usr/bin/env python
-from pathlib import Path
+
+import xml.etree.ElementTree as ETree
 
 import pandas as pd
 import pytest
-import xml.etree.ElementTree as ETree
 
 from unify_idents.engine_parsers.ident.comet_2020_01_4_parser import (
     Comet_2020_01_4_Parser,
@@ -65,15 +65,10 @@ def test_engine_parsers_comet_check_dataframe_integrity():
         input_file,
         params={
             "cpus": 2,
-            "enzyme": {
-                "original_value": "trypsin",
-                "translated_value": "(?<=[KR])(?![P])",
-            },
-            "terminal_cleavage_site_integrity": {"translated_value": "any"},
-            "validation_score_field": {
-                "translated_value": {"comet_2020_01_4": "comet:e_value"}
-            },
-            "bigger_scores_better": {"translated_value": {"comet_2020_01_4": False}},
+            "enzyme": "(?<=[KR])(?![P])",
+            "terminal_cleavage_site_integrity": "any",
+            "validation_score_field": {"comet_2020_01_4": "comet:e_value"},
+            "bigger_scores_better": {"comet_2020_01_4": False},
             "rt_pickle_name": rt_lookup_path,
             "database": db_path,
             "modifications": [
