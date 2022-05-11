@@ -18,28 +18,21 @@ PARAMS = {
     / "data"
     / "mapping_data"
     / "trunc_meta.spectra_meta.csv",
-    "enzyme": {
-        "original_value": "trypsin",
-        "translated_value": "(?<=[KR])(?![P])",
-    },
-    "terminal_cleavage_site_integrity": {"translated_value": "any"},
+    "enzyme": "(?<=[KR])(?![P])",
+    "terminal_cleavage_site_integrity": "any",
     "validation_score_field": {
-        "translated_value": {
-            "msfragger_3_0": "msfragger:hyperscore",
-            "comet_2020_01_4": "comet:e_value",
-            "msgfplus_2021_03_22": "ms-gf:spec_evalue",
-            "xtandem_alanine": "x!tandem:hyperscore",
-            "omssa_2_1_9": "omssa:pvalue",
-        }
+        "msfragger_3_0": "msfragger:hyperscore",
+        "comet_2020_01_4": "comet:e_value",
+        "msgfplus_2021_03_22": "ms-gf:spec_evalue",
+        "xtandem_alanine": "x!tandem:hyperscore",
+        "omssa_2_1_9": "omssa:pvalue",
     },
     "bigger_scores_better": {
-        "translated_value": {
-            "msfragger_3_0": True,
-            "comet_2020_01_4": False,
-            "msgfplus_2021_03_22": False,
-            "xtandem_alanine": True,
-            "omssa_2_1_9": True,
-        }
+        "msfragger_3_0": True,
+        "comet_2020_01_4": False,
+        "msgfplus_2021_03_22": False,
+        "xtandem_alanine": True,
+        "omssa_2_1_9": True,
     },
     "modifications": [
         {
