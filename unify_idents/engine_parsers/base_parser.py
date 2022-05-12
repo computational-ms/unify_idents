@@ -1,8 +1,8 @@
 """Parser handler."""
 import multiprocessing as mp
 
-import pandas as pd
 import numpy as np
+import pandas as pd
 import regex as re
 import uparma
 from chemical_composition import ChemicalComposition
