@@ -185,7 +185,7 @@ class IdentBaseParser(BaseParser):
     def sort_mods(self, data):
         """
         Sort mods based on position in peptide.
-        
+
         Args:
             data (list): list of modifications with style "Mod:position"
         Returns:
