@@ -463,3 +463,31 @@ def test_groupby_rt_and_spec_id():
     with pytest.raises(KeyError):
         obj.df[0, "spectrum_id"] = 1234567
         obj.get_meta_info()
+
+
+def test_clean_up_modifications():
+    obj = IdentBaseParser(
+        input_file=None,
+        params={
+            "cpus": 2,
+            "rt_pickle_name": pytest._test_path / "data/_ursgal_lookup.csv",
+            "enzyme": "(?<=[KR])(?![P])",
+            "terminal_cleavage_site_integrity": "any",
+        },
+    )
+    obj.df = pd.DataFrame()
+    obj.df["modifications"] = [
+        "TMTpro:12;;Oxidation:2",
+        "TMTpro:10;Acetyl:0",
+        "",
+        "Acetyl:0;Oxidation:5",
+    ]
+    expected_mods = [
+        "Oxidation:2;TMTpro:12",
+        "Acetyl:0;TMTpro:10",
+        "",
+        "Acetyl:0;Oxidation:5",
+    ]
+
+    obj.clean_up_modifications()
+    assert (obj.df["modifications"] == expected_mods).all()

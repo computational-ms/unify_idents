@@ -177,22 +177,29 @@ class IdentBaseParser(BaseParser):
         )
 
         # Ensure same order of modifications
-        sort_pattern = r"(\w+)(?:\:)(\d+)"
+
         self.df.loc[:, "modifications"] = (
-            self.df["modifications"]
-            .fillna("")
-            .str.split(";")
-            .apply(
-                sorted,
-                key=lambda x: (
-                    int(re.search(sort_pattern, x).group(2)),
-                    re.search(sort_pattern, x).group(1),
-                )
-                if x != ""
-                else "",
-            )
-            .str.join(";")
+            self.df["modifications"].fillna("").str.split(";").apply(self.sort_mods)
         )
+
+    def sort_mods(self, data):
+        """
+        Sort mods based on position in peptide.
+
+        Args:
+            data (list): list of modifications with style "Mod:position"
+        Returns:
+            sorted_formatted_mods (str): String with sorted mods in style "Mod1:pos1;Modn:posn"
+        """
+        sort_pattern = r"(\w+)(?:\:)(\d+)"
+        positions = [
+            int(re.search(r"(\w+)(?:\:)(\d+)", d).group(2)) for d in data if d != ""
+        ]
+        names = [re.search(r"(\w+)(?:\:)(\d+)", d).group(1) for d in data if d != ""]
+        sorted_mods = sorted(zip(names, positions), key=lambda x: x[1])
+        sorted_mods_str = [[str(i) for i in m] for m in sorted_mods]
+        sorted_formatted_mods = ";".join([":".join(m) for m in sorted_mods_str])
+        return sorted_formatted_mods
 
     def assert_only_iupac_and_missing_aas(self):
         """Assert that only IUPAC nomenclature one letter amino acids are used in sequence.
