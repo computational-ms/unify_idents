@@ -2,6 +2,7 @@
 import multiprocessing as mp
 
 import pandas as pd
+import numpy as np
 import regex as re
 import uparma
 from chemical_composition import ChemicalComposition
@@ -335,7 +336,9 @@ class IdentBaseParser(BaseParser):
         """
         rt_lookup = pd.read_csv(self.params["rt_pickle_name"], compression="infer")
         rt_lookup["rt_unit"] = rt_lookup["rt_unit"].replace({"second": 1, "minute": 60})
-        rt_lookup.set_index(["spectrum_id", rt_lookup["rt"].round(2)], inplace=True)
+        rt_lookup.set_index(
+            ["spectrum_id", rt_lookup["rt"].apply(np.trunc, args=(2,))], inplace=True
+        )
         return rt_lookup
 
     def get_meta_info(self):
@@ -360,7 +363,9 @@ class IdentBaseParser(BaseParser):
                 pd.concat(
                     [
                         spec_ids,
-                        self.df["retention_time_seconds"].astype(float).round(2),
+                        self.df["retention_time_seconds"]
+                        .astype(float)
+                        .apply(np.trunc, args=(2,)),
                     ],
                     axis=1,
                 )
