@@ -183,6 +183,14 @@ class IdentBaseParser(BaseParser):
         )
 
     def sort_mods(self, data):
+        """
+        Sort mods based on position in peptide.
+        
+        Args:
+            data (list): list of modifications with style "Mod:position"
+        Returns:
+            sorted_formatted_mods (str): String with sorted mods in style "Mod1:pos1;Modn:posn"
+        """
         sort_pattern = r"(\w+)(?:\:)(\d+)"
         positions = [
             int(re.search(r"(\w+)(?:\:)(\d+)", d).group(2)) for d in data if d != ""
