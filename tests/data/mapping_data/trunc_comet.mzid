@@ -13,12 +13,17 @@
  </AnalysisSoftwareList>
  <SequenceCollection xmlns="http://psidev.info/psi/pi/mzIdentML/1.2">
  <DBSequence id="decoy_sp|P27539|GDF1_HUMAN" accession="decoy_sp|P27539|GDF1_HUMAN" searchDatabase_ref="DB0" />
+ <DBSequence id="sp|Q8N697|S15A4_HUMAN" accession="sp|Q8N697|S15A4_HUMAN" searchDatabase_ref="DB0" />
  <Peptide id="AAAPLGDCAPAMHVAPLACRLSLNFDSVIDNFVVPLSR;38:304.207146;11:15.994915;">
   <PeptideSequence>AAAPLGDCAPAMHVAPLACRLSLNFDSVIDNFVVPLSR</PeptideSequence>
   <Modification location="0" monoisotopicMassDelta="304.207146"></Modification>
   <Modification location="12" monoisotopicMassDelta="15.994915"></Modification>
  </Peptide>
+ <Peptide id="AAAAAAAAGAFAGR;">
+  <PeptideSequence>AAAAAAAAGAFAGR</PeptideSequence>
+ </Peptide>
  <PeptideEvidence id="AAAPLGDCAPAMHVAPLACRLSLNFDSVIDNFVVPLSR;decoy_sp|P27539|GDF1_HUMAN" isDecoy="false" DBSequence_Ref="decoy_sp|P27539|GDF1_HUMAN" />
+ <PeptideEvidence id="AAAAAAAAGAFAGR;sp|Q8N697|S15A4_HUMAN" isDecoy="false" DBSequence_Ref="sp|Q8N697|S15A4_HUMAN" />
  </SequenceCollection>
  <AnalysisCollection>
   <SpectrumIdentification spectrumIdentificationList_ref="SIL" spectrumIdentificationProtocol_ref="SIP" id="SI">
@@ -205,6 +210,18 @@
       <cvParam cvRef="MS" accession="MS:1002255" name="Comet:spscore" value="1.5000" />
       <cvParam cvRef="MS" accession="MS:1002256" name="Comet:sprank" value="33" />
       <cvParam cvRef="MS" accession="MS:1002257" name="Comet:expectation value" value="1.04E+02" />
+     </SpectrumIdentificationItem>
+    </SpectrumIdentificationResult>
+    <SpectrumIdentificationResult id="SIR_1502" spectrumID="scan=21547" spectraData_ref="SD0">
+     <SpectrumIdentificationItem id="SII_0" rank="0" chargeState="2" peptide_ref="AAAAAAAAGAFAGR;" experimentalMassToCharge="574.305481" calculatedMassToCharge="573.804354" passThreshold="true">
+      <PeptideEvidenceRef peptideEvidence_ref="AAAAAAAAGAFAGR;sp|Q8N697|S15A4_HUMAN" />
+      <cvParam cvRef="MS" accession="MS:1001121" name="number of matched peaks" value="5" />
+      <cvParam cvRef="MS" accession="MS:1001362" name="number of unmatched peaks" value="21" />
+      <cvParam cvRef="MS" accession="MS:1002252" name="Comet:xcorr" value="0.7449" />
+      <cvParam cvRef="MS" accession="MS:1002253" name="Comet:deltacn" value="0.1669" />
+      <cvParam cvRef="MS" accession="MS:1002255" name="Comet:spscore" value="41.6000" />
+      <cvParam cvRef="MS" accession="MS:1002256" name="Comet:sprank" value="2" />
+      <cvParam cvRef="MS" accession="MS:1002257" name="Comet:expectation value" value="4.44E+00" />
      </SpectrumIdentificationItem>
     </SpectrumIdentificationResult>
    </SpectrumIdentificationList>
