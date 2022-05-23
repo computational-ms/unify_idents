@@ -384,12 +384,13 @@ class IdentBaseParser(BaseParser):
             )
         try:
             self.df["retention_time_seconds"] = (
-                rt_lookup.loc[spec_rt_idx, ["rt", "rt_unit"]].product(axis=1).to_list()
+                rt_lookup.loc[spec_rt_idx, ["rt", "rt_unit"]]
+                .astype(float)
+                .product(axis=1)
+                .to_list()
             )
         except KeyError:
-            logger.warning(
-                "Retention times could not be uniquely mapped to meta information."
-            )
+            logger.warning("PSMs could not be uniquely mapped to meta information.")
             logger.info("Continuing with smallest delta retention times.")
             missing_truncated_indices = set(
                 ind for ind in spec_rt_idx if ind not in rt_lookup.index
@@ -398,7 +399,7 @@ class IdentBaseParser(BaseParser):
             for ind in missing_truncated_indices:
                 meta_rt = rt_lookup.loc[ind[0], "rt"]
                 smallest_delta_idx = abs(meta_rt - ind[1]).idxmin()
-                if abs(meta_rt.loc[smallest_delta_idx]) <= 10 ** (
+                if abs(meta_rt.loc[smallest_delta_idx] - ind[1]) <= 10 ** (
                     -self.rt_truncate_precision
                 ):
                     ind_mapping[ind] = (ind[0], smallest_delta_idx)
