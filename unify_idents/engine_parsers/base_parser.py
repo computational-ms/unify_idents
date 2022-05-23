@@ -1,6 +1,7 @@
 """Parser handler."""
 import multiprocessing as mp
 
+import numpy as np
 import pandas as pd
 import regex as re
 import uparma
@@ -82,6 +83,7 @@ class IdentBaseParser(BaseParser):
             mod_list=self.params.get("modifications", [])
         )
         self.mod_dict = self._create_mod_dicts()
+        self.rt_truncate_precision = 2
         self.reference_dict = {
             "exp_mz": None,
             "calc_mz": None,
@@ -192,10 +194,8 @@ class IdentBaseParser(BaseParser):
             sorted_formatted_mods (str): String with sorted mods in style "Mod1:pos1;Modn:posn"
         """
         sort_pattern = r"(\w+)(?:\:)(\d+)"
-        positions = [
-            int(re.search(r"(\w+)(?:\:)(\d+)", d).group(2)) for d in data if d != ""
-        ]
-        names = [re.search(r"(\w+)(?:\:)(\d+)", d).group(1) for d in data if d != ""]
+        positions = [int(re.search(sort_pattern, d).group(2)) for d in data if d != ""]
+        names = [re.search(sort_pattern, d).group(1) for d in data if d != ""]
         sorted_mods = sorted(zip(names, positions), key=lambda x: x[1])
         sorted_mods_str = [[str(i) for i in m] for m in sorted_mods]
         sorted_formatted_mods = ";".join([":".join(m) for m in sorted_mods_str])
@@ -341,8 +341,16 @@ class IdentBaseParser(BaseParser):
             rt_lookup (pd.DataFrame): loaded rt_pickle_file indexable by Spectrum ID
         """
         rt_lookup = pd.read_csv(self.params["rt_pickle_name"], compression="infer")
-        rt_lookup["rt_unit"] = rt_lookup["rt_unit"].replace({"second": 1, "minute": 60})
-        rt_lookup.set_index(["spectrum_id", rt_lookup["rt"].round(2)], inplace=True)
+        rt_lookup["rt_unit"] = rt_lookup["rt_unit"].replace(
+            {"second": 1, "minute": 60, "s": 1, "min": 60}
+        )
+        rt_lookup.set_index(
+            [
+                "spectrum_id",
+                rt_lookup["rt"].apply(np.trunc, args=(self.rt_truncate_precision,)),
+            ],
+            inplace=True,
+        )
         return rt_lookup
 
     def get_meta_info(self):
@@ -367,16 +375,49 @@ class IdentBaseParser(BaseParser):
                 pd.concat(
                     [
                         spec_ids,
-                        self.df["retention_time_seconds"].astype(float).round(2),
+                        self.df["retention_time_seconds"]
+                        .astype(float)
+                        .apply(np.trunc, args=(self.rt_truncate_precision,)),
                     ],
                     axis=1,
                 )
                 .apply(tuple, axis=1)
                 .to_list()
             )
-        self.df["retention_time_seconds"] = (
-            rt_lookup.loc[spec_rt_idx, ["rt", "rt_unit"]].product(axis=1).to_list()
-        )
+        try:
+            self.df["retention_time_seconds"] = (
+                rt_lookup.loc[spec_rt_idx, ["rt", "rt_unit"]]
+                .astype(float)
+                .product(axis=1)
+                .to_list()
+            )
+        except KeyError:
+            logger.warning("PSMs could not be uniquely mapped to meta information.")
+            logger.info("Continuing with smallest delta retention times.")
+            missing_truncated_indices = set(
+                ind for ind in spec_rt_idx if ind not in rt_lookup.index
+            )
+            ind_mapping = {}
+            for ind in missing_truncated_indices:
+                meta_rt = rt_lookup.loc[ind[0], "rt"]
+                smallest_delta_idx = abs(meta_rt - ind[1]).idxmin()
+                if abs(meta_rt.loc[smallest_delta_idx] - ind[1]) <= 10 ** (
+                    -self.rt_truncate_precision
+                ):
+                    ind_mapping[ind] = (ind[0], smallest_delta_idx)
+                else:
+                    logger.error(
+                        f"No PSMs with (spectrum_id, retention_time) {ind} in meta information."
+                    )
+                    raise KeyError
+            spec_rt_idx = [ind_mapping.get(ind, ind) for ind in spec_rt_idx]
+            self.df["retention_time_seconds"] = (
+                rt_lookup.loc[spec_rt_idx, ["rt", "rt_unit"]]
+                .astype(float)
+                .product(axis=1)
+                .to_list()
+            )
+
         self.df["exp_mz"] = rt_lookup.loc[spec_rt_idx, "precursor_mz"].to_list()
         self.df["raw_data_location"] = rt_lookup.loc[spec_rt_idx, "file"].to_list()
         self.df.loc[:, "spectrum_title"] = (
