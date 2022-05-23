@@ -341,7 +341,9 @@ class IdentBaseParser(BaseParser):
             rt_lookup (pd.DataFrame): loaded rt_pickle_file indexable by Spectrum ID
         """
         rt_lookup = pd.read_csv(self.params["rt_pickle_name"], compression="infer")
-        rt_lookup["rt_unit"] = rt_lookup["rt_unit"].replace({"second": 1, "minute": 60})
+        rt_lookup["rt_unit"] = rt_lookup["rt_unit"].replace(
+            {"second": 1, "minute": 60, "s": 1, "min": 60}
+        )
         rt_lookup.set_index(
             [
                 "spectrum_id",
@@ -409,6 +411,12 @@ class IdentBaseParser(BaseParser):
                     )
                     raise KeyError
             spec_rt_idx = [ind_mapping.get(ind, ind) for ind in spec_rt_idx]
+            self.df["retention_time_seconds"] = (
+                rt_lookup.loc[spec_rt_idx, ["rt", "rt_unit"]]
+                .astype(float)
+                .product(axis=1)
+                .to_list()
+            )
 
         self.df["exp_mz"] = rt_lookup.loc[spec_rt_idx, "precursor_mz"].to_list()
         self.df["raw_data_location"] = rt_lookup.loc[spec_rt_idx, "file"].to_list()
