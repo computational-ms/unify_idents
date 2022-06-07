@@ -11,15 +11,15 @@ from peptide_mapper.mapper import UPeptideMapper
 from unimod_mapper.unimod_mapper import UnimodMapper
 
 from unify_idents.utils import merge_and_join_dicts
+from itertools import repeat
 
-cc = ChemicalComposition()
 
-
-def get_mass_and_composition(seq, mods):
+def get_mass_and_composition(cc, seq, mods):
     """Compute theoretical mass and hill_notation of any single peptidoform.
 
     Returns None if sequence contains unknown amino acids.
     Args:
+        cc (ChemicalComposition): chemical composition object instantiated with correct mods xml
         seq (str): peptide sequence
         mods (str): modifications of the peptide sequence, given as "UnimodName:Position"
 
@@ -321,7 +321,15 @@ class IdentBaseParser(BaseParser):
         with mp.Pool(self.params.get("cpus", mp.cpu_count() - 1)) as pool:
             cc_masses_and_comp = pool.starmap(
                 get_mass_and_composition,
-                zip(self.df["sequence"].values, self.df["modifications"].values),
+                zip(
+                    repeat(
+                        ChemicalComposition(
+                            unimod_file_list=self.params.get("xml_file_list", None)
+                        )
+                    ),
+                    self.df["sequence"].values,
+                    self.df["modifications"].values,
+                ),
                 chunksize=1,
             )
         self.df.loc[:, ["ucalc_mass", "chemical_composition"]] = cc_masses_and_comp
