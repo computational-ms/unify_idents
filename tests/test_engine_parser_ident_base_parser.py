@@ -293,7 +293,7 @@ def test_get_mass_and_composition():
     # With modifications
     mods = "Acetyl:0;Carbamidomethyl:5"
     m, comp = get_mass_and_composition(cc=ChemicalComposition(), seq=seq, mods=mods)
-    assert m == pytest.approx(902.3691 + 57.021464 + 42.010565)
+    assert m == pytest.approx(m_no_mods + 57.021464 + 42.010565)
     assert comp == "C(41)H(63)N(9)O(18)S(1)"
 
     mods = "CustomMod42:4"
