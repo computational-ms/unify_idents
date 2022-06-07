@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+<umod:unimod xmlns:umod="http://www.unimod.org/xmlns/schema/unimod_2" majorVersion="2" minorVersion="0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.unimod.org/xmlns/schema/unimod_2 unimod_2.xsd">
+
+    <umod:elements>
+        <umod:elem avge_mass="1.00794" full_name="Hydrogen" mono_mass="1.007825035" title="H"/>
+        <umod:elem avge_mass="2.014101779" full_name="Deuterium" mono_mass="2.014101779" title="2H"/>
+        <umod:elem avge_mass="6.941" full_name="Lithium" mono_mass="7.016003" title="Li"/>
+        <umod:elem avge_mass="12.0107" full_name="Carbon" mono_mass="12" title="C"/>
+        <umod:elem avge_mass="13.00335483" full_name="Carbon13" mono_mass="13.00335483" title="13C"/>
+        <umod:elem avge_mass="14.0067" full_name="Nitrogen" mono_mass="14.003074" title="N"/>
+        <umod:elem avge_mass="15.00010897" full_name="Nitrogen15" mono_mass="15.00010897" title="15N"/>
+        <umod:elem avge_mass="15.9994" full_name="Oxygen" mono_mass="15.99491463" title="O"/>
+        <umod:elem avge_mass="17.9991603" full_name="Oxygen18" mono_mass="17.9991603" title="18O"/>
+        <umod:elem avge_mass="18.9984032" full_name="Fluorine" mono_mass="18.99840322" title="F"/>
+        <umod:elem avge_mass="22.98977" full_name="Sodium" mono_mass="22.9897677" title="Na"/>
+        <umod:elem avge_mass="30.973761" full_name="Phosphorous" mono_mass="30.973762" title="P"/>
+        <umod:elem avge_mass="32.065" full_name="Sulfur" mono_mass="31.9720707" title="S"/>
+        <umod:elem avge_mass="35.453" full_name="Chlorine" mono_mass="34.96885272" title="Cl"/>
+        <umod:elem avge_mass="39.0983" full_name="Potassium" mono_mass="38.9637074" title="K"/>
+        <umod:elem avge_mass="40.078" full_name="Calcium" mono_mass="39.9625906" title="Ca"/>
+        <umod:elem avge_mass="55.845" full_name="Iron" mono_mass="55.9349393" title="Fe"/>
+        <umod:elem avge_mass="58.6934" full_name="Nickel" mono_mass="57.9353462" title="Ni"/>
+        <umod:elem avge_mass="65.409" full_name="Zinc" mono_mass="63.9291448" title="Zn"/>
+        <umod:elem avge_mass="78.96" full_name="Selenium" mono_mass="79.9165196" title="Se"/>
+        <umod:elem avge_mass="79.904" full_name="Bromine" mono_mass="78.9183361" title="Br"/>
+        <umod:elem avge_mass="107.8682" full_name="Silver" mono_mass="106.905092" title="Ag"/>
+        <umod:elem avge_mass="200.59" full_name="Mercury" mono_mass="201.970617" title="Hg"/>
+        <umod:elem avge_mass="196.96655" full_name="Gold" mono_mass="196.966543" title="Au"/>
+        <umod:elem avge_mass="126.90447" full_name="Iodine" mono_mass="126.904473" title="I"/>
+        <umod:elem avge_mass="95.94" full_name="Molybdenum" mono_mass="97.9054073" title="Mo"/>
+        <umod:elem avge_mass="63.546" full_name="Copper" mono_mass="62.9295989" title="Cu"/>
+        <umod:elem avge_mass="0.000549" full_name="electron" mono_mass="0.000549" title="e"/>
+        <umod:elem avge_mass="10.811" full_name="Boron" mono_mass="11.0093055" title="B"/>
+        <umod:elem avge_mass="74.9215942" full_name="Arsenic" mono_mass="74.9215942" title="As"/>
+        <umod:elem avge_mass="112.411" full_name="Cadmium" mono_mass="113.903357" title="Cd"/>
+        <umod:elem avge_mass="51.9961" full_name="Chromium" mono_mass="51.9405098" title="Cr"/>
+        <umod:elem avge_mass="58.933195" full_name="Cobalt" mono_mass="58.9331976" title="Co"/>
+        <umod:elem avge_mass="54.938045" full_name="Manganese" mono_mass="54.9380471" title="Mn"/>
+        <umod:elem avge_mass="24.305" full_name="Magnesium" mono_mass="23.9850423" title="Mg"/>
+        <umod:elem avge_mass="106.42" full_name="Palladium" mono_mass="105.903478" title="Pd"/>
+    </umod:elements>
+
+    <umod:modifications>
+        <umod:mod approved="true" date_time_modified="2015-06-10 17-00-40" date_time_posted="2015-06-10 17-00-04" full_name="CustomMod42" group_of_poster="guest" title="CustomMod42" username_of_poster="guest">
+            <umod:specificity classification="Isotopic label" hidden="false" position="Anywhere" site="T" spec_group="0">
+                <umod:misc_notes></umod:misc_notes>
+            </umod:specificity>
+            <umod:delta avge_mass="42.00" composition="13C(3) H(3)" mono_mass="42.00">
+                <umod:element number="3" symbol="13C"/>
+                <umod:element number="3" symbol="H"/>
+
+            </umod:delta>
+        </umod:mod>
+    </umod:modifications>
+</umod:unimod>
