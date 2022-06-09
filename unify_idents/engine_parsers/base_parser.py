@@ -27,8 +27,8 @@ def init_custom_cc(function, xml_file_list):
 
 def get_mass_and_composition(seq, mods):
     """Compute theoretical mass and hill_notation of any single peptidoform.
-    Requires the 'cc' attribute of the function to be set externally.
 
+    Requires the 'cc' attribute of the function to be set externally.
     Returns None if sequence contains unknown amino acids.
     Args:
         seq (str): peptide sequence
