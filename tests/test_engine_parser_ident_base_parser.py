@@ -283,25 +283,26 @@ def test_calc_mz():
 def test_get_mass_and_composition():
     seq = "PEPTCIDE"
     mods = ""
+    # Set up ChemicalComposition like it would be using the initalizer
+    get_mass_and_composition.cc = ChemicalComposition()
     # Without modifications
-    m_no_mods, comp = get_mass_and_composition(
-        cc=ChemicalComposition(), seq=seq, mods=mods
-    )
+    m_no_mods, comp = get_mass_and_composition(seq=seq, mods=mods)
     assert m_no_mods == pytest.approx(902.3691)
     assert comp == "C(37)H(58)N(8)O(16)S(1)"
 
     # With modifications
     mods = "Acetyl:0;Carbamidomethyl:5"
-    m, comp = get_mass_and_composition(cc=ChemicalComposition(), seq=seq, mods=mods)
+    m, comp = get_mass_and_composition(seq=seq, mods=mods)
     assert m == pytest.approx(m_no_mods + 57.021464 + 42.010565)
     assert comp == "C(41)H(63)N(9)O(18)S(1)"
 
     mods = "CustomMod42:4"
+    # Change the ChemicalComposition instance to use custom mods
+    get_mass_and_composition.cc = ChemicalComposition(
+        unimod_file_list=[Path(pytest._test_path / "data" / "custom_mod.xml")],
+        add_default_files=False,
+    )
     m, comp = get_mass_and_composition(
-        cc=ChemicalComposition(
-            unimod_file_list=[Path(pytest._test_path / "data" / "custom_mod.xml")],
-            add_default_files=False,
-        ),
         seq=seq,
         mods=mods,
     )
