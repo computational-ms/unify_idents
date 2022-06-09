@@ -14,12 +14,23 @@ from unify_idents.utils import merge_and_join_dicts
 from itertools import repeat
 
 
-def get_mass_and_composition(cc, seq, mods):
+def init_custom_cc(function, xml_file_list):
+    """Initialize function for multiprocessing by providing 'global' attribute.
+
+    Args:
+        function (function): function to be appended with cc attribute
+        xml_file_list (list): list of xml files to be passed to ChemicalComposition
+
+    """
+    function.cc = ChemicalComposition(unimod_file_list=xml_file_list)
+
+
+def get_mass_and_composition(seq, mods):
     """Compute theoretical mass and hill_notation of any single peptidoform.
 
+    Requires the 'cc' attribute of the function to be set externally.
     Returns None if sequence contains unknown amino acids.
     Args:
-        cc (ChemicalComposition): chemical composition object instantiated with correct mods xml
         seq (str): peptide sequence
         mods (str): modifications of the peptide sequence, given as "UnimodName:Position"
 
@@ -28,10 +39,13 @@ def get_mass_and_composition(cc, seq, mods):
 
     """
     try:
-        cc.use(sequence=seq, modifications=mods)
+        get_mass_and_composition.cc.use(sequence=seq, modifications=mods)
     except (KeyError, Exception):
         return None, None
-    return cc.mass(), cc.hill_notation_unimod()
+    return (
+        get_mass_and_composition.cc.mass(),
+        get_mass_and_composition.cc.hill_notation_unimod(),
+    )
 
 
 class BaseParser:
@@ -193,7 +207,7 @@ class IdentBaseParser(BaseParser):
         Returns:
             sorted_formatted_mods (str): String with sorted mods in style "Mod1:pos1;Modn:posn"
         """
-        sort_pattern = r"(\w+)(?:\:)(\d+)"
+        sort_pattern = r"([\w\-\(\)]+)(?:\:)(\d+)"
         positions = [int(re.search(sort_pattern, d).group(2)) for d in data if d != ""]
         names = [re.search(sort_pattern, d).group(1) for d in data if d != ""]
         sorted_mods = sorted(zip(names, positions), key=lambda x: x[1])
@@ -318,15 +332,14 @@ class IdentBaseParser(BaseParser):
         Offsets are calculated between theoretical and experimental mass-to-charge ratio.
         Operations are performed inplace on self.df
         """
-        with mp.Pool(self.params.get("cpus", mp.cpu_count() - 1)) as pool:
+        with mp.Pool(
+            self.params.get("cpus", mp.cpu_count() - 1),
+            initializer=init_custom_cc,
+            initargs=(get_mass_and_composition, self.params.get("xml_file_list", None)),
+        ) as pool:
             cc_masses_and_comp = pool.starmap(
                 get_mass_and_composition,
                 zip(
-                    repeat(
-                        ChemicalComposition(
-                            unimod_file_list=self.params.get("xml_file_list", None)
-                        )
-                    ),
                     self.df["sequence"].values,
                     self.df["modifications"].values,
                 ),
