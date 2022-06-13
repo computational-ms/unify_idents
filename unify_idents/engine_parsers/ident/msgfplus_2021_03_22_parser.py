@@ -129,12 +129,14 @@ class MSGFPlus_2021_03_22_Parser(IdentBaseParser):
             for child in pep.findall(".//{*}PeptideSequence"):
                 lookup[id]["sequence"] = child.text
             for child in pep.findall(".//{*}Modification"):
-                mod_name = child.find('.//{*}cvParam').attrib['name']
+                mod_name = child.find(".//{*}cvParam").attrib["name"]
                 if mod_name == "unknown modification":
                     try:
-                        mod_name = child.find('.//{*}cvParam').attrib["value"]
-                    except: 
-                        raise Exception('an unknown modification causes problems as its value is not even recorded')
+                        mod_name = child.find(".//{*}cvParam").attrib["value"]
+                    except:
+                        raise Exception(
+                            "an unknown modification causes problems as its value is not even recorded"
+                        )
                 lookup[id]["modifications"].append(
                     f"{mod_name}:{child.attrib['location']}"
                 )

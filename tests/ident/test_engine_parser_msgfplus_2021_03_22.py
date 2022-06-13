@@ -211,7 +211,8 @@ def test_get_single_spec_df():
             ]
         ]
     ).all()
-    
+
+
 #!/usr/bin/env python
 
 import xml.etree.ElementTree as ETree
@@ -489,4 +490,3 @@ def test_engine_parsers_msgfplus_check_dataframe_integrity_unknown_mod():
         == df[df["sequence"] != "EACFAVEGPK"]["sequence"].str.count("C")
     ).all()
     assert df["modifications"].str.count(":").sum() == 71
-    
