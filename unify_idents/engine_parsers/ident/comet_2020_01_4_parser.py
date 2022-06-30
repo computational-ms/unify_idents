@@ -150,8 +150,15 @@ class Comet_2020_01_4_Parser(IdentBaseParser):
             lookup[id] = {"modifications": []}
             lookup[id]["sequence"] = pep.find(".//{*}PeptideSequence").text
             for child in pep.findall(".//{*}Modification"):
+                if mod_name == "unknown modification":
+                    try:
+                        mod_name = child.find(".//{*}cvParam").attrib["value"]
+                    except:
+                        raise Exception(
+                            "an unknown modification causes problems as its value is not even recorded"
+                        )
                 lookup[id]["modifications"].append(
-                    f"{modification_mass_map[child.attrib['monoisotopicMassDelta']]}:{child.attrib['location']}"
+                    f"{mod_name}:{child.attrib['location']}"
                 )
             lookup[id]["modifications"] = ";".join(lookup[id]["modifications"])
 
