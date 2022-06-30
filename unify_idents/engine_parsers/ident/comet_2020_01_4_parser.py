@@ -150,6 +150,7 @@ class Comet_2020_01_4_Parser(IdentBaseParser):
             lookup[id] = {"modifications": []}
             lookup[id]["sequence"] = pep.find(".//{*}PeptideSequence").text
             for child in pep.findall(".//{*}Modification"):
+                mod_name = child.find(".//{*}cvParam").attrib["name"]
                 if mod_name == "unknown modification":
                     try:
                         mod_name = child.find(".//{*}cvParam").attrib["value"]
