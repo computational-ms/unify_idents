@@ -193,7 +193,6 @@ class IdentBaseParser(BaseParser):
         )
 
         # Ensure same order of modifications
-
         self.df.loc[:, "modifications"] = (
             self.df["modifications"].fillna("").str.split(";").apply(self.sort_mods)
         )
@@ -207,7 +206,7 @@ class IdentBaseParser(BaseParser):
         Returns:
             sorted_formatted_mods (str): String with sorted mods in style "Mod1:pos1;Modn:posn"
         """
-        sort_pattern = r"([\w\-\(\)]+)(?:\:)(\d+)"
+        sort_pattern = r"([\w\-\(\)\>]+)(?:\:)(\d+)"
         positions = [int(re.search(sort_pattern, d).group(2)) for d in data if d != ""]
         names = [re.search(sort_pattern, d).group(1) for d in data if d != ""]
         sorted_mods = sorted(zip(names, positions), key=lambda x: x[1])
@@ -485,7 +484,6 @@ class IdentBaseParser(BaseParser):
         """
         missing_data_locs = ~(self.df["raw_data_location"].str.len() > 0)
         self.df.loc[missing_data_locs, "raw_data_location"] = ""
-
         # Set missing columns to None and reorder columns in standardized manner
         new_cols = self.col_order[~self.col_order.isin(self.df.columns)].to_list()
         self.df.loc[:, new_cols] = None
@@ -495,7 +493,6 @@ class IdentBaseParser(BaseParser):
             + sorted(self.df.columns[~self.df.columns.isin(self.col_order)].tolist()),
         ]
         self.df = self.df.astype(self.dtype_mapping)
-
         # Ensure there are not any column that should not be
         if hasattr(self, "mapping_dict"):
             new_cols = set(self.mapping_dict.keys())
