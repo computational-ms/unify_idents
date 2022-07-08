@@ -51,14 +51,16 @@ def get_mass_and_composition(seq, mods):
 class BaseParser:
     """Base class of all parser types."""
 
-    def __init__(self, input_file, params):
+    def __init__(self, input_file, params, immutable_peptides):
         """Initialize parser.
 
         Args:
             input_file (str): path to input file
             params (dict): ursgal param dict
+            immutable_peptides (list): list of immutable peptides
         """
         self.input_file = input_file
+        self.immutable_peptides = immutable_peptides
         if params is None:
             params = {}
         self.params = params
@@ -469,10 +471,15 @@ class IdentBaseParser(BaseParser):
     def add_decoy_identity(self):
         """Add boolean decoy state if designated decoy prefix is in Protein IDs.
 
+        Also marks peptides which were assigned decoy but were immutable during
+        target decoy generation.
         Operations are performed inplace on self.df
         """
         decoy_tag = self.params.get("decoy_tag", "decoy_")
         self.df.loc[:, "is_decoy"] = self.df["protein_id"].str.contains(decoy_tag)
+        self.df.loc[:, "is_immutable"] = self.df["sequence"].isin(
+            self.immutable_peptides
+        )
 
     def sanitize(self):
         """Perform dataframe sanitation steps.
