@@ -296,6 +296,11 @@ def test_get_mass_and_composition():
     assert m == pytest.approx(m_no_mods + 57.021464 + 42.010565)
     assert comp == "C(41)H(63)N(9)O(18)S(1)"
 
+    # With labeled modifications
+    mods = "Acetyl:0;Carbamidomethyl:5;Label:18O(1):7"
+    m, comp = get_mass_and_composition(seq=seq, mods=mods)
+    assert comp == "C(41)H(63)18O(1)N(9)O(17)S(1)"
+
     mods = "CustomMod42:4"
     # Change the ChemicalComposition instance to use custom mods
     get_mass_and_composition.cc = ChemicalComposition(
@@ -519,13 +524,16 @@ def test_clean_up_modifications():
         "TMTpro:10;Acetyl:0",
         "",
         "Acetyl:0;Oxidation:5",
+        "Label:18O(1):7;Acetyl:0;Oxidation:5",
     ]
     expected_mods = [
         "Oxidation:2;TMTpro:12",
         "Acetyl:0;TMTpro:10",
         "",
         "Acetyl:0;Oxidation:5",
+        "Acetyl:0;Oxidation:5;Label:18O(1):7",
     ]
 
     obj.clean_up_modifications()
+    print(obj.df["modifications"])
     assert (obj.df["modifications"] == expected_mods).all()

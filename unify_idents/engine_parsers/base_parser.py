@@ -208,7 +208,7 @@ class IdentBaseParser(BaseParser):
         Returns:
             sorted_formatted_mods (str): String with sorted mods in style "Mod1:pos1;Modn:posn"
         """
-        sort_pattern = r"([\w\-\(\)\>]+)(?:\:)(\d+)"
+        sort_pattern = r"([\w\-\(\)\>\:]+)(?:\:)(\d+)"
         positions = [int(re.search(sort_pattern, d).group(2)) for d in data if d != ""]
         names = [re.search(sort_pattern, d).group(1) for d in data if d != ""]
         sorted_mods = sorted(zip(names, positions), key=lambda x: x[1])
