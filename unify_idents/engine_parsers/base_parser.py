@@ -11,7 +11,6 @@ from peptide_mapper.mapper import UPeptideMapper
 from unimod_mapper.unimod_mapper import UnimodMapper
 
 from unify_idents.utils import merge_and_join_dicts
-from itertools import repeat
 
 
 def init_custom_cc(function, xml_file_list):
@@ -51,13 +50,13 @@ def get_mass_and_composition(seq, mods):
 class BaseParser:
     """Base class of all parser types."""
 
-    def __init__(self, input_file, params, immutable_peptides):
+    def __init__(self, input_file, params, immutable_peptides=None):
         """Initialize parser.
 
         Args:
             input_file (str): path to input file
             params (dict): ursgal param dict
-            immutable_peptides (list): list of immutable peptides
+            immutable_peptides (list, optional): list of immutable peptides
         """
         self.input_file = input_file
         self.immutable_peptides = immutable_peptides
@@ -477,9 +476,10 @@ class IdentBaseParser(BaseParser):
         """
         decoy_tag = self.params.get("decoy_tag", "decoy_")
         self.df.loc[:, "is_decoy"] = self.df["protein_id"].str.contains(decoy_tag)
-        self.df.loc[:, "is_immutable"] = self.df["sequence"].isin(
-            self.immutable_peptides
-        )
+        if self.immutable_peptides is not None:
+            self.df.loc[:, "is_immutable"] = self.df["sequence"].isin(
+                self.immutable_peptides
+            )
 
     def sanitize(self):
         """Perform dataframe sanitation steps.

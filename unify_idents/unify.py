@@ -33,6 +33,8 @@ class Unify:
             self.immutable_peptides = (
                 pd.read_csv(immutable_peptides).iloc[:, 0].to_list()
             )
+        else:
+            self.immutable_peptides = None
 
         self._parser_classes = []
         self.parser = self._get_parser()
