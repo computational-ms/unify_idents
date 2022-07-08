@@ -116,6 +116,7 @@ class IdentBaseParser(BaseParser):
             "modifications": "str",
             "charge": "int32",
             "is_decoy": "bool",
+            "is_immutable": "bool",
             "rank": "int32",
             "protein_id": "str",
             "retention_time_seconds": "float32",
