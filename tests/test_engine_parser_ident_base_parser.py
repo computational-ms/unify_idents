@@ -386,7 +386,7 @@ def test_add_decoy_identity_with_immutable_peptides():
             "cpus": 2,
             "rt_pickle_name": pytest._test_path / "data/_ursgal_lookup.csv",
         },
-        immutable_peptides=["GONEIN", "UPAND"]
+        immutable_peptides=["GONEIN", "UPAND"],
     )
     obj.df = pd.DataFrame(
         np.ones((4, len(obj.col_order) + 1)),
