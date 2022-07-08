@@ -379,6 +379,26 @@ def test_add_decoy_identity_non_default_prefix():
     assert all(obj.df["is_decoy"] == [False, False, False, True])
 
 
+def test_add_decoy_identity_with_immutable_peptides():
+    obj = IdentBaseParser(
+        input_file=None,
+        params={
+            "cpus": 2,
+            "rt_pickle_name": pytest._test_path / "data/_ursgal_lookup.csv",
+        },
+        immutable_peptides=["GONEIN", "UPAND"],
+    )
+    obj.df = pd.DataFrame(
+        np.ones((4, len(obj.col_order) + 1)),
+        columns=obj.col_order.to_list() + ["msfragger:hyperscore"],
+    )
+    obj.df["protein_id"] = ["NOTADECOY", "PEPTIDE", "decoy_PEPTIDE", "decoy_ASDF"]
+    obj.df["sequence"] = ["GONEINTHEWIND", "GONEIN", "UPAND", "UPANDAWAY"]
+
+    obj.add_decoy_identity()
+    assert all(obj.df["is_immutable"] == [False, True, True, False])
+
+
 def test_check_enzyme_specificity_trypsin_all():
     obj = IdentBaseParser(
         input_file=None,
