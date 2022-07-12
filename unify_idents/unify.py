@@ -31,7 +31,7 @@ class Unify:
 
         if immutable_peptides is not None:
             self.immutable_peptides = (
-                pd.read_csv(immutable_peptides).iloc[:, 0].to_list()
+                pd.read_csv(immutable_peptides, header=None).iloc[:, 0].to_list()
             )
         else:
             self.immutable_peptides = None
