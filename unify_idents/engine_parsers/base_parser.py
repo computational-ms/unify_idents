@@ -1,5 +1,6 @@
 """Parser handler."""
 import multiprocessing as mp
+import ahocorasick
 import numpy as np
 import pandas as pd
 import regex as re
@@ -477,9 +478,14 @@ class IdentBaseParser(BaseParser):
         decoy_tag = self.params.get("decoy_tag", "decoy_")
         self.df.loc[:, "is_decoy"] = self.df["protein_id"].str.contains(decoy_tag)
         if self.immutable_peptides is not None:
-            self.df.loc[:, "is_immutable"] = self.df["sequence"].isin(
-                self.immutable_peptides
-            )
+            auto = ahocorasick.Automaton()
+            for seq in self.immutable_peptides:
+                auto.add_word(seq, seq)
+            auto.make_automaton()
+            self.df.loc[:, "is_immutable"] = [
+                sum([len(match) for _, match in auto.iter_long(seq)]) == len(seq)
+                for seq in self.df["sequence"]
+            ]
 
     def sanitize(self):
         """Perform dataframe sanitation steps.
