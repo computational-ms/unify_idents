@@ -1,9 +1,8 @@
-from pathlib import Path
-
 import numpy as np
 import pandas as pd
 import pytest
 from chemical_composition import ChemicalComposition
+from pathlib import Path
 
 from unify_idents.engine_parsers.base_parser import (
     IdentBaseParser,

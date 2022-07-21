@@ -1,38 +1,45 @@
 """Engine parser."""
 import multiprocessing as mp
-import sys
-import xml.etree.ElementTree as ETree
-from itertools import repeat
-
 import pandas as pd
 import regex as re
+import sys
+from io import BytesIO
 from loguru import logger
+from lxml import etree
 from tqdm import tqdm
 
 from unify_idents.engine_parsers.base_parser import IdentBaseParser
 
 
-def _get_single_spec_df(reference_dict, mapping_dict, spectrum):
+def _mp_specs_init(func, reference_dict, mapping_dict):
+    func.reference_dict = reference_dict
+    func.mapping_dict = mapping_dict
+
+
+def _get_single_spec_df(spectrum):
     """Primary method for reading and storing information from a single spectrum.
 
-    Args:
+    Attributes:
         reference_dict (dict): dict with reference columns to be filled in
         mapping_dict (dict): mapping of engine level column names to ursgal unified column names
+
+    Args:
         spectrum (xml Element): namespace of single spectrum with potentially multiple PSMs
 
     Returns:
         (pd.DataFrame): dataframe containing spectrum information
 
     """
+    spectrum = etree.parse(BytesIO(spectrum))
     spec_records = []
-    spec_level_dict = reference_dict.copy()
+    spec_level_dict = _get_single_spec_df.reference_dict.copy()
     spec_level_info = {
         c.attrib["name"]: c.attrib["value"] for c in spectrum.findall(".//{*}cvParam")
     }
     spec_level_dict.update(
         {
-            mapping_dict[k]: spec_level_info[k]
-            for k in mapping_dict
+            _get_single_spec_df.mapping_dict[k]: spec_level_info[k]
+            for k in _get_single_spec_df.mapping_dict
             if k in spec_level_info
         }
     )
@@ -42,15 +49,19 @@ def _get_single_spec_df(reference_dict, mapping_dict, spectrum):
         psm_level_dict = spec_level_dict.copy()
 
         psm_level_dict.update(
-            {mapping_dict[k]: psm.attrib[k] for k in mapping_dict if k in psm.attrib}
+            {
+                _get_single_spec_df.mapping_dict[k]: psm.attrib[k]
+                for k in _get_single_spec_df.mapping_dict
+                if k in psm.attrib
+            }
         )
         cv_param_info = {
             c.attrib["name"]: c.attrib["value"] for c in psm.findall(".//{*}cvParam")
         }
         psm_level_dict.update(
             {
-                mapping_dict[k]: cv_param_info[k]
-                for k in mapping_dict
+                _get_single_spec_df.mapping_dict[k]: cv_param_info[k]
+                for k in _get_single_spec_df.mapping_dict
                 if k in cv_param_info
             }
         )
@@ -59,8 +70,8 @@ def _get_single_spec_df(reference_dict, mapping_dict, spectrum):
         }
         psm_level_dict.update(
             {
-                mapping_dict[k]: user_param_info[k]
-                for k in mapping_dict
+                _get_single_spec_df.mapping_dict[k]: user_param_info[k]
+                for k in _get_single_spec_df.mapping_dict
                 if k in user_param_info
             }
         )
@@ -80,7 +91,7 @@ class MSGFPlus_2021_03_22_Parser(IdentBaseParser):
         super().__init__(*args, **kwargs)
         self.style = "msgfplus_style_1"
 
-        tree = ETree.parse(self.input_file)
+        tree = etree.parse(self.input_file)
         self.root = tree.getroot()
         self.reference_dict["search_engine"] = "msgfplus_" + "_".join(
             re.findall(
@@ -151,21 +162,20 @@ class MSGFPlus_2021_03_22_Parser(IdentBaseParser):
             self.df (pd.DataFrame): unified dataframe
         """
         peptide_lookup = self._get_peptide_lookup()
-        spec_idents = self.root.findall(".//{*}SpectrumIdentificationResult")
+        spec_idents = [
+            etree.tostring(e)
+            for e in self.root.findall(".//{*}SpectrumIdentificationResult")
+        ]
         logger.remove()
         logger.add(lambda msg: tqdm.write(msg, end=""))
-        pbar_iterator = tqdm(
-            zip(
-                repeat(self.reference_dict),
-                repeat(self.mapping_dict),
-                spec_idents,
-            ),
-            total=len(spec_idents),
-        )
-        with mp.Pool(self.params.get("cpus", mp.cpu_count() - 1)) as pool:
-            chunk_dfs = pool.starmap(
+        with mp.Pool(
+            self.params.get("cpus", mp.cpu_count() - 1),
+            initializer=_mp_specs_init,
+            initargs=(_get_single_spec_df, self.reference_dict, self.mapping_dict),
+        ) as pool:
+            chunk_dfs = pool.map(
                 _get_single_spec_df,
-                pbar_iterator,
+                tqdm(spec_idents),
             )
         logger.remove()
         logger.add(sys.stdout)

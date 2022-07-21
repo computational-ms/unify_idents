@@ -1,6 +1,5 @@
 """Parser handler."""
 import multiprocessing as mp
-
 import ahocorasick
 import numpy as np
 import pandas as pd

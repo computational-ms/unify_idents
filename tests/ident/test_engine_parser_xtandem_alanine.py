@@ -1,10 +1,9 @@
 #!/usr/bin/env python
 
-import xml.etree.ElementTree as ETree
-
 import numpy as np
 import pandas as pd
 import pytest
+from lxml import etree
 
 from unify_idents.engine_parsers.ident.xtandem_alanine import (
     XTandemAlanine_Parser,
@@ -123,7 +122,7 @@ def test_get_single_spec_df():
     input_file = (
         pytest._test_path / "data" / "test_Creinhardtii_QE_pH11_xtandem_alanine.xml"
     )
-    element = ETree.parse(input_file).getroot()[0]
+    element = etree.parse(input_file).getroot()[0]
     ref_dict = {
         "exp_mz": None,
         "calc_mz": None,
@@ -155,7 +154,9 @@ def test_get_single_spec_df():
         "hyperscore": "x!tandem:hyperscore",
     }
 
-    result = _get_single_spec_df(ref_dict, mapping_dict, element)
+    _get_single_spec_df.reference_dict = ref_dict
+    _get_single_spec_df.mapping_dict = mapping_dict
+    result = _get_single_spec_df(etree.tostring(element))
 
     assert isinstance(result, pd.DataFrame)
     assert (

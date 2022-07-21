@@ -1,34 +1,43 @@
 """Engine parser."""
 import multiprocessing as mp
-import sys
-import xml.etree.ElementTree as ETree
-from itertools import repeat
-
 import pandas as pd
 import regex as re
+from io import BytesIO
 from loguru import logger
+from lxml import etree
 from tqdm import tqdm
 
 from unify_idents.engine_parsers.base_parser import IdentBaseParser
 
 
-def _get_single_spec_df(reference_dict, mapping_dict, spectrum):
+def _mp_specs_init(func, reference_dict, mapping_dict):
+    func.reference_dict = reference_dict
+    func.mapping_dict = mapping_dict
+
+
+def _get_single_spec_df(spectrum):
     """Primary method for reading and storing information from a single spectrum.
 
-    Args:
+    Attributes:
         reference_dict (dict): dict with reference columns to be filled in
         mapping_dict (dict): mapping of engine level column names to ursgal unified column names
+
+    Args:
         spectrum (xml Element): namespace of single spectrum with potentially multiple PSMs
 
     Returns:
         (pd.DataFrame): dataframe containing spectrum information
 
     """
+    spectrum = etree.parse(BytesIO(spectrum)).getroot()
     spec_records = []
-    spec_level_dict = reference_dict.copy()
-    spec_level_info = mapping_dict.keys() & spectrum.attrib.keys()
+    spec_level_dict = _get_single_spec_df.reference_dict.copy()
+    spec_level_info = _get_single_spec_df.mapping_dict.keys() & spectrum.attrib.keys()
     spec_level_dict.update(
-        {mapping_dict[k]: spectrum.attrib[k] for k in spec_level_info}
+        {
+            _get_single_spec_df.mapping_dict[k]: spectrum.attrib[k]
+            for k in spec_level_info
+        }
     )
 
     if "z" not in spectrum.attrib:
@@ -43,8 +52,10 @@ def _get_single_spec_df(reference_dict, mapping_dict, spectrum):
 
         psm_level_dict["calc_mz"] = psm.attrib["mh"]
 
-        psm_level_info = mapping_dict.keys() & psm.attrib.keys()
-        psm_level_dict.update({mapping_dict[k]: psm.attrib[k] for k in psm_level_info})
+        psm_level_info = _get_single_spec_df.mapping_dict.keys() & psm.attrib.keys()
+        psm_level_dict.update(
+            {_get_single_spec_df.mapping_dict[k]: psm.attrib[k] for k in psm_level_info}
+        )
 
         # Record modifications
         mods = []
@@ -70,7 +81,7 @@ class XTandemAlanine_Parser(IdentBaseParser):
         """
         super().__init__(*args, **kwargs)
         self.style = "xtandem_style_1"
-        tree = ETree.parse(self.input_file)
+        tree = etree.parse(self.input_file)
         self.root = tree.getroot()
         self.reference_dict["search_engine"] = (
             "xtandem_"
@@ -170,20 +181,18 @@ class XTandemAlanine_Parser(IdentBaseParser):
         Returns:
             self.df (pd.DataFrame): unified dataframe
         """
+        self.root = [etree.tostring(e) for e in self.root]
         logger.remove()
         logger.add(lambda msg: tqdm.write(msg, end=""))
-        pbar_iterator = tqdm(
-            zip(
-                repeat(self.reference_dict),
-                repeat(self.mapping_dict),
-                self.root,
-            ),
-            total=len(self.root),
-        )
-        with mp.Pool(self.params.get("cpus", mp.cpu_count() - 1)) as pool:
-            chunk_dfs = pool.starmap(_get_single_spec_df, pbar_iterator)
-        logger.remove()
-        logger.add(sys.stdout)
+        with mp.Pool(
+            self.params.get("cpus", mp.cpu_count() - 1),
+            initializer=_mp_specs_init,
+            initargs=(_get_single_spec_df, self.reference_dict, self.mapping_dict),
+        ) as pool:
+            chunk_dfs = pool.map(
+                _get_single_spec_df,
+                tqdm(self.root),
+            )
         chunk_dfs = [df for df in chunk_dfs if not df is None]
         self.df = pd.concat(chunk_dfs, axis=0, ignore_index=True)
         self.df["calc_mz"] = (
