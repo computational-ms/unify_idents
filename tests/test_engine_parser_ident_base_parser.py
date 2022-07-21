@@ -394,14 +394,26 @@ def test_add_decoy_identity_with_immutable_peptides():
         immutable_peptides=["GONEIN", "UPAND"],
     )
     obj.df = pd.DataFrame(
-        np.ones((4, len(obj.col_order) + 1)),
+        np.ones((5, len(obj.col_order) + 1)),
         columns=obj.col_order.to_list() + ["msfragger:hyperscore"],
     )
-    obj.df["protein_id"] = ["NOTADECOY", "PEPTIDE", "decoy_PEPTIDE", "decoy_ASDF"]
-    obj.df["sequence"] = ["GONEINTHEWIND", "GONEIN", "UPAND", "UPANDAWAY"]
+    obj.df["protein_id"] = [
+        "NOTADECOY",
+        "PEPTIDE",
+        "decoy_PEPTIDE",
+        "decoy_ASDF",
+        "decoy_BUTIMMUTABLE",
+    ]
+    obj.df["sequence"] = [
+        "GONEINTHEWIND",
+        "GONEIN",
+        "UPAND",
+        "UPANDAWAY",
+        "GONEINUPAND",
+    ]
 
     obj.add_decoy_identity()
-    assert all(obj.df["is_immutable"] == [False, True, True, False])
+    assert all(obj.df["is_immutable"] == [False, True, True, False, True])
 
 
 def test_check_enzyme_specificity_trypsin_all():
