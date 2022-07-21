@@ -1,6 +1,6 @@
 """Parser handler."""
 import multiprocessing as mp
-
+import ahocorasick
 import numpy as np
 import pandas as pd
 import regex as re
@@ -11,7 +11,6 @@ from peptide_mapper.mapper import UPeptideMapper
 from unimod_mapper.unimod_mapper import UnimodMapper
 
 from unify_idents.utils import merge_and_join_dicts
-from itertools import repeat
 
 
 def init_custom_cc(function, xml_file_list):
@@ -51,14 +50,16 @@ def get_mass_and_composition(seq, mods):
 class BaseParser:
     """Base class of all parser types."""
 
-    def __init__(self, input_file, params):
+    def __init__(self, input_file, params, immutable_peptides=None):
         """Initialize parser.
 
         Args:
             input_file (str): path to input file
             params (dict): ursgal param dict
+            immutable_peptides (list, optional): list of immutable peptides
         """
         self.input_file = input_file
+        self.immutable_peptides = immutable_peptides
         if params is None:
             params = {}
         self.params = params
@@ -115,6 +116,7 @@ class IdentBaseParser(BaseParser):
             "modifications": "str",
             "charge": "int32",
             "is_decoy": "bool",
+            "is_immutable": "bool",
             "rank": "int32",
             "protein_id": "str",
             "retention_time_seconds": "float32",
@@ -206,7 +208,7 @@ class IdentBaseParser(BaseParser):
         Returns:
             sorted_formatted_mods (str): String with sorted mods in style "Mod1:pos1;Modn:posn"
         """
-        sort_pattern = r"([\w\-\(\)\>]+)(?:\:)(\d+)"
+        sort_pattern = r"([\w\-\(\)\>\:]+)(?:\:)(\d+)"
         positions = [int(re.search(sort_pattern, d).group(2)) for d in data if d != ""]
         names = [re.search(sort_pattern, d).group(1) for d in data if d != ""]
         sorted_mods = sorted(zip(names, positions), key=lambda x: x[1])
@@ -217,12 +219,12 @@ class IdentBaseParser(BaseParser):
     def assert_only_iupac_and_missing_aas(self):
         """Assert that only IUPAC nomenclature one letter amino acids are used in sequence.
 
-        Non-IUPAC designations are dropped.
+        Non-IUPAC designations are dropped (except for selenocysteine).
         Operations are performed inplace.
         """
         self.df["sequence"] = self.df["sequence"].str.upper()
         # Added X for missing AAs
-        iupac_aas = set("ACDEFGHIKLMNPQRSTVWY")
+        iupac_aas = set("ACDEFGHIKLMNPQRSTUVWY")
         iupac_conform_seqs = self.df["sequence"].apply(
             lambda seq: set(seq).issubset(iupac_aas)
         )
@@ -469,10 +471,21 @@ class IdentBaseParser(BaseParser):
     def add_decoy_identity(self):
         """Add boolean decoy state if designated decoy prefix is in Protein IDs.
 
+        Also marks peptides which were assigned decoy but were immutable during
+        target decoy generation.
         Operations are performed inplace on self.df
         """
         decoy_tag = self.params.get("decoy_tag", "decoy_")
         self.df.loc[:, "is_decoy"] = self.df["protein_id"].str.contains(decoy_tag)
+        if self.immutable_peptides is not None:
+            auto = ahocorasick.Automaton()
+            for seq in self.immutable_peptides:
+                auto.add_word(seq, seq)
+            auto.make_automaton()
+            self.df.loc[:, "is_immutable"] = [
+                sum([len(match) for _, match in auto.iter_long(seq)]) == len(seq)
+                for seq in self.df["sequence"]
+            ]
 
     def sanitize(self):
         """Perform dataframe sanitation steps.

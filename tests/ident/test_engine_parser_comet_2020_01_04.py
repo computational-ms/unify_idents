@@ -1,9 +1,8 @@
 #!/usr/bin/env python
 
-import xml.etree.ElementTree as ETree
-
 import pandas as pd
 import pytest
+from lxml import etree
 
 from unify_idents.engine_parsers.ident.comet_2020_01_4_parser import (
     Comet_2020_01_4_Parser,
@@ -110,7 +109,7 @@ def test_engine_parsers_comet_check_dataframe_integrity():
 def test_get_single_spec_df():
     input_file = pytest._test_path / "data" / "BSA1_comet_2020_01_4.mzid"
     element = (
-        ETree.parse(input_file)
+        etree.parse(input_file)
         .getroot()
         .find(".//{*}SpectrumIdentificationList/{*}SpectrumIdentificationResult")
     )
@@ -145,8 +144,9 @@ def test_get_single_spec_df():
         "number of matched peaks": "comet:num_matched_ions",
         "number of unmatched peaks": "comet:num_unmatched_ions",
     }
-
-    result = _get_single_spec_df(ref_dict, mapping_dict, element)
+    _get_single_spec_df.reference_dict = ref_dict
+    _get_single_spec_df.mapping_dict = mapping_dict
+    result = _get_single_spec_df(etree.tostring(element))
 
     assert isinstance(result, pd.DataFrame)
     assert (

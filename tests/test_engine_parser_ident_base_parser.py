@@ -1,9 +1,8 @@
-from pathlib import Path
-
 import numpy as np
 import pandas as pd
 import pytest
 from chemical_composition import ChemicalComposition
+from pathlib import Path
 
 from unify_idents.engine_parsers.base_parser import (
     IdentBaseParser,
@@ -296,6 +295,11 @@ def test_get_mass_and_composition():
     assert m == pytest.approx(m_no_mods + 57.021464 + 42.010565)
     assert comp == "C(41)H(63)N(9)O(18)S(1)"
 
+    # With labeled modifications
+    mods = "Acetyl:0;Carbamidomethyl:5;Label:18O(1):7"
+    m, comp = get_mass_and_composition(seq=seq, mods=mods)
+    assert comp == "C(41)H(63)18O(1)N(9)O(17)S(1)"
+
     mods = "CustomMod42:4"
     # Change the ChemicalComposition instance to use custom mods
     get_mass_and_composition.cc = ChemicalComposition(
@@ -377,6 +381,38 @@ def test_add_decoy_identity_non_default_prefix():
     obj.add_decoy_identity()
 
     assert all(obj.df["is_decoy"] == [False, False, False, True])
+
+
+def test_add_decoy_identity_with_immutable_peptides():
+    obj = IdentBaseParser(
+        input_file=None,
+        params={
+            "cpus": 2,
+            "rt_pickle_name": pytest._test_path / "data/_ursgal_lookup.csv",
+        },
+        immutable_peptides=["GONEIN", "UPAND"],
+    )
+    obj.df = pd.DataFrame(
+        np.ones((5, len(obj.col_order) + 1)),
+        columns=obj.col_order.to_list() + ["msfragger:hyperscore"],
+    )
+    obj.df["protein_id"] = [
+        "NOTADECOY",
+        "PEPTIDE",
+        "decoy_PEPTIDE",
+        "decoy_ASDF",
+        "decoy_BUTIMMUTABLE",
+    ]
+    obj.df["sequence"] = [
+        "GONEINTHEWIND",
+        "GONEIN",
+        "UPAND",
+        "UPANDAWAY",
+        "GONEINUPAND",
+    ]
+
+    obj.add_decoy_identity()
+    assert all(obj.df["is_immutable"] == [False, True, True, False, True])
 
 
 def test_check_enzyme_specificity_trypsin_all():
@@ -499,13 +535,16 @@ def test_clean_up_modifications():
         "TMTpro:10;Acetyl:0",
         "",
         "Acetyl:0;Oxidation:5",
+        "Label:18O(1):7;Acetyl:0;Oxidation:5",
     ]
     expected_mods = [
         "Oxidation:2;TMTpro:12",
         "Acetyl:0;TMTpro:10",
         "",
         "Acetyl:0;Oxidation:5",
+        "Acetyl:0;Oxidation:5;Label:18O(1):7",
     ]
 
     obj.clean_up_modifications()
+    print(obj.df["modifications"])
     assert (obj.df["modifications"] == expected_mods).all()
