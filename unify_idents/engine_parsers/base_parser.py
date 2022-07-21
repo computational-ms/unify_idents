@@ -220,12 +220,12 @@ class IdentBaseParser(BaseParser):
     def assert_only_iupac_and_missing_aas(self):
         """Assert that only IUPAC nomenclature one letter amino acids are used in sequence.
 
-        Non-IUPAC designations are dropped.
+        Non-IUPAC designations are dropped (except for selenocysteine).
         Operations are performed inplace.
         """
         self.df["sequence"] = self.df["sequence"].str.upper()
         # Added X for missing AAs
-        iupac_aas = set("ACDEFGHIKLMNPQRSTVWY")
+        iupac_aas = set("ACDEFGHIKLMNPQRSTUVWY")
         iupac_conform_seqs = self.df["sequence"].apply(
             lambda seq: set(seq).issubset(iupac_aas)
         )
