@@ -205,7 +205,8 @@ class Mascot_2_6_2_Parser(IdentBaseParser):
         self.df.loc[:, "modifications"] = (
             self.df["modifications"].apply(self._translate_opt_mods).to_list()
         )
-        self.df.loc[:, "modifications"] += fix_mods
+        if fix_mods is not None:
+            self.df.loc[:, "modifications"] += fix_mods
 
         # Add substitutions
         if self.df["subst"].str.match(r"(\d+,\w,\w)").any():
