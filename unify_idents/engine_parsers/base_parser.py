@@ -7,6 +7,7 @@ import regex as re
 import uparma
 from chemical_composition import ChemicalComposition
 from loguru import logger
+from pyqms import IsotopologueLibrary
 from peptide_mapper.mapper import UPeptideMapper
 from unimod_mapper.unimod_mapper import UnimodMapper
 
@@ -24,8 +25,8 @@ def init_custom_cc(function, xml_file_list):
     function.cc = ChemicalComposition(unimod_file_list=xml_file_list)
 
 
-def get_mass_and_composition(seq, mods):
-    """Compute theoretical mass and hill_notation of any single peptidoform.
+def get_composition(seq, mods):
+    """Compute hill_notation of any single peptidoform.
 
     Requires the 'cc' attribute of the function to be set externally.
     Returns None if sequence contains unknown amino acids.
@@ -34,17 +35,14 @@ def get_mass_and_composition(seq, mods):
         mods (str): modifications of the peptide sequence, given as "UnimodName:Position"
 
     Returns:
-        tuple: (computed mass, hill_notation_unimod string)
+        str or None: hill_notation_unimod string
 
     """
     try:
-        get_mass_and_composition.cc.use(sequence=seq, modifications=mods)
+        get_composition.cc.use(sequence=seq, modifications=mods)
     except (KeyError, Exception):
-        return None, None
-    return (
-        get_mass_and_composition.cc.mass(),
-        get_mass_and_composition.cc.hill_notation_unimod(),
-    )
+        return None
+    return get_composition.cc.hill_notation_unimod()
 
 
 class BaseParser:
@@ -138,7 +136,7 @@ class IdentBaseParser(BaseParser):
         self.col_order = pd.Series(self.dtype_mapping.keys())
 
     def _calc_mz(self, mass, charge):
-        """Calulates mass-to-charge ratio.
+        """Calculate mass-to-charge ratio.
 
         Args:
             mass (pd.Series): masses
@@ -150,6 +148,28 @@ class IdentBaseParser(BaseParser):
         return (
             mass.astype(float) + (charge.astype(int) * self.PROTON)
         ) / charge.astype(int)
+
+    def _calc_mass(self, mz, charge):
+        """Calculate mass from mass-to-charge ratio.
+
+        Args:
+            mz (pd.Series): mass-to-charge
+            charge (pd.Series): charges
+
+        Returns:
+            (pd.Series): mass
+        """
+        return mz.astype(float) * charge.astype(int) - (
+            charge.astype(int) * self.PROTON
+        )
+
+    def _find_closest_isotopologue(self, row):
+        return min(
+            self._il[row["chemical_composition"]]["env"][(("N", "0.000"),)][
+                int(row["charge"])
+            ]["mz"][:3],
+            key=lambda x: abs(row["exp_mz"] - x),
+        )
 
     def _create_mod_dicts(self):
         """
@@ -336,19 +356,27 @@ class IdentBaseParser(BaseParser):
         with mp.Pool(
             self.params.get("cpus", mp.cpu_count() - 1),
             initializer=init_custom_cc,
-            initargs=(get_mass_and_composition, self.params.get("xml_file_list", None)),
+            initargs=(get_composition, self.params.get("xml_file_list", None)),
         ) as pool:
-            cc_masses_and_comp = pool.starmap(
-                get_mass_and_composition,
+            comp = pool.starmap(
+                get_composition,
                 zip(
                     self.df["sequence"].values,
                     self.df["modifications"].values,
                 ),
                 chunksize=1,
             )
-        self.df.loc[:, ["ucalc_mass", "chemical_composition"]] = cc_masses_and_comp
-        self.df.loc[:, "ucalc_mz"] = self._calc_mz(
-            mass=self.df["ucalc_mass"], charge=self.df["charge"]
+        self.df.loc[:, "chemical_composition"] = comp
+        non_empty = ~self.df["chemical_composition"].isna()
+        self._il = IsotopologueLibrary(
+            molecules=("+" + self.df.loc[non_empty, "chemical_composition"]).to_list(),
+            charges=set(self.df.loc[non_empty, "charge"].astype(int).tolist()),
+        )
+        self.df.loc[non_empty, "ucalc_mz"] = self.df.loc[non_empty].apply(
+            lambda row: self._find_closest_isotopologue(row), axis=1
+        )
+        self.df.loc[:, "ucalc_mass"] = self._calc_mass(
+            mz=self.df["ucalc_mz"], charge=self.df["charge"]
         )
         self.df.loc[:, "accuracy_ppm"] = (
             (self.df["exp_mz"].astype(float) - self.df["ucalc_mz"])
