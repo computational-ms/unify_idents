@@ -86,7 +86,7 @@ def test_engine_parsers_msfragger_check_dataframe_integrity():
     )
     df = parser.unify()
     assert len(df) == 3417
-    assert pytest.approx(df["ucalc_mz"].mean()) == 477.8585
+    assert pytest.approx(df["ucalc_mz"].mean()) == 478.2247
     assert pytest.approx(df["exp_mz"].mean()) == 478.12137
 
     assert df["modifications"].str.contains("Acetyl:0").sum() == 2

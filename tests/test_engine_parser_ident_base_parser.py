@@ -6,7 +6,7 @@ from pathlib import Path
 
 from unify_idents.engine_parsers.base_parser import (
     IdentBaseParser,
-    get_mass_and_composition,
+    get_composition,
     merge_and_join_dicts,
 )
 
@@ -279,38 +279,65 @@ def test_calc_mz():
     assert mz[2] == pytest.approx(16.0, abs=1e-2)
 
 
+def test_calc_mass():
+    obj = IdentBaseParser(input_file=None, params=None)
+    mzs_in_weird_types = pd.Series(["6", 11, 16.0])
+    charges_in_weird_types = pd.Series(["2", 2, 2.0])
+    mz = obj._calc_mass(mzs_in_weird_types, charges_in_weird_types).to_list()
+
+    assert mz[0] == pytest.approx(10.0, abs=1e-1)
+    assert mz[1] == pytest.approx(20.0, abs=1e-1)
+    assert mz[2] == pytest.approx(30.0, abs=1e-1)
+
+
+def test_get_closest_isotopologue():
+    obj = IdentBaseParser(input_file=None, params=None)
+    obj.df = pd.DataFrame(
+        np.ones((2, len(obj.col_order) + 1)),
+        columns=obj.col_order.to_list() + ["msfragger:hyperscore"],
+    )
+    obj.df["sequence"] = ["PEPTIDE", "ASDF"]
+    obj.df["modifications"] = ["Acetyl:2", ""]
+    obj.df["charge"] = [1, 1]
+    obj.df["exp_mz"] = [840.0, 441.0]
+    obj.calc_masses_offsets_and_composition()
+    assert obj.df.loc[0, "ucalc_mz"] == pytest.approx(842.3778051857701, abs=1e-6)
+    assert obj.df.loc[1, "ucalc_mz"] == pytest.approx(441.1884835951163, abs=1e-6)
+    obj.df["exp_mz"] = [845.0, 420.0]
+    obj.calc_masses_offsets_and_composition()
+    assert obj.df.loc[0, "ucalc_mz"] == pytest.approx(844.383963584984, abs=1e-6)
+    assert obj.df.loc[1, "ucalc_mz"] == pytest.approx(439.18234027997, abs=1e-6)
+
+
 def test_get_mass_and_composition():
     seq = "PEPTCIDE"
     mods = ""
     # Set up ChemicalComposition like it would be using the initalizer
-    get_mass_and_composition.cc = ChemicalComposition()
+    get_composition.cc = ChemicalComposition()
     # Without modifications
-    m_no_mods, comp = get_mass_and_composition(seq=seq, mods=mods)
-    assert m_no_mods == pytest.approx(902.3691)
+    comp = get_composition(seq=seq, mods=mods)
     assert comp == "C(37)H(58)N(8)O(16)S(1)"
 
     # With modifications
     mods = "Acetyl:0;Carbamidomethyl:5"
-    m, comp = get_mass_and_composition(seq=seq, mods=mods)
-    assert m == pytest.approx(m_no_mods + 57.021464 + 42.010565)
+    comp = get_composition(seq=seq, mods=mods)
     assert comp == "C(41)H(63)N(9)O(18)S(1)"
 
     # With labeled modifications
     mods = "Acetyl:0;Carbamidomethyl:5;Label:18O(1):7"
-    m, comp = get_mass_and_composition(seq=seq, mods=mods)
+    comp = get_composition(seq=seq, mods=mods)
     assert comp == "C(41)H(63)18O(1)N(9)O(17)S(1)"
 
     mods = "CustomMod42:4"
     # Change the ChemicalComposition instance to use custom mods
-    get_mass_and_composition.cc = ChemicalComposition(
+    get_composition.cc = ChemicalComposition(
         unimod_file_list=[Path(pytest._test_path / "data" / "custom_mod.xml")],
         add_default_files=False,
     )
-    m, comp = get_mass_and_composition(
+    comp = get_composition(
         seq=seq,
         mods=mods,
     )
-    assert m == pytest.approx(m_no_mods + 42, abs=0.1)
     assert comp == "C(37)H(61)13C(3)N(8)O(16)S(1)"
 
 
