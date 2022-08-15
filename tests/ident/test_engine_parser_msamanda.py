@@ -84,7 +84,7 @@ def test_engine_parsers_msamanda_check_dataframe_integrity():
     )
     df = parser.unify()
     assert len(df) == 87
-    assert pytest.approx(df["ucalc_mz"].mean()) == 485.2679
+    assert pytest.approx(df["ucalc_mz"].mean()) == 485.2649
     assert pytest.approx(df["exp_mz"].mean()) == 485.26797
 
     assert df["modifications"].str.contains("Acetyl:0").sum() == 0

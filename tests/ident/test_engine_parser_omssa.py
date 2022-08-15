@@ -97,7 +97,7 @@ def test_engine_parsers_omssa_check_dataframe_integrity():
         },
     )
     df = parser.unify()
-    assert pytest.approx(df["ucalc_mz"].mean()) == 826.7793
+    assert pytest.approx(df["ucalc_mz"].mean()) == 826.77600
     assert (df["raw_data_location"] == "path/for/glory.mzML").all()
     assert pytest.approx(df["exp_mz"].mean()) == 826.7788
 
