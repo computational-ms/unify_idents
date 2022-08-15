@@ -10,4 +10,4 @@ tqdm~=4.64.0
 regex~=2022.7.25
 uparma~=0.9.8
 lxml~=4.9.1
-pyqms~=0.6.5
+IsoSpecPy~=2.2.0
