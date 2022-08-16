@@ -309,36 +309,53 @@ def test_get_closest_isotopologue():
     assert obj.df.loc[1, "ucalc_mz"] == pytest.approx(438.17506381742, abs=1e-6)
 
 
-# def test_get_mass_and_composition():
-#     seq = "PEPTCIDE"
-#     mods = ""
-#     # Set up ChemicalComposition like it would be using the initalizer
-#     get_composition.cc = ChemicalComposition()
-#     # Without modifications
-#     comp = get_composition(seq=seq, mods=mods)
-#     assert comp == "C(37)H(58)N(8)O(16)S(1)"
-#
-#     # With modifications
-#     mods = "Acetyl:0;Carbamidomethyl:5"
-#     comp = get_composition(seq=seq, mods=mods)
-#     assert comp == "C(41)H(63)N(9)O(18)S(1)"
-#
-#     # With labeled modifications
-#     mods = "Acetyl:0;Carbamidomethyl:5;Label:18O(1):7"
-#     comp = get_composition(seq=seq, mods=mods)
-#     assert comp == "C(41)H(63)18O(1)N(9)O(17)S(1)"
-#
-#     mods = "CustomMod42:4"
-#     # Change the ChemicalComposition instance to use custom mods
-#     get_composition.cc = ChemicalComposition(
-#         unimod_file_list=[Path(pytest._test_path / "data" / "custom_mod.xml")],
-#         add_default_files=False,
-#     )
-#     comp = get_composition(
-#         seq=seq,
-#         mods=mods,
-#     )
-#     assert comp == "C(37)H(61)13C(3)N(8)O(16)S(1)"
+def test_get_composition():
+    seq = "PEPTCIDE"
+    mods = ""
+    # Set up ChemicalComposition like it would be using the initalizer
+    get_composition_and_mz.cc = ChemicalComposition()
+    # Without modifications
+    comp, _ = get_composition_and_mz(
+        seq=seq,
+        mods=mods,
+        exp_mz=0,
+        charge=1,
+    )
+    assert comp == "C(37)H(58)N(8)O(16)S(1)"
+
+    # With modifications
+    mods = "Acetyl:0;Carbamidomethyl:5"
+    comp, _ = get_composition_and_mz(
+        seq=seq,
+        mods=mods,
+        exp_mz=0,
+        charge=1,
+    )
+    assert comp == "C(41)H(63)N(9)O(18)S(1)"
+
+    # With labeled modifications
+    mods = "Acetyl:0;Carbamidomethyl:5;Label:18O(1):7"
+    comp, _ = get_composition_and_mz(
+        seq=seq,
+        mods=mods,
+        exp_mz=0,
+        charge=1,
+    )
+    assert comp == "C(41)H(63)18O(1)N(9)O(17)S(1)"
+
+    mods = "CustomMod42:4"
+    # Change the ChemicalComposition instance to use custom mods
+    get_composition_and_mz.cc = ChemicalComposition(
+        unimod_file_list=[Path(pytest._test_path / "data" / "custom_mod.xml")],
+        add_default_files=False,
+    )
+    comp, _ = get_composition_and_mz(
+        seq=seq,
+        mods=mods,
+        exp_mz=0,
+        charge=1,
+    )
+    assert comp == "C(37)H(61)13C(3)N(8)O(16)S(1)"
 
 
 def test_merge_and_join_dicts():
