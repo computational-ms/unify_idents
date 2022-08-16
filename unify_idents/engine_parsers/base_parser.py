@@ -41,6 +41,8 @@ def get_composition_and_mz(seq, mods, charge, exp_mz):
         tuple: hill_notation_unimod string, mz
 
     """
+    composition = None
+    mz = None
     try:
         get_composition_and_mz.cc.use(sequence=seq, modifications=mods)
         composition = get_composition_and_mz.cc.hill_notation_unimod()
@@ -55,13 +57,13 @@ def get_composition_and_mz(seq, mods, charge, exp_mz):
             )
         ]
         # Report only most accurate mass
-        mass = min(
+        mz = min(
             isotopologue_mzs,
             key=lambda x: abs(exp_mz - x),
         )
     except (KeyError, Exception):
-        return (None, None)
-    return composition, mass
+        pass
+    return composition, mz
 
 
 class BaseParser:
