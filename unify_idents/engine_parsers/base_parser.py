@@ -7,7 +7,7 @@ import regex as re
 import uparma
 from chemical_composition import ChemicalComposition
 from loguru import logger
-from pyqms import IsotopologueLibrary
+import IsoSpecPy as iso
 from peptide_mapper.mapper import UPeptideMapper
 from unimod_mapper.unimod_mapper import UnimodMapper
 
@@ -25,24 +25,45 @@ def init_custom_cc(function, xml_file_list):
     function.cc = ChemicalComposition(unimod_file_list=xml_file_list)
 
 
-def get_composition(seq, mods):
-    """Compute hill_notation of any single peptidoform.
+def get_composition_and_mz(seq, mods, charge, exp_mz):
+    """Compute hill_notation of any single peptidoform and mass.
 
+    Only the mass of the isotopologue closest to the experimental mass is reported.
     Requires the 'cc' attribute of the function to be set externally.
     Returns None if sequence contains unknown amino acids.
     Args:
         seq (str): peptide sequence
         mods (str): modifications of the peptide sequence, given as "UnimodName:Position"
+        charge (int): charge
+        exp_mz (float): experimental spectrum mz
 
     Returns:
-        str or None: hill_notation_unimod string
+        tuple: hill_notation_unimod string, mz
 
     """
+    composition = None
+    mz = None
     try:
-        get_composition.cc.use(sequence=seq, modifications=mods)
+        get_composition_and_mz.cc.use(sequence=seq, modifications=mods)
+        composition = get_composition_and_mz.cc.hill_notation_unimod()
+        isotopologue_mzs = [
+            mz
+            for mz, _ in (
+                iso.IsoThreshold(
+                    formula=composition.replace("(", "").replace(")", ""),
+                    threshold=0.001,
+                    charge=charge,
+                )
+            )
+        ]
+        # Report only most accurate mass
+        mz = min(
+            isotopologue_mzs,
+            key=lambda x: abs(exp_mz - x),
+        )
     except (KeyError, Exception):
-        return None
-    return get_composition.cc.hill_notation_unimod()
+        pass
+    return composition, mz
 
 
 class BaseParser:
@@ -161,14 +182,6 @@ class IdentBaseParser(BaseParser):
         """
         return mz.astype(float) * charge.astype(int) - (
             charge.astype(int) * self.PROTON
-        )
-
-    def _find_closest_isotopologue(self, row):
-        return min(
-            self._il[row["chemical_composition"]]["env"][(("N", "0.000"),)][
-                int(row["charge"])
-            ]["mz"][:3],
-            key=lambda x: abs(row["exp_mz"] - x),
         )
 
     def _create_mod_dicts(self):
@@ -356,25 +369,19 @@ class IdentBaseParser(BaseParser):
         with mp.Pool(
             self.params.get("cpus", mp.cpu_count() - 1),
             initializer=init_custom_cc,
-            initargs=(get_composition, self.params.get("xml_file_list", None)),
+            initargs=(get_composition_and_mz, self.params.get("xml_file_list", None)),
         ) as pool:
             comp = pool.starmap(
-                get_composition,
+                get_composition_and_mz,
                 zip(
                     self.df["sequence"].values,
                     self.df["modifications"].values,
+                    self.df["charge"].astype(int).values,
+                    self.df["exp_mz"].values,
                 ),
                 chunksize=1,
             )
-        self.df.loc[:, "chemical_composition"] = comp
-        non_empty = ~self.df["chemical_composition"].isna()
-        self._il = IsotopologueLibrary(
-            molecules=("+" + self.df.loc[non_empty, "chemical_composition"]).to_list(),
-            charges=set(self.df.loc[non_empty, "charge"].astype(int).tolist()),
-        )
-        self.df.loc[non_empty, "ucalc_mz"] = self.df.loc[non_empty].apply(
-            lambda row: self._find_closest_isotopologue(row), axis=1
-        )
+        self.df.loc[:, ["chemical_composition", "ucalc_mz"]] = comp
         self.df.loc[:, "ucalc_mass"] = self._calc_mass(
             mz=self.df["ucalc_mz"], charge=self.df["charge"]
         )
