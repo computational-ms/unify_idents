@@ -48,6 +48,7 @@ def get_composition_and_mz(seq, mods, charge, exp_mz):
     atom_counts = None
     isotope_masses = None
     isotope_probs = None
+    replaced_composition = None
     try:
         get_composition_and_mz.cc.use(sequence=seq, modifications=mods)
         composition = get_composition_and_mz.cc.hill_notation_unimod()
@@ -57,21 +58,28 @@ def get_composition_and_mz(seq, mods, charge, exp_mz):
             isotope_masses = []
             for isotope in static_isotopes:
                 mass, element, number = isotope
-                composition = composition.replace(f"{mass}{element}({number})", "")
+                replaced_composition = composition.replace(
+                    f"{mass}{element}({number})", ""
+                )
                 isotope_masses.append(
                     [
                         [
                             m
                             for m in symbol_to_masses[element]
-                            if str(m).startswith(mass)
+                            if str(round(m)).startswith(mass)
                         ][0]
                     ]
                 )
                 atom_counts.append(int(number))
             isotope_probs = len(atom_counts) * [[1.0]]
+        if replaced_composition is not None:
+            formula = replaced_composition
+        else:
+            formula = composition
+        formula = formula.replace("(", "").replace(")", "")
         isotopologue_mzs = list(
             iso.IsoThreshold(
-                formula=composition.replace("(", "").replace(")", ""),
+                formula=formula,
                 threshold=0.001,
                 charge=charge,
                 get_confs=True,
