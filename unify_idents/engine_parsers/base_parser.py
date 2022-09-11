@@ -52,7 +52,7 @@ def get_composition_and_mz(seq, mods, charge, exp_mz):
     try:
         get_composition_and_mz.cc.use(sequence=seq, modifications=mods)
         composition = get_composition_and_mz.cc.hill_notation_unimod()
-        static_isotopes = re.findall("(?<=\))(\d+)(\w+)(?:\()(\d+)", composition)
+        static_isotopes = re.findall(r"(?<=\))(\d+)(\w+)(?:\()(\d+)", composition)
         if len(static_isotopes) != 0:
             atom_counts = []
             isotope_masses = []
