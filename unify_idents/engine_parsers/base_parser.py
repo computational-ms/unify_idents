@@ -1,13 +1,15 @@
 """Parser handler."""
 import multiprocessing as mp
+
+import IsoSpecPy as iso
 import ahocorasick
 import numpy as np
 import pandas as pd
 import regex as re
 import uparma
+from IsoSpecPy.PeriodicTbl import symbol_to_masses
 from chemical_composition import ChemicalComposition
 from loguru import logger
-import IsoSpecPy as iso
 from peptide_mapper.mapper import UPeptideMapper
 from unimod_mapper.unimod_mapper import UnimodMapper
 
@@ -43,25 +45,56 @@ def get_composition_and_mz(seq, mods, charge, exp_mz):
     """
     composition = None
     mz = None
+    atom_counts = None
+    isotope_masses = None
+    isotope_probs = None
+    replaced_composition = None
     try:
         get_composition_and_mz.cc.use(sequence=seq, modifications=mods)
         composition = get_composition_and_mz.cc.hill_notation_unimod()
-        isotopologue_mzs = [
-            mz
-            for mz, _ in (
-                iso.IsoThreshold(
-                    formula=composition.replace("(", "").replace(")", ""),
-                    threshold=0.001,
-                    charge=charge,
+        static_isotopes = re.findall(r"(?<=\))(\d+)(\w+)(?:\()(\d+)", composition)
+        if len(static_isotopes) != 0:
+            atom_counts = []
+            isotope_masses = []
+            for isotope in static_isotopes:
+                mass, element, number = isotope
+                replaced_composition = composition.replace(
+                    f"{mass}{element}({number})", ""
                 )
-            )
-        ]
+                isotope_masses.append(
+                    [
+                        [
+                            m
+                            for m in symbol_to_masses[element]
+                            if str(round(m)).startswith(mass)
+                        ][0]
+                    ]
+                )
+                atom_counts.append(int(number))
+            isotope_probs = len(atom_counts) * [[1.0]]
+        if replaced_composition is not None:
+            formula = replaced_composition
+        else:
+            formula = composition
+        formula = formula.replace("(", "").replace(")", "")
+        isotopologue_mzs = list(
+            iso.IsoThreshold(
+                formula=formula,
+                threshold=0.001,
+                charge=charge,
+                get_confs=True,
+                atomCounts=atom_counts,
+                isotopeMasses=isotope_masses,
+                isotopeProbabilities=isotope_probs,
+            ).masses
+        )
         # Report only most accurate mass
         mz = min(
             isotopologue_mzs,
             key=lambda x: abs(exp_mz - x),
         )
     except (KeyError, Exception):
+        logger.warning(f"Could not calculate mz for {seq}#{mods}")
         pass
     return composition, mz
 
