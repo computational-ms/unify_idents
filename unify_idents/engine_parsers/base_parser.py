@@ -50,10 +50,10 @@ def get_composition_and_mass_and_accuracy(seq, mods, charge, exp_mz):
     atom_counts = None
     isotope_masses = None
     isotope_probs = None
-    replaced_composition = None
     try:
         get_composition_and_mass_and_accuracy.cc.use(sequence=seq, modifications=mods)
         composition = get_composition_and_mass_and_accuracy.cc.hill_notation_unimod()
+        replaced_composition = composition
         c12_mass = get_composition_and_mass_and_accuracy.cc.mass()
         static_isotopes = re.findall(r"(?<=\))(\d+)(\w+)(?:\()(\d+)", composition)
         if len(static_isotopes) != 0:
@@ -61,7 +61,7 @@ def get_composition_and_mass_and_accuracy(seq, mods, charge, exp_mz):
             isotope_masses = []
             for isotope in static_isotopes:
                 mass, element, number = isotope
-                replaced_composition = composition.replace(
+                replaced_composition = replaced_composition.replace(
                     f"{mass}{element}({number})", ""
                 )
                 isotope_masses.append(
