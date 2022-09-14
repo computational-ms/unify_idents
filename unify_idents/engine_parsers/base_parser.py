@@ -17,15 +17,21 @@ from unimod_mapper.unimod_mapper import UnimodMapper
 from unify_idents.utils import merge_and_join_dicts
 
 
-def init_custom_cc(function, xml_file_list):
+def init_custom_cc(function, xml_file_list, proton):
     """Initialize function for multiprocessing by providing 'global' attribute.
 
     Args:
         function (function): function to be appended with cc attribute
         xml_file_list (list): list of xml files to be passed to ChemicalComposition
+        proton (float): proton mass
 
     """
+
+    def _calc_mz(mass, charge):
+        return (mass + (charge * proton)) / charge
+
     function.cc = ChemicalComposition(unimod_file_list=xml_file_list)
+    function.calc_mz = _calc_mz
 
 
 def get_composition_and_mass_and_accuracy(seq, mods, charge, exp_mz):
@@ -80,17 +86,21 @@ def get_composition_and_mass_and_accuracy(seq, mods, charge, exp_mz):
         else:
             formula = composition
         formula = formula.replace("(", "").replace(")", "")
-        isotopologue_mzs = list(
+        isotopologue_masses = list(
             iso.IsoThreshold(
                 formula=formula,
                 threshold=0.02,
-                charge=charge,
+                charge=1,
                 get_confs=True,
                 atomCounts=atom_counts,
                 isotopeMasses=isotope_masses,
                 isotopeProbabilities=isotope_probs,
             ).masses
         )
+        isotopologue_mzs = [
+            get_composition_and_mass_and_accuracy.calc_mz(mass, charge)
+            for mass in isotopologue_masses
+        ]
         # Report only most accurate mass
         isotopologue_mz = min(
             isotopologue_mzs,
@@ -410,6 +420,7 @@ class IdentBaseParser(BaseParser):
             initargs=(
                 get_composition_and_mass_and_accuracy,
                 self.params.get("xml_file_list", None),
+                self.PROTON,
             ),
         ) as pool:
             comp = pool.starmap(

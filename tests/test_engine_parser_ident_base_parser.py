@@ -200,7 +200,7 @@ def test_calc_masses_offsets_and_composition():
     assert np.allclose(obj.df["ucalc_mass"], ref_masses, atol=1e-4)
     assert np.allclose(obj.df["ucalc_mz"], ref_masses + obj.PROTON, atol=1e-4)
     assert np.allclose(
-        obj.df["accuracy_ppm"], [-158459.767, -208476.783, -241682.593], atol=1e-3
+        obj.df["accuracy_ppm"], [-159398.0953, -209306.9420, -242444.5934], atol=1e-3
     )
     assert np.allclose(
         obj.df["accuracy_ppm_C12"],
@@ -307,7 +307,7 @@ def test_get_closest_isotopologue():
     obj.df["exp_mz"] = [840.0, 441.0]
     obj.calc_masses_offsets_and_composition()
     assert np.allclose(
-        obj.df.loc[:, "accuracy_ppm"], [-1628.9240, 1858.8377], atol=1e-3
+        obj.df.loc[:, "accuracy_ppm"], [-2822.7301, -428.5010], atol=1e-3
     )
     assert np.allclose(
         obj.df.loc[:, "accuracy_ppm_C12"], [-2822.7300, 4138.7359], atol=1e-3
@@ -315,7 +315,7 @@ def test_get_closest_isotopologue():
     obj.df["exp_mz"] = [845.0, 420.0]
     obj.calc_masses_offsets_and_composition()
     assert np.allclose(
-        obj.df.loc[:, "accuracy_ppm"], [1924.1230, -41479.0007], atol=1e-3
+        obj.df.loc[:, "accuracy_ppm"], [728.9157, -43677.3943], atol=1e-3
     )
     assert np.allclose(
         obj.df.loc[:, "accuracy_ppm_C12"], [3112.8488, -43677.3943], atol=1e-3
