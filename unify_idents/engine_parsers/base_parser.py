@@ -9,6 +9,7 @@ import regex as re
 import uparma
 from IsoSpecPy.PeriodicTbl import symbol_to_masses
 from chemical_composition import ChemicalComposition
+from chemical_composition.chemical_composition_kb import PROTON
 from loguru import logger
 from peptide_mapper.mapper import UPeptideMapper
 from unimod_mapper.unimod_mapper import UnimodMapper
@@ -16,21 +17,27 @@ from unimod_mapper.unimod_mapper import UnimodMapper
 from unify_idents.utils import merge_and_join_dicts
 
 
-def init_custom_cc(function, xml_file_list):
+def init_custom_cc(function, xml_file_list, proton):
     """Initialize function for multiprocessing by providing 'global' attribute.
 
     Args:
         function (function): function to be appended with cc attribute
         xml_file_list (list): list of xml files to be passed to ChemicalComposition
+        proton (float): proton mass
 
     """
+
+    def _calc_mz(mass, charge):
+        return (mass + (charge * proton)) / charge
+
     function.cc = ChemicalComposition(unimod_file_list=xml_file_list)
+    function.calc_mz = _calc_mz
 
 
-def get_composition_and_mz(seq, mods, charge, exp_mz):
-    """Compute hill_notation of any single peptidoform and mass.
+def get_composition_and_mass_and_accuracy(seq, mods, charge, exp_mz):
+    """Compute hill_notation of any single peptidoform, mass, and accuracy.
 
-    Only the mass of the isotopologue closest to the experimental mass is reported.
+    Only the accuracy of the isotopologue closest to the experimental mass is reported.
     Requires the 'cc' attribute of the function to be set externally.
     Returns None if sequence contains unknown amino acids.
     Args:
@@ -40,25 +47,27 @@ def get_composition_and_mz(seq, mods, charge, exp_mz):
         exp_mz (float): experimental spectrum mz
 
     Returns:
-        tuple: hill_notation_unimod string, mz
+        tuple: hill_notation_unimod string, mass, accuracy
 
     """
     composition = None
-    mz = None
+    c12_mass = None
+    isotopologue_acc = None
     atom_counts = None
     isotope_masses = None
     isotope_probs = None
-    replaced_composition = None
     try:
-        get_composition_and_mz.cc.use(sequence=seq, modifications=mods)
-        composition = get_composition_and_mz.cc.hill_notation_unimod()
+        get_composition_and_mass_and_accuracy.cc.use(sequence=seq, modifications=mods)
+        composition = get_composition_and_mass_and_accuracy.cc.hill_notation_unimod()
+        replaced_composition = composition
+        c12_mass = get_composition_and_mass_and_accuracy.cc.mass()
         static_isotopes = re.findall(r"(?<=\))(\d+)(\w+)(?:\()(\d+)", composition)
         if len(static_isotopes) != 0:
             atom_counts = []
             isotope_masses = []
             for isotope in static_isotopes:
                 mass, element, number = isotope
-                replaced_composition = composition.replace(
+                replaced_composition = replaced_composition.replace(
                     f"{mass}{element}({number})", ""
                 )
                 isotope_masses.append(
@@ -77,26 +86,31 @@ def get_composition_and_mz(seq, mods, charge, exp_mz):
         else:
             formula = composition
         formula = formula.replace("(", "").replace(")", "")
-        isotopologue_mzs = list(
+        isotopologue_masses = list(
             iso.IsoThreshold(
                 formula=formula,
-                threshold=0.001,
-                charge=charge,
+                threshold=0.02,
+                charge=1,
                 get_confs=True,
                 atomCounts=atom_counts,
                 isotopeMasses=isotope_masses,
                 isotopeProbabilities=isotope_probs,
             ).masses
         )
+        isotopologue_mzs = [
+            get_composition_and_mass_and_accuracy.calc_mz(mass, charge)
+            for mass in isotopologue_masses
+        ]
         # Report only most accurate mass
-        mz = min(
+        isotopologue_mz = min(
             isotopologue_mzs,
             key=lambda x: abs(exp_mz - x),
         )
+        isotopologue_acc = (exp_mz - isotopologue_mz) / isotopologue_mz * 1e6
     except (KeyError, Exception):
         logger.warning(f"Could not calculate mz for {seq}#{mods}")
         pass
-    return composition, mz
+    return composition, c12_mass, isotopologue_acc
 
 
 class BaseParser:
@@ -143,7 +157,7 @@ class IdentBaseParser(BaseParser):
         """
         super().__init__(*args, **kwargs)
         self.DELIMITER = self.params.get("delimiter", "<|>")
-        self.PROTON = 1.00727646677
+        self.PROTON = PROTON
         self.df = None
         self.mod_mapper = UnimodMapper(xml_file_list=self.xml_file_list)
         self.params["mapped_mods"] = self.mod_mapper.map_mods(
@@ -177,6 +191,7 @@ class IdentBaseParser(BaseParser):
             "ucalc_mz": "float32",
             "ucalc_mass": "float32",
             "accuracy_ppm": "float32",
+            "accuracy_ppm_C12": "float32",
             "chemical_composition": "str",
             "sequence_start": "str",
             "sequence_stop": "str",
@@ -402,10 +417,14 @@ class IdentBaseParser(BaseParser):
         with mp.Pool(
             self.params.get("cpus", mp.cpu_count() - 1),
             initializer=init_custom_cc,
-            initargs=(get_composition_and_mz, self.params.get("xml_file_list", None)),
+            initargs=(
+                get_composition_and_mass_and_accuracy,
+                self.params.get("xml_file_list", None),
+                self.PROTON,
+            ),
         ) as pool:
             comp = pool.starmap(
-                get_composition_and_mz,
+                get_composition_and_mass_and_accuracy,
                 zip(
                     self.df["sequence"].values,
                     self.df["modifications"].values,
@@ -414,11 +433,11 @@ class IdentBaseParser(BaseParser):
                 ),
                 chunksize=1,
             )
-        self.df.loc[:, ["chemical_composition", "ucalc_mz"]] = comp
-        self.df.loc[:, "ucalc_mass"] = self._calc_mass(
-            mz=self.df["ucalc_mz"], charge=self.df["charge"]
+        self.df.loc[:, ["chemical_composition", "ucalc_mass", "accuracy_ppm"]] = comp
+        self.df.loc[:, "ucalc_mz"] = self._calc_mz(
+            mass=self.df["ucalc_mass"], charge=self.df["charge"]
         )
-        self.df.loc[:, "accuracy_ppm"] = (
+        self.df.loc[:, "accuracy_ppm_C12"] = (
             (self.df["exp_mz"].astype(float) - self.df["ucalc_mz"])
             / self.df["ucalc_mz"]
             * 1e6
