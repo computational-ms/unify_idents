@@ -9,6 +9,7 @@ import regex as re
 import uparma
 from IsoSpecPy.PeriodicTbl import symbol_to_masses
 from chemical_composition import ChemicalComposition
+from chemical_composition.chemical_composition_kb import PROTON
 from loguru import logger
 from peptide_mapper.mapper import UPeptideMapper
 from unimod_mapper.unimod_mapper import UnimodMapper
@@ -143,7 +144,7 @@ class IdentBaseParser(BaseParser):
         """
         super().__init__(*args, **kwargs)
         self.DELIMITER = self.params.get("delimiter", "<|>")
-        self.PROTON = 1.00727646677
+        self.PROTON = PROTON
         self.df = None
         self.mod_mapper = UnimodMapper(xml_file_list=self.xml_file_list)
         self.params["mapped_mods"] = self.mod_mapper.map_mods(
