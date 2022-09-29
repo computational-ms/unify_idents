@@ -17,6 +17,15 @@ from unimod_mapper.unimod_mapper import UnimodMapper
 from unify_idents.utils import merge_and_join_dicts
 
 
+def trunc(values, decs=0):
+    """Truncate  float to `number of decimals.
+
+    Args:
+        decs (int): Truncating precision
+    """
+    return np.trunc(values * 10**decs) / (10**decs)
+
+
 def init_custom_cc(function, xml_file_list, proton):
     """Initialize function for multiprocessing by providing 'global' attribute.
 
@@ -456,7 +465,7 @@ class IdentBaseParser(BaseParser):
         rt_lookup.set_index(
             [
                 "spectrum_id",
-                rt_lookup["rt"].apply(np.trunc, args=(self.rt_truncate_precision,)),
+                rt_lookup["rt"].apply(trunc, args=(self.rt_truncate_precision,)),
             ],
             inplace=True,
         )
@@ -471,6 +480,7 @@ class IdentBaseParser(BaseParser):
         """
         rt_lookup = self._read_meta_info_lookup_file()
         spec_ids = self.df["spectrum_id"].astype(int)
+        logger.info(self.style)
         if self.style in ("comet_style_1", "omssa_style_1"):
             logger.warning(
                 "This engine does not provide retention time information. Grouping only by Spectrum ID. This may cause problems when working with multi-file inputs."
@@ -486,7 +496,7 @@ class IdentBaseParser(BaseParser):
                         spec_ids,
                         self.df["retention_time_seconds"]
                         .astype(float)
-                        .apply(np.trunc, args=(self.rt_truncate_precision,)),
+                        .apply(trunc, args=(self.rt_truncate_precision,)),
                     ],
                     axis=1,
                 )
@@ -510,9 +520,12 @@ class IdentBaseParser(BaseParser):
             for ind in missing_truncated_indices:
                 meta_rt = rt_lookup.loc[ind[0], "rt"]
                 smallest_delta_idx = abs(meta_rt - ind[1]).idxmin()
-                if abs(meta_rt.loc[smallest_delta_idx] - ind[1]) <= 10 ** (
-                    -self.rt_truncate_precision
-                ):
+                if abs(
+                    round(
+                        meta_rt.loc[smallest_delta_idx] - ind[1],
+                        self.rt_truncate_precision,
+                    )
+                ) <= 10 ** (-self.rt_truncate_precision):
                     ind_mapping[ind] = (ind[0], smallest_delta_idx)
                 else:
                     logger.error(
