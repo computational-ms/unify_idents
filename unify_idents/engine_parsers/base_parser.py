@@ -520,9 +520,12 @@ class IdentBaseParser(BaseParser):
             for ind in missing_truncated_indices:
                 meta_rt = rt_lookup.loc[ind[0], "rt"]
                 smallest_delta_idx = abs(meta_rt - ind[1]).idxmin()
-                if abs(round(meta_rt.loc[smallest_delta_idx] - ind[1], self.rt_truncate_precision)) <= 10 ** (
-                    -self.rt_truncate_precision
-                ):
+                if abs(
+                    round(
+                        meta_rt.loc[smallest_delta_idx] - ind[1],
+                        self.rt_truncate_precision,
+                    )
+                ) <= 10 ** (-self.rt_truncate_precision):
                     ind_mapping[ind] = (ind[0], smallest_delta_idx)
                 else:
                     logger.error(
