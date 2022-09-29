@@ -520,7 +520,7 @@ class IdentBaseParser(BaseParser):
             for ind in missing_truncated_indices:
                 meta_rt = rt_lookup.loc[ind[0], "rt"]
                 smallest_delta_idx = abs(meta_rt - ind[1]).idxmin()
-                if abs(round(meta_rt.loc[smallest_delta_idx] - ind[1], 2)) <= 10 ** (
+                if abs(round(meta_rt.loc[smallest_delta_idx] - ind[1], self.rt_truncate_precision)) <= 10 ** (
                     -self.rt_truncate_precision
                 ):
                     ind_mapping[ind] = (ind[0], smallest_delta_idx)
@@ -528,7 +528,6 @@ class IdentBaseParser(BaseParser):
                     logger.error(
                         f"No PSMs with (spectrum_id, retention_time) {ind} in meta information."
                     )
-                    print(smallest_delta_idx)
                     raise KeyError
             spec_rt_idx = [ind_mapping.get(ind, ind) for ind in spec_rt_idx]
             self.df["retention_time_seconds"] = (
