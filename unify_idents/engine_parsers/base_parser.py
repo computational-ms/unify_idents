@@ -16,8 +16,15 @@ from unimod_mapper.unimod_mapper import UnimodMapper
 
 from unify_idents.utils import merge_and_join_dicts
 
+
 def trunc(values, decs=0):
-    return np.trunc(values*10**decs)/(10**decs)
+    """Truncate  float to `number of decimals.
+
+    Args:
+        decs (int): Truncating precision
+    """
+    return np.trunc(values * 10**decs) / (10**decs)
+
 
 def init_custom_cc(function, xml_file_list, proton):
     """Initialize function for multiprocessing by providing 'global' attribute.
@@ -471,7 +478,6 @@ class IdentBaseParser(BaseParser):
         and spectrum titles are added.
         Operations are performed inplace on self.df
         """
-
         rt_lookup = self._read_meta_info_lookup_file()
         spec_ids = self.df["spectrum_id"].astype(int)
         logger.info(self.style)
