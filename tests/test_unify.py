@@ -1,6 +1,7 @@
 #!/usr/bin/env python
-import pytest
 from pathlib import Path
+
+import pytest
 
 import unify_idents
 from unify_idents.engine_parsers.ident.comet_2020_01_4_parser import (
@@ -73,8 +74,8 @@ def test_unify_get_parser_classes():
         )
         - 1
     )
-
-    assert len(u._parser_classes) == ident_files + quant_files
+    # Minus two because of the two base classes
+    assert len(u._parser_classes) == ident_files + quant_files - 2
 
 
 def test_unify_get_omssa_parser():

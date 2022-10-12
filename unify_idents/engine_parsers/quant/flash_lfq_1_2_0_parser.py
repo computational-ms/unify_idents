@@ -1,9 +1,10 @@
 """Quant parser."""
-import pandas as pd
 import re
 from pathlib import Path
 
-from unify_idents.engine_parsers.base_parser import QuantBaseParser
+import pandas as pd
+
+from unify_idents.engine_parsers.quant.quant_base_parser import QuantBaseParser
 
 
 class FlashLFQ_1_2_0_Parser(QuantBaseParser):

@@ -2,7 +2,7 @@
 import pandas as pd
 import regex as re
 
-from unify_idents.engine_parsers.base_parser import IdentBaseParser
+from unify_idents.engine_parsers.ident.ident_base_parser import IdentBaseParser
 
 
 class MSAmanda_2_Parser(IdentBaseParser):

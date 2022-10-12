@@ -1,5 +1,5 @@
 """Dummy parser."""
-from unify_idents.engine_parsers.base_parser import IdentBaseParser
+from unify_idents.engine_parsers.ident.ident_base_parser import IdentBaseParser
 
 
 class Dummy(IdentBaseParser):

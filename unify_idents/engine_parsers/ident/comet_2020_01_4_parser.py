@@ -1,15 +1,16 @@
 """Engine parser."""
 import multiprocessing as mp
+from io import BytesIO
+
 import numpy as np
 import pandas as pd
 import regex as re
 import sys
-from io import BytesIO
 from loguru import logger
 from lxml import etree
 from tqdm import tqdm
 
-from unify_idents.engine_parsers.base_parser import IdentBaseParser
+from unify_idents.engine_parsers.ident.ident_base_parser import IdentBaseParser
 
 
 def _mp_specs_init(func, reference_dict, mapping_dict):

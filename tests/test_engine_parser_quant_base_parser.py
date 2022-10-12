@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 import pytest
 
-from unify_idents.engine_parsers.base_parser import QuantBaseParser
+from unify_idents.engine_parsers.quant.quant_base_parser import QuantBaseParser
 
 
 def test_engine_parsers_QuantBaseParser_init():
