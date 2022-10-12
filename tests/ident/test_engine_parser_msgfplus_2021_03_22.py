@@ -149,7 +149,7 @@ def test_engine_parsers_msgfplus_get_peptide_lookup():
     assert lookup["Pep_YICDNQDTISSK"]["modifications"] == "Carbamidomethyl:3"
 
 
-def test_get_single_spec_df():
+def test_get_single_spec_df_msgf():
     input_file = pytest._test_path / "data" / "BSA1_msgfplus_2021_03_22.mzid"
     element = (
         etree.parse(input_file).getroot().find(".//{*}SpectrumIdentificationResult")
