@@ -28,17 +28,14 @@ envlist = py38,py39
 isolated_build = True
 
 [testenv]
-# install pytest in the virtualenv where commands will be executed
-passenv =
-    *
 commands =
-    pytest {posargs}
+    pytest tests {posargs}
 
 [testenv:coverage]
 deps = -Ur{toxinidir}/requirements_dev.txt
 commands =
     coverage erase
-    coverage run --source=ursgal {envbindir}/pytest {posargs}
+    coverage run --source=unify_idents {envbindir}/pytest {posargs}
     coverage report -m
 """
 
