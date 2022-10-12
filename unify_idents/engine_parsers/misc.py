@@ -10,6 +10,7 @@ from loguru import logger
 
 def trunc(values, decs=0):
     """Truncate  float to `number of decimals.
+
     Args:
         decs (int): Truncating precision
     """
@@ -18,6 +19,7 @@ def trunc(values, decs=0):
 
 def init_custom_cc(function, xml_file_list, proton):
     """Initialize function for multiprocessing by providing 'global' attribute.
+
     Args:
         function (function): function to be appended with cc attribute
         xml_file_list (list): list of xml files to be passed to ChemicalComposition
@@ -33,9 +35,11 @@ def init_custom_cc(function, xml_file_list, proton):
 
 def get_composition_and_mass_and_accuracy(seq, mods, charge, exp_mz):
     """Compute hill_notation of any single peptidoform, mass, and accuracy.
+
     Only the accuracy of the isotopologue closest to the experimental mass is reported.
     Requires the 'cc' attribute of the function to be set externally.
     Returns None if sequence contains unknown amino acids.
+
     Args:
         seq (str): peptide sequence
         mods (str): modifications of the peptide sequence, given as "UnimodName:Position"
