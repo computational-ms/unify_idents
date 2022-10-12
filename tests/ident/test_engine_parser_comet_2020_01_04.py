@@ -93,7 +93,7 @@ def test_engine_parsers_comet_check_dataframe_integrity():
         },
     )
     df = parser.unify()
-    assert pytest.approx(df["ucalc_mz"].mean()) == 457.87326
+    assert pytest.approx(df["ucalc_mz"].mean()) == 457.85944
     assert pytest.approx(df["exp_mz"].mean()) == 457.87625
 
     assert df["modifications"].str.contains("Acetyl:0").sum() == 5

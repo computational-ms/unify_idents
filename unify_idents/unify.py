@@ -39,7 +39,6 @@ class Unify:
         self._parser_classes = []
         self.parser = self._get_parser()
         self.df = None
-        self.PROTON = 1.00727646677
 
     def _get_parser(self):
         """Check input file / parser compatibility and init matching parser in self.parser.

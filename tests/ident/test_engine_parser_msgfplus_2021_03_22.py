@@ -98,7 +98,7 @@ def test_engine_parsers_msgfplus_check_dataframe_integrity():
     print(df)
     assert pytest.approx(df["exp_mz"].mean()) == 488.0319
     assert len(df) == 92
-    assert pytest.approx(df["ucalc_mz"].mean()) == 488.0288
+    assert pytest.approx(df["ucalc_mz"].mean()) == 488.03167
     assert (df["raw_data_location"] == "path/for/glory.mzML").all()
     assert df["modifications"].str.contains("Acetyl:0").sum() == 0
     assert df["modifications"].str.contains("Oxidation:").sum() == 0
@@ -261,7 +261,7 @@ def test_engine_parsers_msgfplus_check_dataframe_integrity_unknown_mod():
     assert pytest.approx(df["exp_mz"].mean()) == 488.0319
     assert len(df) == 92
     # Currently this excludes two peptides and is reduced
-    assert pytest.approx(df["ucalc_mz"].mean()) == 486.5571
+    assert pytest.approx(df["ucalc_mz"].mean()) == 486.56
     assert (df["raw_data_location"] == "path/for/glory.mzML").all()
     assert df["modifications"].str.contains("Acetyl:0").sum() == 0
     assert df["modifications"].str.contains("Oxidation:").sum() == 0
