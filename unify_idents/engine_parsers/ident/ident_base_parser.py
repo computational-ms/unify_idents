@@ -352,7 +352,7 @@ class IdentBaseParser(BaseParser):
                         spec_ids,
                         self.df["retention_time_seconds"]
                         .astype(float)
-                        .apply(np.trunc, args=(self.rt_truncate_precision,)),
+                        .apply(trunc, args=(self.rt_truncate_precision,)),
                     ],
                     axis=1,
                 )
