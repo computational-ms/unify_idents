@@ -151,7 +151,7 @@ def test_unify_get_msgfplus_parser():
 
 def test_unify_get_msamanda_parser():
     rt_lookup_path = pytest._test_path / "data" / "BSA1_ursgal_lookup.csv"
-    p = pytest._test_path / "data" / "BSA_msamanda_2_0_0_17442.csv"
+    p = pytest._test_path / "data" / "BSA1_msamanda_2_0_0_17442.csv"
     db_path = pytest._test_path / "data" / "BSA.fasta"
     u = Unify(
         p,

@@ -5,7 +5,10 @@ import sys
 
 def main():
     input_file = (
-        Path(__file__).parent.parent / "tests" / "data" / "BSA_msamanda_2_0_0_17442.csv"
+        Path(__file__).parent.parent
+        / "tests"
+        / "data"
+        / "BSA1_msamanda_2_0_0_17442.csv"
     )
     rt_lookup_path = (
         Path(__file__).parent.parent / "tests" / "data" / "BSA_ursgal_lookup.csv.bz2"
