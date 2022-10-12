@@ -1,53 +1,38 @@
-#!/usr/bin/env python3
-from setuptools import setup
-import os
+import setuptools
 
-version_path = os.path.join(os.path.dirname(__file__), "unify_idents", "version.txt")
-with open(version_path, "r") as version_file:
-    unify_idents_version = version_file.read().strip()
 
-with open("requirements.txt") as req_file:
-    reqs = req_file.readlines()
+def branch_dependent_version():
+    import setuptools_scm
 
-setup(
-    name="unify_idents",
-    version=unify_idents_version,
-    packages=[
-        "unify_idents",
-        "unify_idents.engine_parsers",
-        "unify_idents.engine_parsers.ident",
-        "unify_idents.engine_parsers.quant",
-    ],
-    package_dir={"unify_idents": "unify_idents"},
-    #    package_data={
-    #        "unify_idents": ["version.txt", "engine_parsers"],
-    #        "": ["tests", "example_scripts"],
-    #    },
-    python_requires=">=3.8.0",
-    install_requires=reqs,
-    description="Unify PSM idents",
-    long_description="Unifying PSM identifications of different peptide search engines",
-    author="M. Koesters, T. Ranff, A. Vlasov, C. Fufezan",
-    url="http://computational-ms.github.com",
-    license="The MIT license",
-    platforms="any that supports python 3.8",
-    classifiers=[
-        "Development Status :: 4 - Beta",
-        "Environment :: Console",
-        "Intended Audience :: Education",
-        "Intended Audience :: Science/Research",
-        "Intended Audience :: Developers",
-        "License :: OSI Approved :: MIT License",
-        "Operating System :: MacOS :: MacOS X",
-        "Operating System :: Microsoft :: Windows",
-        "Operating System :: POSIX",
-        "Operating System :: POSIX :: SunOS/Solaris",
-        "Operating System :: Unix",
-        "Programming Language :: Python :: 3.8",
-        "Programming Language :: Python :: 3.9",
-        "Programming Language :: Python :: 3.10",
-        "Topic :: Scientific/Engineering :: Bio-Informatics",
-        "Topic :: Scientific/Engineering :: Chemistry",
-        "Topic :: Scientific/Engineering :: Medical Science Apps.",
-    ],
+    def void(version):
+        return ""
+
+    def version_scheme(version):
+        if version.branch not in ["main", "master"]:
+            _v = setuptools_scm.get_version(local_scheme=void)
+        else:
+            _v = str(version.tag)
+        return _v
+
+    def local_scheme(version):
+        if version.branch not in ["main", "master"]:
+            _v = setuptools_scm.get_version(version_scheme=void)
+        else:
+            _v = ""
+        return _v
+
+    scm_version = {
+        "root": ".",
+        "relative_to": __file__,
+        "version_scheme": version_scheme,
+        "local_scheme": local_scheme
+        # >> "no-local-version" not quit good enough
+        # >> on dev "node-and-timestamp",  # version_scheme,
+    }
+    return scm_version
+
+
+setuptools.setup(
+    use_scm_version=branch_dependent_version,
+    setup_requires=["setuptools_scm"],
 )

@@ -1,5 +1,7 @@
 include requirements.txt
 include requirements_dev.txt
 include unify_idents/version.txt
+include LICENSE.txt README.rst pyproject.toml 
+include setup.cfg
 graft tests
 graft unify_idents
