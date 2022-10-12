@@ -73,8 +73,8 @@ def test_unify_get_parser_classes():
         )
         - 1
     )
-
-    assert len(u._parser_classes) == ident_files + quant_files
+    # Minus two because of the two base classes
+    assert len(u._parser_classes) == ident_files + quant_files - 2
 
 
 def test_unify_get_omssa_parser():

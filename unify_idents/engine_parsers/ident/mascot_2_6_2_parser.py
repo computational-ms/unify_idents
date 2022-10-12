@@ -1,5 +1,6 @@
 """Engine parser."""
 import multiprocessing as mp
+
 import numpy as np
 import pandas as pd
 import regex as re
@@ -8,7 +9,7 @@ from itertools import repeat
 from loguru import logger
 from tqdm import tqdm
 
-from unify_idents.engine_parsers.base_parser import IdentBaseParser
+from unify_idents.engine_parsers.ident.ident_base_parser import IdentBaseParser
 from unify_idents.utils import merge_and_join_dicts
 
 mascot_custom_psm_regex = re.compile(

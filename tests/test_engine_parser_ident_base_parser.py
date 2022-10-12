@@ -4,11 +4,9 @@ import pytest
 from chemical_composition import ChemicalComposition
 from pathlib import Path
 
-from unify_idents.engine_parsers.base_parser import (
-    IdentBaseParser,
-    get_composition_and_mz,
-    merge_and_join_dicts,
-)
+from unify_idents.engine_parsers.ident.ident_base_parser import IdentBaseParser
+from unify_idents.engine_parsers.misc import get_composition_and_mz
+from unify_idents.utils import merge_and_join_dicts
 
 
 def test_base_parser_read_rt_lookup_file():

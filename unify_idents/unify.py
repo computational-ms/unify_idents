@@ -1,8 +1,8 @@
 """Unify handler."""
 from importlib import import_module
+from pathlib import Path
 
 import pandas as pd
-from pathlib import Path
 
 from unify_idents.engine_parsers.base_parser import BaseParser
 
