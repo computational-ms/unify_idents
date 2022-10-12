@@ -14,7 +14,9 @@ def trunc(values, decs=0):
     Args:
         decs (int): Truncating precision
     """
-    return np.trunc(values * 10**decs) / (10**decs)
+    return np.trunc(np.around(values, decimals=decs) * 10**decs) / (10**decs)
+
+    # return np.trunc(values * 10**decs) / (10**decs)
 
 
 def init_custom_cc(function, xml_file_list, proton):
