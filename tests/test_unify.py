@@ -1,6 +1,7 @@
 #!/usr/bin/env python
-import pytest
 from pathlib import Path
+
+import pytest
 
 import unify_idents
 from unify_idents.engine_parsers.ident.comet_2020_01_4_parser import (

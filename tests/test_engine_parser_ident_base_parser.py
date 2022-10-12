@@ -1,11 +1,12 @@
+from pathlib import Path
+
 import numpy as np
 import pandas as pd
 import pytest
 from chemical_composition import ChemicalComposition
-from pathlib import Path
 
 from unify_idents.engine_parsers.ident.ident_base_parser import IdentBaseParser
-from unify_idents.engine_parsers.misc import get_composition_and_mz
+from unify_idents.engine_parsers.misc import get_composition_and_mass_and_accuracy
 from unify_idents.utils import merge_and_join_dicts
 
 
