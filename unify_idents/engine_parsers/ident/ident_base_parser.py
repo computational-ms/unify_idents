@@ -10,7 +10,11 @@ from peptide_mapper.mapper import UPeptideMapper
 from unimod_mapper.unimod_mapper import UnimodMapper
 
 from unify_idents.engine_parsers.base_parser import BaseParser
-from unify_idents.engine_parsers.misc import get_composition_and_mz, init_custom_cc
+from unify_idents.engine_parsers.misc import (
+    get_composition_and_mz,
+    init_custom_cc,
+    trunc,
+)
 from unify_idents.utils import merge_and_join_dicts
 
 
@@ -81,8 +85,8 @@ class IdentBaseParser(BaseParser):
             (pd.Series): m/z
         """
         return (
-                       mass.astype(float) + (charge.astype(int) * self.PROTON)
-               ) / charge.astype(int)
+            mass.astype(float) + (charge.astype(int) * self.PROTON)
+        ) / charge.astype(int)
 
     def _calc_mass(self, mz, charge):
         """Calculate mass from mass-to-charge ratio.
@@ -95,7 +99,7 @@ class IdentBaseParser(BaseParser):
             (pd.Series): mass
         """
         return mz.astype(float) * charge.astype(int) - (
-                charge.astype(int) * self.PROTON
+            charge.astype(int) * self.PROTON
         )
 
     def _create_mod_dicts(self):
@@ -234,14 +238,14 @@ class IdentBaseParser(BaseParser):
                 ],
                 axis=1,
             )
-                .explode("sequence_pre_aa")
-                .sum(axis=1)
+            .explode("sequence_pre_aa")
+            .sum(axis=1)
         )
         self.df.loc[:, "enzn"] = (
-                                         pren_seq.str.split(rf"{enzyme_pattern}").str[0].str.len() == 1
-                                 ).groupby(pren_seq.index).agg(integrity_strictness) | (
-                                         pren_seq.str[0] == "-"
-                                 ).groupby(
+            pren_seq.str.split(rf"{enzyme_pattern}").str[0].str.len() == 1
+        ).groupby(pren_seq.index).agg(integrity_strictness) | (
+            pren_seq.str[0] == "-"
+        ).groupby(
             pren_seq.index
         ).agg(
             integrity_strictness
@@ -254,14 +258,14 @@ class IdentBaseParser(BaseParser):
                 ],
                 axis=1,
             )
-                .explode("sequence_post_aa")
-                .sum(axis=1)
+            .explode("sequence_post_aa")
+            .sum(axis=1)
         )
         self.df.loc[:, "enzc"] = (
-                                         postc_seq.str.split(rf"{enzyme_pattern}").str[0].str.len() == 1
-                                 ).groupby(postc_seq.index).agg(integrity_strictness) | (
-                                         postc_seq.str[-1] == "-"
-                                 ).groupby(
+            postc_seq.str.split(rf"{enzyme_pattern}").str[0].str.len() == 1
+        ).groupby(postc_seq.index).agg(integrity_strictness) | (
+            postc_seq.str[-1] == "-"
+        ).groupby(
             postc_seq.index
         ).agg(
             integrity_strictness
@@ -269,9 +273,9 @@ class IdentBaseParser(BaseParser):
 
         internal_cuts = self.df["sequence"].str.split(rf"{enzyme_pattern}")
         self.df.loc[:, "missed_cleavages"] = (
-                internal_cuts.apply(len)
-                - internal_cuts.apply(lambda row: "" in row).astype(int)
-                - 1
+            internal_cuts.apply(len)
+            - internal_cuts.apply(lambda row: "" in row).astype(int)
+            - 1
         )
 
     def calc_masses_offsets_and_composition(self):
@@ -281,9 +285,9 @@ class IdentBaseParser(BaseParser):
         Operations are performed inplace on self.df
         """
         with mp.Pool(
-                self.params.get("cpus", mp.cpu_count() - 1),
-                initializer=init_custom_cc,
-                initargs=(get_composition_and_mz, self.params.get("xml_file_list", None)),
+            self.params.get("cpus", mp.cpu_count() - 1),
+            initializer=init_custom_cc,
+            initargs=(get_composition_and_mz, self.params.get("xml_file_list", None)),
         ) as pool:
             comp = pool.starmap(
                 get_composition_and_mz,
@@ -300,9 +304,9 @@ class IdentBaseParser(BaseParser):
             mz=self.df["ucalc_mz"], charge=self.df["charge"]
         )
         self.df.loc[:, "accuracy_ppm"] = (
-                (self.df["exp_mz"].astype(float) - self.df["ucalc_mz"])
-                / self.df["ucalc_mz"]
-                * 1e6
+            (self.df["exp_mz"].astype(float) - self.df["ucalc_mz"])
+            / self.df["ucalc_mz"]
+            * 1e6
         )
 
     def _read_meta_info_lookup_file(self):
@@ -318,7 +322,7 @@ class IdentBaseParser(BaseParser):
         rt_lookup.set_index(
             [
                 "spectrum_id",
-                rt_lookup["rt"].apply(np.trunc, args=(self.rt_truncate_precision,)),
+                rt_lookup["rt"].apply(trunc, args=(self.rt_truncate_precision,)),
             ],
             inplace=True,
         )
@@ -347,20 +351,20 @@ class IdentBaseParser(BaseParser):
                     [
                         spec_ids,
                         self.df["retention_time_seconds"]
-                            .astype(float)
-                            .apply(np.trunc, args=(self.rt_truncate_precision,)),
+                        .astype(float)
+                        .apply(np.trunc, args=(self.rt_truncate_precision,)),
                     ],
                     axis=1,
-                            )
-                    .apply(tuple, axis=1)
-                    .to_list()
+                )
+                .apply(tuple, axis=1)
+                .to_list()
             )
         try:
             self.df["retention_time_seconds"] = (
                 rt_lookup.loc[spec_rt_idx, ["rt", "rt_unit"]]
-                    .astype(float)
-                    .product(axis=1)
-                    .to_list()
+                .astype(float)
+                .product(axis=1)
+                .to_list()
             )
         except KeyError:
             logger.warning("PSMs could not be uniquely mapped to meta information.")
@@ -372,9 +376,12 @@ class IdentBaseParser(BaseParser):
             for ind in missing_truncated_indices:
                 meta_rt = rt_lookup.loc[ind[0], "rt"]
                 smallest_delta_idx = abs(meta_rt - ind[1]).idxmin()
-                if abs(meta_rt.loc[smallest_delta_idx] - ind[1]) <= 10 ** (
-                        -self.rt_truncate_precision
-                ):
+                if abs(
+                    round(
+                        meta_rt.loc[smallest_delta_idx] - ind[1],
+                        self.rt_truncate_precision,
+                    )
+                ) <= 10 ** (-self.rt_truncate_precision):
                     ind_mapping[ind] = (ind[0], smallest_delta_idx)
                 else:
                     logger.error(
@@ -384,21 +391,21 @@ class IdentBaseParser(BaseParser):
             spec_rt_idx = [ind_mapping.get(ind, ind) for ind in spec_rt_idx]
             self.df["retention_time_seconds"] = (
                 rt_lookup.loc[spec_rt_idx, ["rt", "rt_unit"]]
-                    .astype(float)
-                    .product(axis=1)
-                    .to_list()
+                .astype(float)
+                .product(axis=1)
+                .to_list()
             )
 
         self.df["exp_mz"] = rt_lookup.loc[spec_rt_idx, "precursor_mz"].to_list()
         self.df["raw_data_location"] = rt_lookup.loc[spec_rt_idx, "file"].to_list()
         self.df.loc[:, "spectrum_title"] = (
-                self.df["raw_data_location"]
-                + "."
-                + self.df["spectrum_id"].astype(str)
-                + "."
-                + self.df["spectrum_id"].astype(str)
-                + "."
-                + self.df["charge"].astype(str)
+            self.df["raw_data_location"]
+            + "."
+            + self.df["spectrum_id"].astype(str)
+            + "."
+            + self.df["spectrum_id"].astype(str)
+            + "."
+            + self.df["charge"].astype(str)
         )
 
     def add_ranks(self):
@@ -413,8 +420,8 @@ class IdentBaseParser(BaseParser):
         self.df.loc[:, score_col] = self.df[score_col].astype(float)
         self.df.loc[:, "rank"] = (
             self.df.groupby("spectrum_id")[score_col]
-                .rank(ascending=ranking_needs_to_be_ascending, method="min")
-                .astype(int)
+            .rank(ascending=ranking_needs_to_be_ascending, method="min")
+            .astype(int)
         )
 
     def add_decoy_identity(self):
@@ -450,10 +457,10 @@ class IdentBaseParser(BaseParser):
         new_cols = self.col_order[~self.col_order.isin(self.df.columns)].to_list()
         self.df.loc[:, new_cols] = None
         self.df = self.df.loc[
-                  :,
-                  self.col_order.tolist()
-                  + sorted(self.df.columns[~self.df.columns.isin(self.col_order)].tolist()),
-                  ]
+            :,
+            self.col_order.tolist()
+            + sorted(self.df.columns[~self.df.columns.isin(self.col_order)].tolist()),
+        ]
         self.df = self.df.astype(self.dtype_mapping)
         # Ensure there are not any column that should not be
         if hasattr(self, "mapping_dict"):

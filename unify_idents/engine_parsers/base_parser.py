@@ -35,4 +35,3 @@ class BaseParser:
 
         """
         return False
-

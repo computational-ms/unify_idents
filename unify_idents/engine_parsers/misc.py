@@ -1,10 +1,20 @@
 """Parser handler."""
 
 import IsoSpecPy as iso
+import numpy as np
 import regex as re
 from IsoSpecPy.PeriodicTbl import symbol_to_masses
 from chemical_composition import ChemicalComposition
 from loguru import logger
+
+
+def trunc(values, decs=0):
+    """Truncate  float to `number of decimals.
+
+    Args:
+        decs (int): Truncating precision
+    """
+    return np.trunc(values * 10**decs) / (10**decs)
 
 
 def init_custom_cc(function, xml_file_list):
