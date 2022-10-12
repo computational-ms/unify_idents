@@ -106,7 +106,7 @@ def test_engine_parsers_comet_check_dataframe_integrity():
     assert (df["raw_data_location"] == "path/for/glory.mzML").all()
 
 
-def test_get_single_spec_df():
+def test_get_single_spec_df_comet():
     input_file = pytest._test_path / "data" / "BSA1_comet_2020_01_4.mzid"
     element = (
         etree.parse(input_file)

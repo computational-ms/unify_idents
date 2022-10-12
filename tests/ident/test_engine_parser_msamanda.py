@@ -96,7 +96,7 @@ def test_engine_parsers_msamanda_check_dataframe_integrity():
     assert (df["raw_data_location"] == "path/for/glory.mzML").all()
 
 
-def test_map_mod_translation():
+def test_map_mod_translation_msamanda():
     input_file = pytest._test_path / "data" / "BSA1_msamanda_2_0_0_17442.csv"
 
     parser = MSAmanda_2_Parser(

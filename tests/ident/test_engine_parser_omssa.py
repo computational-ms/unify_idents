@@ -110,7 +110,7 @@ def test_engine_parsers_omssa_check_dataframe_integrity():
     assert df["modifications"].str.count(":").sum() == 204
 
 
-def test_replace_mod_strings():
+def test_replace_mod_strings_omssa():
     input_file = (
         pytest._test_path / "data" / "test_Creinhardtii_QE_pH11_omssa_2_1_9.csv"
     )

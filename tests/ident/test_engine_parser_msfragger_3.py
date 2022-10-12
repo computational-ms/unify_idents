@@ -99,7 +99,7 @@ def test_engine_parsers_msfragger_check_dataframe_integrity():
     assert (df["raw_data_location"] == "path/for/glory.mzML").all()
 
 
-def test_map_mod_translation():
+def test_map_mod_translation_msfragger3():
     input_file = (
         pytest._test_path / "data" / "test_Creinhardtii_QE_pH11_msfragger_3.tsv"
     )

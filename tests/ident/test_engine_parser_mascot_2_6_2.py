@@ -9,7 +9,7 @@ from unify_idents.engine_parsers.ident.mascot_2_6_2_parser import (
 )
 
 
-def test_engine_parsers_comet_init():
+def test_engine_parsers_mascot_init():
     input_file = pytest._test_path / "data" / "BSA1_mascot_2_6_2.dat"
 
     parser = Mascot_2_6_2_Parser(
@@ -40,13 +40,13 @@ def test_engine_parsers_comet_init():
     )
 
 
-def test_engine_parsers_comet_check_parser_compatibility():
+def test_engine_parsers_mascot_check_parser_compatibility():
     msgf_parser_class = Mascot_2_6_2_Parser
     input_file = pytest._test_path / "data" / "BSA1_mascot_2_6_2.dat"
     assert msgf_parser_class.check_parser_compatibility(input_file) is True
 
 
-def test_engine_parsers_comet_check_parser_compatibility_fail_with_omssa_file():
+def test_engine_parsers_mascot_check_parser_compatibility_fail_with_omssa_file():
     msgf_parser_class = Mascot_2_6_2_Parser
     input_file = (
         pytest._test_path / "data" / "test_Creinhardtii_QE_pH11_omssa_2_1_9.csv"
@@ -54,7 +54,7 @@ def test_engine_parsers_comet_check_parser_compatibility_fail_with_omssa_file():
     assert msgf_parser_class.check_parser_compatibility(input_file) is False
 
 
-def test_engine_parsers_comet_check_dataframe_integrity():
+def test_engine_parsers_mascot_check_dataframe_integrity():
     input_file = pytest._test_path / "data" / "BSA1_mascot_2_6_2.dat"
     rt_lookup_path = pytest._test_path / "data" / "BSA1_ursgal_lookup.csv"
     db_path = pytest._test_path / "data" / "BSA.fasta"
@@ -148,7 +148,7 @@ def test_get_single_spec_df():
     ).all()
 
 
-def test_translate_opt_mods():
+def test_translate_opt_mods_mascot():
     input_file = pytest._test_path / "data" / "BSA1_mascot_2_6_2.dat"
     rt_lookup_path = pytest._test_path / "data" / "BSA1_ursgal_lookup.csv"
     db_path = pytest._test_path / "data" / "BSA.fasta"
